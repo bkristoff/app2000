@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<!-- 
+    Kilde: 
+    https://ckeditor.com/docs/ckeditor5/latest/examples/builds/classic-editor.html
+-->
+
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <script src="https://cdn.ckeditor.com/ckeditor5/21.0.0/classic/ckeditor.js"></script>
+    <title>APP2000</title>
+</head>
+<body>
+    <h1>Enkel editordemo</h1>
+
+	<div id="editor">Denne teksten kan du redigere.</div>
+    
+    <p>Man kan sende innholdet til serveren med et vanlig HTML-skjema (mer om det når vi begynner med PHP), men det er også mulig å "grabbe" teksten med JavaScript. Klikk på knappen!</p>
+    <button id="henteKnapp">Kopier tekst!</button>
+    <p>Du skrev:</p>
+	<div id="utdata"></div>
+    <script>
+        let editor;
+
+        ClassicEditor
+            .create( document.querySelector( '#editor' ) )
+            .then ( newEditor => {
+                editor = newEditor;
+            } )
+            .catch( error => {
+                console.error( error );
+            } );
+
+        document.querySelector( '#henteKnapp' ).addEventListener( 'click', () => {
+            const editorData = editor.getData();
+            let ut = document.getElementById("utdata");
+            ut.innerHTML = editorData;
+        } );
+    </script>
+</body>
+</html>
