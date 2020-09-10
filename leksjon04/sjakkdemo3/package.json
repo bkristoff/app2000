@@ -1,0 +1,14 @@
+{
+  "name": "sjakkdemo3",
+  "version": "1.0.0",
+  "description": "Sjakkdemo med npm",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "BK",
+  "license": "MIT",
+  "dependencies": {
+    "chess.js": "^0.11.0"
+  }
+}
