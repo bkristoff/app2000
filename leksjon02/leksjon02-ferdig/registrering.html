@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="nb">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>APP2000</title>
+    <link rel="stylesheet" href="registrering.css" />
+    <script src="registrering.js" defer></script>
+  </head>
+
+  <body>
+    <h1>Brukerregistrering</h1>
+
+    <form
+      action="https://itfag.usn.no/~kristoff/app2000/leksjon02/ekko.php"
+      method="POST">
+      <label>Epost:</label>
+      <input type="email" name="epost" id="epost" required />
+
+      <label>Passord:</label>
+      <input type="password" name="passord" id="passord" required />
+
+      <label>Fornavn:</label>
+      <input
+        type="text"
+        name="fornavn"
+        id="fornavn"
+        pattern="^[A-Z][a-z]+$"
+        required />
+
+      <label>Alder:</label>
+      <input
+        type="number"
+        name="alder"
+        id="alder"
+        min="18"
+        max="120"
+        required />
+
+      <button type="submit">Opprett bruker</button>
+    </form>
+  </body>
+</html>
