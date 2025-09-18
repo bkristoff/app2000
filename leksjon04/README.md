@@ -360,7 +360,7 @@ Start med å lese om "remote" og "origin" i Git-boken.
 Navn på "remote":
 
 ```
-$ git remote
+git remote
 ```
 
 Vise "origin":
