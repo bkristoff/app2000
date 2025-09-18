@@ -40,6 +40,12 @@ Oppdatere Git til nyeste versjon (fra kommandolinjen, altså først åpne termin
 git update-git-for-windows
 ```
 
+Sjekk versjon:
+
+```
+git --version
+```
+
 ## 4-4. Git fra kommandolinja
 
 Kommandovindu-alternativer:
@@ -54,7 +60,6 @@ Jeg bruker PowerShell som terminalvindu i VS Code.
 ### Få hjelp
 
 ```
-git --version
 git help git
 git help config
 git config --help
@@ -105,7 +110,7 @@ Hva gjør add-kommandoen?
 git add -h
 ```
 
-Legg til alle HTML-filer i staged area med add:
+Legg til alle HTML-filer med add (de blir da med i "staged area"):
 
 - Filene får nå en A for "added".
 
@@ -119,7 +124,7 @@ Eventuelt kan man legge til alle filer:
 git add .
 ```
 
-Bekreft med commit:
+Bekreft med commit (alt i "staged area" blir tatt med, altså alt du har "added"):
 
 ```
 git commit
@@ -133,7 +138,7 @@ Alternativt kan du bruke commit med melding:
 git commit -m 'Første versjon'
 ```
 
-Hvis det kun er snakk om endringer i eksisterende filer (ikke nye filer), så kan slå sammen add og commit til én kommando:
+Hvis det kun er snakk om endringer i eksisterende filer (ikke nye filer), så kan man slå sammen add og commit til én kommando:
 
 ```
 git commit -a -m 'melding'
@@ -163,7 +168,7 @@ Vis kort status
 git status -s
 ```
 
-Legg til endringene i fil1.html i staged area:
+Legg endringene i fil1.html til i staged area:
 
 ```
 git add fil1.html
@@ -220,7 +225,7 @@ logg.txt
 tmp/
 ```
 
-Lag filer/mapper og sjekk at de ignorerte filene faktisk ikke blir med (selv om du nå bruker git add . skal f.eks. logg.txt ikke bli med). Følgende kommando viser hvilke filer som faktisk er med i repoet:
+Lag filer/mapper og sjekk at de ignorerte filene faktisk ikke blir med (selv om du nå bruker git add . skal f.eks. logg.txt ikke bli med). Følgende kommando viser hvilke filer som er med i repoet:
 
 ```
 git ls-files
@@ -355,9 +360,9 @@ Når du har laget noe nytt:
 
 ### Hvis du vil fortsette fra kommandolinjen (for spesielt interesserte)
 
-Start med å lese om "remote" og "origin" i Git-boken.
+I Git er "remote" navnet på et ekstern repo du kan "pushe til" og "pulle fra", typisk på GitHub, mens "origin" er standardnavnet på et slikt repo. Les mer om "remote" og "origin" i Git-boken.
 
-Navn på "remote":
+Vis navnet på "remote":
 
 ```
 git remote
@@ -369,29 +374,23 @@ Vise "origin":
 git remote show origin
 ```
 
-Alternativ til å knytte sammen lokalt repo og GitHub:
+Publisere lokalt repo GitHub:
 
-- Publisere lokalt repo på tomt GitHub-repo
+- Opprett et tomt repo på GitHub uten README, .gitignore eller lisens.
+- Koble ditt lokale repo til GitHub med remote (endre til riktig ULR) og push til GitHub.
 
 ```
-echo "# demo-repo" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
 git remote add origin https://github.com/<BRUKER>/<REPO>.git
 git push -u origin main
 ```
 
-Pull - laste ned siste versjon
-
-- Gjør både fetch og merge
+Hent endringer fra GitHub med pull (= fetch + merge)
 
 ```
 git pull
 ```
 
-Pushe fra lokal maskin til GitHub (upstream)
+Pushe fra lokal maskin til GitHub (upstream):
 
 ```
 git push -u origin main
