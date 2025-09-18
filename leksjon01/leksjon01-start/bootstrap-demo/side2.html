@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+    Legg til import av Bootstrap CSS og JS  (fra CDN - Content Delivery Network).
+    Se https://getbootstrap.com/docs/5.3/getting-started/download/
+    -->
+    <title>Bedrift XYZ</title>
+  </head>
+
+  <body>
+    <!-- Ytterst en div av klasse container. -->
+    <div>
+      <!-- Så en rad som fyller hele bredden (og sett på ramme som før). -->
+      <div>
+        <div>
+          <h2>Responsiv sidedesign med Bootstrap</h2>
+          <p>
+            Idéen bak responsiv sidedesign med Bootstrap er å dele opp nettsiden
+            i "bokser" (med div-er), og gi hver boks en variabel størrelse
+            avhengig av størrelsen på skjermen. På en liten skjerm (eller hvis
+            du har zoomet langt nok inn), så vil hver boks ta opp hele bredden
+            (col-sm-12). På en middels stor skjerm (f.eks. et nettbrett), så vil
+            to bokser vises side om side (col-md-6). På en stor skjerm (f.eks.
+            en vanlig PC-skjerm), så vil fire bokser vises side om side
+            (col-xl-3). Prøv å zoom inn/ut eller endre størrelsen på
+            nettleservinduet!
+          </p>
+        </div>
+      </div>
+      <!-- 
+        Så en rad med 4 div-er. På store skjermer skal alle fire bli vist på én rad,
+        på mellomstore skjermer skal de bli vist to og to, og på små skjermer skal de bli
+        vist under hverandre.
+       -->
+      <div>
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris rutrum
+          venenatis felis, ac fermentum mi faucibus et. Quisque eget maximus
+          diam.
+        </div>
+        <div>
+          Nam et bibendum justo, non facilisis lorem. Praesent vitae magna
+          fermentum mauris tincidunt consectetur.
+        </div>
+        <div>
+          Phasellus sit amet imperdiet dolor. Class aptent taciti sociosqu ad
+          litora torquent per conubia nostra, per inceptos himenaeos. Nullam in
+          libero nisi.
+        </div>
+        <div>
+          Donec consectetur lectus enim, id tincidunt velit dictum id. Quisque a
+          ultrices nulla. Nunc ullamcorper arcu sem, et vestibulum nulla
+          ullamcorper et.
+        </div>
+      </div>
+      <!-- Og til slutt en rad som fyller hele bredden uansett skjermstørrelse. -->
+      <div>
+        <div>
+          <p><a href="">Kontakt oss</a></p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

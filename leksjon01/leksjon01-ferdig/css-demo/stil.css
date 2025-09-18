@@ -1,0 +1,80 @@
+* {
+  font-family: georgia, times, sans-serif
+}
+
+body {
+  width: 80%;
+  text-align: justify
+}
+
+footer {
+  font-size: small;
+  color: #999999
+}
+
+h1 {
+  background-color: #cccccc;
+}
+
+p {
+  color: #666666
+}
+
+p:first-letter {
+  font-size:xx-large
+}
+
+#intro {
+  font-style: italic
+}
+
+.første {
+  color: red
+}
+
+ul {
+  list-style-type: square
+}
+
+ul ul {
+  list-style-type: circle
+}
+
+table {
+  border-width: thick;
+  border-style: outset;
+  border-color: gray;
+}
+
+caption {
+  caption-side:bottom;
+  font-style: italic
+}
+
+th {
+  padding-bottom: 10px;
+  color: blue
+}
+
+td {
+  border-width: thin;
+  border-style: solid;
+  padding: 5px;
+  font-family: courier, serif;
+  font-weight: bold;
+  font-size: small;
+  color: green
+}
+
+a:link {
+  color: #0000ff
+}
+
+a:visited {
+  color: #6666ff
+}
+
+a:hover {
+  color: #ff0000;
+  text-decoration: none
+}

@@ -1,0 +1,39 @@
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    "header header header header header header header header"
+    "menu main main main main main right right"
+    "menu footer footer footer footer footer footer footer";
+  grid-gap: 5px;
+  padding: 2px;
+}
+
+header {
+  grid-area: header;
+  padding: 5px;
+  border: 2px solid grey;
+}
+
+nav {
+  grid-area: menu;
+  padding: 5px;
+  border: 2px solid grey;
+}
+
+main {
+  grid-area: main;
+  padding: 5px;
+  border: 2px solid grey;
+}
+
+aside {
+  grid-area: right;
+  padding: 5px;
+  border: 2px solid grey;
+}
+
+footer {
+  grid-area: footer;
+  padding: 5px;
+  border: 2px solid grey;
+}
