@@ -1,0 +1,48 @@
+* {
+  padding: 5px;
+  /* border: 1px solid grey */
+}
+
+body {
+  min-width: 200px;
+}
+
+ul {
+  position: relative;
+  width: 60%;
+}
+
+/* Høyrejustering av lukkekryssene. */
+.lukk {
+  position: absolute;
+  right: 10px;
+}
+
+/* Endre til pekemarkør for klikkbare elementer. */
+.lukk:hover {
+  cursor: pointer;
+}
+
+#nyKnapp {
+  cursor: pointer;
+}
+
+/* Fjerner listesymbolene. */
+ul li {
+  list-style-type: none;
+}
+
+/* Annenhver rad får grå bakgrunn */
+ul li:nth-child(odd) {
+  background: #eeeeee;
+}
+
+/* Mørkere bakgrunn ved fokus */
+ul li:hover {
+  background: #cccccc;
+}
+
+/* Gjør ferdige oppgaver gjennomstreket */
+ul li.utført {
+  text-decoration: line-through;
+}

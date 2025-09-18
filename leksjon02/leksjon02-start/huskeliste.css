@@ -1,0 +1,29 @@
+* {
+    padding  : 5px;
+}
+
+body {
+    min-width: 200px;
+}
+
+ul {
+    position: relative;
+    width   : 60%;
+}
+
+/* Høyrejustering av lukkekryssene. */
+
+
+/* Endre til pekemarkør for klikkbare elementer. */
+
+
+/* Fjerner listesymbolene. */
+
+
+/* Annenhver rad får grå bakgrunn */
+
+
+/* Mørkere bakgrunn ved fokus */
+
+
+/* Strek over oppgaver som er utført */
