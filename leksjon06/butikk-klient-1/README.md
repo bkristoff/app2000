@@ -6,14 +6,14 @@ Vi løser dette først (navigering) og så bygger vi ut nettbutikken med visning
 
 ## 1. Sjekk at løsningen fungerer
 
-Noen av undermappene i et Next/React-prosjekt kan genereres automatisk. Før opplasting til Canvas slettet jeg undermappene .git, .next og node_modules samt filen package-lock.js. For å teste må du derfor kjøre:
+Noen av undermappene i et Next/React-prosjekt kan genereres automatisk. Før opplasting til GitHub slettet jeg undermappene .git, .next og node_modules samt filen package-lock.js. For å teste må du derfor skrive inn følgende kommandoer, som først laster ned relevante biblioteker, gjenoppretter mappene som er slettet og deretter starter opp serveren og kjører applikasjonen:
 
 ```
 npm install
 npm run dev
 ```
 
-Og så åpne nettleseren på adresse: localhost:3000
+Nå kan du åpne nettleseren på adresse: http://localhost:3000
 
 Hvis du vil jobbe med Git i dette prosjektet, så må du i tillegg kjøre git init som forklart i leksjon 4.
 
@@ -21,7 +21,7 @@ Hvis du vil jobbe med Git i dette prosjektet, så må du i tillegg kjøre git in
 
 Mye av jobben er gjort fordi vi allerede har laget undersider "om" og "faq" med filer som heter page.js.
 
-- Det mangler bare å lenke til undersidene fra nav-bar'en - det gjør vi ved å redigere app/components/nav-bar.js:
+- Det mangler bare å lenke til undersidene fra navbar-en; det gjør vi ved å redigere app/components/nav-bar.js:
 
 ```
 import Link from "next/link";
@@ -42,7 +42,7 @@ export default function NavBar() {
 
 I nav-bar'en blir det nå lenket til nettadressen /butikk, men den har vi ennå ikke laget.
 
-Lage en dummy-variant av denne Butikk-komponenten nå. (Tanken er altså at "/" er en landingside med selve nettbutikken på underside /butikk.) Den skal vise tre hjelpekomponenter Innlogging, Bestilling og Handlekurv, som alle kan legges under app/components og bare vise en tekst a la "<p>Her er innlogging.</p>". Filer:
+Lage en dummy-variant av denne Butikk-komponenten nå. (Tanken er altså at "/" er en landingside med selve nettbutikken på underside /butikk.) Butikksiden skal vise tre hjelpekomponenter Innlogging, Bestilling og Handlekurv, som alle kan legges under app/components og bare vise en tekst a la "<p>Her er innlogging.</p>". Filer:
 
 ```
 app/components/butikk.js
@@ -66,7 +66,7 @@ Sørg for at varelisten blir vist nederst i butikk-komponenten.
 
 ## 5. Simulere JSON-data fra databasen
 
-Utvid Butikk-komponenten med en variabel varer som holder på en array med vare-objekter (som vi kan tenke oss kommer fra databasen på JSON-format, se leksjon 2):
+Utvid Butikk-komponenten med en variabel varer som holder på en tabell (array) med vare-objekter (som vi kan tenke oss kommer fra databasen på JSON-format, se leksjon 2):
 
 ```
 let varer = [
@@ -75,7 +75,7 @@ let varer = [
 ];
 ```
 
-Send denne array'en med som props-parameter til Vareliste. Vareliste bør "loope" gjennom array'en og sende hver enkelt vare-objekt som props-parameter til Vare, f.eks. med map-funksjonen slik:
+Send denne tabellen med som props-parameter til Vareliste. Vareliste bør "loope" gjennom tabellen og sende hvert enkelt vare-objekt som props-parameter til Vare, f.eks. med map-funksjonen slik:
 
 ```
 {varer.map((vare) => (
@@ -88,7 +88,7 @@ Send denne array'en med som props-parameter til Vareliste. Vareliste bør "loope
 ))}
 ```
 
-Utvid Vare tilsvarende:
+Utvid Vare med tilsvarende props-parametre:
 
 ```
 const Vare = ({ vnr, betegnelse, pris }) => { ... }
@@ -116,15 +116,15 @@ import Grid from "@mui/material/Grid";
 ```
 
 I Vare, legg til import og omslutt presentasjonen av varen med en <Grid>.
-Bruk attributter xs, sm og md for å lage en presentasjon som tilpasser seg forskjellige skjermstørrelser.
+
+- Bruk attributt size og xs, sm og md for å lage en presentasjon som tilpasser seg forskjellige skjermstørrelser.
+- (Se lignende teknikk for Bootstrap-oppgave i en tidligere leksjon...)
 
 ```
 import Grid from "@mui/material/Grid";
 ...
-<Grid item xs={12} sm={6} md={4}>...</Grid>
+<Grid size={{ xs: 12, sm: 6, md: 4 }}>...</Grid>
 ```
-
-<Grid> ser ut til å være deprecated, det er altså kommet en nyere versjon, men den får duge her inntil videre.
 
 ## 7. Legg til stilregler
 
@@ -148,4 +148,10 @@ nav {
 }
 ```
 
-Man må samtidig gjøre noen mindre endringer i tilhørende JSX-kode for å få reglene til å slå inn...
+Man må samtidig gjøre noen mindre endringer i tilhørende JSX-kode for å få reglene til å slå inn.
+
+- Tips: Legg til attributt className, f.eks.:
+
+```
+<div className="boks">
+```
