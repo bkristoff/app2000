@@ -376,7 +376,7 @@ function Knapp() {
 <Knapp />
 ```
 
-## 6-14. Dele tilstand med useState og props
+## 6-13. Dele tilstand med useState og props
 
 Koden under viser hvordan to komponenter Knapp og Melding kan "dele" tilstand via en "mor-komponent" Home:
 
@@ -413,7 +413,7 @@ return (
 );
 ```
 
-## 6-15. Bruke vanlig CSS og/eller Tailwind CSS (eller MUI 5)
+## 6-14. Bruke vanlig CSS og/eller Tailwind CSS (eller MUI 5)
 
 Legg til regler i globals.css:
 
@@ -438,7 +438,7 @@ Tailwind-eksempel:
 <h1 className="text-3xl font-bold underline">Overskrift</h1>
 ```
 
-## 6-16. Fikse "The unknown at rule @tailwind warning"
+## 6-15. Fikse "The unknown at rule @tailwind warning"
 
 - CTRL + SHIFT + P for åpne kommando-paletten.
 - Skriv: Open User Settings (JSON)
@@ -448,6 +448,6 @@ Tailwind-eksempel:
 "css.lint.unknownAtRules": "ignore"
 ```
 
-## 6-7. Hva bør du kunne om JavaScript for å bruke React?
+## 6-16. Hva bør du kunne om JavaScript for å bruke React?
 
 https://www.w3schools.com/react/react_es6.asp

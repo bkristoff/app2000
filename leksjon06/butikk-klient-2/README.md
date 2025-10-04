@@ -57,7 +57,13 @@ const bestillVare = (event) => {
 };
 ```
 
-Send de tre funksjonene med som props-parametre til Bestilling.
+Send de tre funksjonene med som props-parametre til Bestilling:
+
+```
+<Bestilling lesVnr={lesVnr} lesAntall={lesAntall} bestillVare={bestillVare} />
+```
+
+Se punkt 6-11 til 6-13 i README-filen for hele leksjon 6 for et mini-eksempel som demonstrerer denne programmeringsteknikken.
 
 ## 5. Visning av handlekurv
 
