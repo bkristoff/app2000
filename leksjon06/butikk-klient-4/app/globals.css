@@ -1,0 +1,15 @@
+nav {
+  background-color: #ccccee;
+}
+
+.boks {
+  padding: 3px;
+  border: 2px solid #3333aa;
+  background-color: #aaaaff;
+  border-radius: 10px;
+}
+
+footer {
+  margin: auto;
+  width: 40%;
+}

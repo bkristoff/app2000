@@ -42,13 +42,21 @@ export default function NavBar() {
 
 I nav-bar'en blir det nå lenket til nettadressen /butikk, men den har vi ennå ikke laget.
 
-Lage en dummy-variant av denne Butikk-komponenten nå. (Tanken er altså at "/" er en landingside med selve nettbutikken på underside /butikk.) Butikksiden skal vise tre hjelpekomponenter Innlogging, Bestilling og Handlekurv, som alle kan legges under app/components og bare vise en tekst a la "<p>Her er innlogging.</p>". Filer:
+Lage en dummy-variant av denne Butikk-komponenten nå. (Tanken er altså at "/" er en landingside med selve nettbutikken på underside /butikk.) Butikksiden skal vise tre hjelpekomponenter Innlogging, Bestilling og Handlekurv, som alle kan legges under app/components og bare vise en tekst a la "Her er innlogging.". Filer:
 
 ```
-app/components/butikk.js
+app/butikk/page.js
 app/component/innlogging.js
 app/components/bestilling.js
 app/component/handlekurv.js
+```
+
+For at Butikk-komponenten skal kunne vise fram de tre andre komponentene, må den få noen import-setninger i toppen:
+
+```
+import Innlogging from "../components/innlogging.js";
+import Bestilling from "../components/bestilling.js";
+import Handlekurv from "../components/handlekurv.js";
 ```
 
 ## 4. Lag dummy-komponenter for visning av varelager
