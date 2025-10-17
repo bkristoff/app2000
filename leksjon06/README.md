@@ -448,6 +448,141 @@ Tailwind-eksempel:
 "css.lint.unknownAtRules": "ignore"
 ```
 
-## 6-16. Hva bør du kunne om JavaScript for å bruke React?
+## 6-16. Håndtere komplekse datastrukturer med useState
+
+Det vil noen ganger være behov for å håndtere litt mer komplekse datastrukturer, som f.eks. tabeller eller objekter, med useState.
+
+- Handlekurven til nettbutikken er et eksempel på dette.
+
+Tabeller brukt i useState bør behandles som "read only":
+
+- Hvis man har behov for å legge til et element, så bør man bygge en helt ny tabell.
+- Koden under er et minimalt eksempel, som viser hvordan dette gjøres med "spread-operatoren".
+- Mer om spread-operatoren: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_array_literals
+- Koden er hentet fra denne siden: https://react.dev/learn/updating-arrays-in-state
+
+Koden kan settes inn på en tom side, som kan levere en Liste.
+
+```
+let n = 0;
+function Liste() {
+  const [navn, setNavn] = useState("");
+  const [liste, setListe] = useState([]);
+  return (
+    <>
+      <h1>Navn:</h1>
+      <input value={navn} onChange={(e) => setNavn(e.target.value)} />
+      <button
+        onClick={() => {
+          // Her blir listen "plukket fra hverandre" og så satt sammen igjen
+          setListe([...liste, { id: n++, name: navn }]);
+        }}>
+        Add
+      </button>
+      <ul>
+        {liste.map((n) => (
+          <li key={n.id}>{n.name}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+```
+
+## 6-17. Props drilling
+
+"Props drilling" er typisk for React og innebærer at vi sender data gjennom flere ledd (nedover).
+
+Eksempel:
+
+- Mange komponenter i appen trenger tilgang på "tema", som kan være "mørk" eller "lys".
+- Komponent 1 sender tema til komponent 2 som sender videre til komponent 3.
+- Koden under er kun en demo av selve parameteroverføringen (endrer ikke tema), og kan testes i en tom side ved å sette inn Komponent1.
+
+```
+function Komponent1() {
+  const [tema, setTema] = useState("mørk");
+  return (
+    <>
+      <h1>K1</h1>
+      <Komponent2 tema={tema} />
+    </>
+  );
+}
+function Komponent2({ tema }) {
+  return (
+    <>
+      <h1>K2</h1>
+      <Komponent3 tema={tema} />
+    </>
+  );
+}
+function Komponent3({ tema }) {
+  return (
+    <>
+      <h1>K3</h1>
+      <p>Tema: {tema}</p>
+    </>
+  );
+}
+```
+
+## 6-18. Bruke useContext for å dele data mellom komponenter
+
+Med useContext kan vi oppnå det samme som i 6-17 uten behov for "props drilling".
+
+- Se https://react.dev/learn/scaling-up-with-reducer-and-context
+- Koden er hentet fra: https://www.w3schools.com/react/react_usecontext.asp
+- Test ved å vise Komponent1b i en tom side.
+
+Man trenger først to importer:
+
+```
+import { createContext, useContext } from "react";
+```
+
+Lager konteksten som en slags "global konstant", typisk eksportert fra en egen fil (men for testing kan man legge alt i én fil).
+
+```
+const TemaContext = createContext();
+```
+
+Lager samme eksempel som over, men uten å sende props.
+
+- Omslutter innholdet i komponent 1b med konteksten.
+- Kan bruke verdien direkte i alle "barn-komponentene", her gjøres det i komponent 3b.
+
+```
+function Komponent1b() {
+  const [tema, setTema] = useState("mørk");
+  return (
+    <>
+      <TemaContext.Provider value={tema}>
+        <h1>K1b</h1>
+        <Komponent2b />
+      </TemaContext.Provider>
+    </>
+  );
+}
+function Komponent2b() {
+  return (
+    <>
+      <h1>K2b</h1>
+      <Komponent3b />
+    </>
+  );
+}
+function Komponent3b() {
+  const tema = useContext(TemaContext);
+  return (
+    <>
+      <h1>K3b</h1>
+      <p>Tema: {tema}</p>
+    </>
+  );
+}
+```
+
+## 6-18. Hva bør du kunne om JavaScript for å bruke React?
 
 https://www.w3schools.com/react/react_es6.asp
