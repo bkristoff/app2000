@@ -111,7 +111,7 @@ Man kan alternativt opprette tilsvarende REST-kall i egne "REST-verktøy", f.eks
 
 - For enkle GET-forespørsler kan vi altså teste rett i nettleseren, men generelt trenger vi verktøy som REST Client, Postman eller lignende.
 
-## 7. Starte serveren med nodemon
+## 5. Starte serveren med nodemon
 
 For å få til "live" oppdatering av serveren etter endring (og lagring) av kildekode, kan man starte serveren via nodemon:
 
