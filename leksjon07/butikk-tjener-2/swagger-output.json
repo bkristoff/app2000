@@ -1,0 +1,151 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Butikk API",
+    "description": "Swagger dokumentasjon av nettbutikken.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3030",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/varer": {
+      "get": {
+        "description": "Henter alle varene i nettbutikken.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "VNr": {
+                  "example": "any"
+                },
+                "Betegnelse": {
+                  "example": "any"
+                },
+                "Pris": {
+                  "example": "any"
+                },
+                "KatNr": {
+                  "example": "any"
+                },
+                "Antall": {
+                  "example": "any"
+                },
+                "Hylle": {
+                  "example": "any"
+                },
+                "Slettet": {
+                  "example": "any"
+                },
+                "Bildefil": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "VNr": {
+                  "example": "any"
+                },
+                "Betegnelse": {
+                  "example": "any"
+                },
+                "Pris": {
+                  "example": "any"
+                },
+                "KatNr": {
+                  "example": "any"
+                },
+                "Antall": {
+                  "example": "any"
+                },
+                "Hylle": {
+                  "example": "any"
+                },
+                "Slettet": {
+                  "example": "any"
+                },
+                "Bildefil": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "VNr": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/varer/{vnr}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "vnr",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}
