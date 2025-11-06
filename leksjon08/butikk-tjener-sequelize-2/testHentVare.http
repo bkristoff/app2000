@@ -1,0 +1,2 @@
+GET http://localhost:3030/varer/101 HTTP/1.1
+Content-Type: application/json

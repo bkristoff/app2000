@@ -1,0 +1,7 @@
+DELETE http://localhost:3030/varer HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "VNr":"99997"
+}

@@ -1,0 +1,13 @@
+PUT http://localhost:3030/varer/99997 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "betegnelse":"Dukkehår, hvitt",
+    "pris":"65.50",
+    "katNr":"1",
+    "antall":"106",
+    "hylle":"E12",
+    "slettet":"0",
+    "bildefil":"steve-johnson-B2_zWEdpLlo-unsplash.jpg"
+}
