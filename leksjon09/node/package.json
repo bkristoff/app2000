@@ -1,0 +1,13 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "mysql2": "^3.11.4",
+    "upper-case": "^2.0.2"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

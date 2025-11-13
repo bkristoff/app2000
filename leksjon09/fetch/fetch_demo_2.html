@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>APP2000</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+      crossorigin="anonymous" />
+    <script src="fetch_demo_2.js" defer></script>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">XYZ</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Hjem</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Rediger
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#">Merk</a></li>
+                <li><a class="dropdown-item" href="#">Kopier</a></li>
+                <li><a class="dropdown-item" href="#">Lim inn</a></li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
+                <li><a class="dropdown-item" href="#">Angre</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link disabled"
+                href="#"
+                tabindex="-1"
+                aria-disabled="true"
+                >Inaktiv</a
+              >
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search" />
+            <button class="btn btn-outline-success" type="submit">Søk</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="bg-light p-5 rounded-lg m-3">
+      <h1 class="display-4">AJAX-demo 4</h1>
+      <p class="lead">
+        Denne siden og tilhørende JavaScript-fil demonstrerer hvordan å lage en
+        enkel SPA som kaller opp et REST API uten bruk av rammeverk ("vanilla
+        JavaScript"). Løsningen forutsetter at butikk-tjener fra leksjon 8
+        kjører.
+      </p>
+      <p class="lead">
+        Siden demonstrerer også enkel bruk av Bootstrap &ndash; med litt
+        gjenbruk av kode fra leksjon 1 (navbar, knapper, grid, responsiv).
+      </p>
+      <a
+        class="btn btn-primary btn-lg"
+        href="https://www.getbootstrap.com"
+        role="button"
+        >Les mer om Bootstrap</a
+      >
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 col-xl-6">
+          <h2>SPA + REST-API</h2>
+          <p>
+            HTML-skjemaet brukes for å registrere data om en enkelt vare. For å
+            slette varen er det kun nødvendig å fylle ut varenummeret, mens
+            innsetting og oppdatering krever at man fyller ut flere
+            opplysninger.
+          </p>
+          <p>
+            Det er tre knapper for å hente data: "Hent 1" henter én vare basert
+            på varenummeret og viser opplysningene i HTML-skjemaet. "Hent alle"
+            henter alle varene og viser disse lenger ned på siden. "Hent side 3"
+            henter vare 31 til 40 ved sortering på VNr.
+          </p>
+          <p>
+            Kommunikasjon med REST-API'et gjøres ved hjelp av
+            <a
+              href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+              >Fetch-API'et</a
+            >.
+          </p>
+        </div>
+
+        <div class="col-md-12 col-xl-6">
+          <h2>Vare</h2>
+          <form id="form">
+            <div class="form-group">
+              <label for="txtVNr">Varenummer</label><br />
+              <input type="number" size="5" id="VNr" name="VNr" />
+            </div>
+            <div class="form-group">
+              <label for="txtVNr">Betegnelse</label><br />
+              <input type="text" size="50" id="Betegnelse" name="Betegnelse" />
+            </div>
+            <div class="form-group">
+              <label for="txtPris">Pris</label><br />
+              <input type="number" size="10" id="Pris" name="Pris" />
+            </div>
+            <div class="form-group">
+              <label for="txtPris">Kategorinummer</label><br />
+              <input type="number" size="3" id="KatNr" name="KatNr" />
+            </div>
+            <p>
+              <button type="button" id="btnHent1" class="btn btn-primary">
+                Hent 1
+              </button>
+              <button type="button" id="btnHentAlle" class="btn btn-primary">
+                Hent alle
+              </button>
+              <button type="button" id="btnSide3" class="btn btn-primary">
+                Hent side 3
+              </button>
+              <button type="button" id="btnNy" class="btn btn-warning">
+                Ny
+              </button>
+              <button type="button" id="btnOppdater" class="btn btn-warning">
+                Oppdater
+              </button>
+              <button type="button" id="btnSlett" class="btn btn-warning">
+                Slett
+              </button>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>Varer</h2>
+
+      <div id="datadiv"></div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+      crossorigin="anonymous"></script>
+  </body>
+</html>

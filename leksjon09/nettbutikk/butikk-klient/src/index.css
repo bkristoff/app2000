@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@layer base {
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  h2 {
+    font-size: var(--text-xl);
+  }
+}
+
+nav {
+  background-color: #ccccee;
+}
+
+.boks {
+  padding: 3px;
+  border: 2px solid #3333aa;
+  background-color: #aaaaff;
+  border-radius: 10px;
+}
+
+footer {
+  margin: auto;
+  width: 40%;
+}
