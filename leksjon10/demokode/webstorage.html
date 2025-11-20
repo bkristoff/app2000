@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="webstorage.js" defer></script>
+    <title>Web Storage Demo</title>
+  </head>
+  <body>
+    <h1>Demo av Web Storage</h1>
+
+    <p>Dette skal altså fungere selv om man slår av støtte for cookies.</p>
+    <p>Men det skal <b>ikke</b> fungere "på tvers" av nettlesere.</p>
+
+    <h2>sessionStorage</h2>
+    <p>
+        <button id="telleKnapp">Tell opp!</button>
+        <div id="knappemelding"></div>
+    </p>
+
+    <h2>localStorage</h2>
+    <p>
+        <input type="text" id="navneboks">
+        <button id="henteKnapp">Hent verdi!</button>
+        <button id="oppdaterKnapp">Oppdater verdi!</button>
+        <div id="navnemelding"></div>
+    </p>
+
+  </body>
+</html>

@@ -1,0 +1,68 @@
+# @name login
+
+### Registrere ny bruker
+POST http://localhost:3030/register
+Content-Type: application/json
+
+{
+  "knr": "99999",
+  "fornavn": "Test",
+  "etternavn": "Testesen",
+  "epost": "test@xyz.com",
+  "passord": "hemmelig",
+  "adresse": "Testveien 1",
+  "postnr": "0123"
+}
+
+### Logg inn
+POST http://localhost:3030/login
+Content-Type: application/json
+
+{
+  "epost": "test@xyz.com",
+  "passord": "hemmelig"
+}
+
+### Sjekk innloggingsstatus
+GET http://localhost:3030/user
+
+### Registrere ordre (krever innlogging)
+POST http://localhost:3030/ordrer
+Content-Type: application/json
+
+{
+  "brukernavn": "test@xyz.com",
+  "kurv": [
+    {
+      "vnr": "10820",
+      "antall": 2,
+      "pris": 99.5
+    },
+    {
+      "vnr": "10830",
+      "antall": 1,
+      "pris": 122.0
+    }
+  ]
+}
+
+### Logg ut
+POST http://localhost:3030/logout
+
+### Test uten innlogging (skal gi 401)
+POST http://localhost:3030/ordrer
+Content-Type: application/json
+
+{
+  "brukernavn": "test@xyz.com",
+  "kurv": []
+}
+
+### Hent alle varer
+GET http://localhost:3030/varer
+
+### Hent én vare
+GET http://localhost:3030/varer/10820
+
+### Hent én kunde (krever innlogging)
+GET http://localhost:3030/kunder/test@xyz.com

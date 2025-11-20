@@ -1,0 +1,16 @@
+{
+  "name": "leksjon11",
+  "version": "1.0.0",
+  "description": "",
+  "main": "kino.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^6.2.1",
+    "mocha": "^11.0.0"
+  }
+}
