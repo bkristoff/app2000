@@ -42,11 +42,29 @@ const hentVare = (VNr) => {
   return varer[0];
 };
 
-const settInnVare = (vare) => {
+const settInnVare = (
+  VNr,
+  Betegnelse,
+  Pris,
+  KatNr,
+  Antall,
+  Hylle,
+  Slettet,
+  Bildefil
+) => {
   console.log("settInnVare");
 };
 
-const oppdaterVare = (vare) => {
+const oppdaterVare = (
+  VNr,
+  Betegnelse,
+  Pris,
+  KatNr,
+  Antall,
+  Hylle,
+  Slettet,
+  Bildefil
+) => {
   console.log("oppdaterVare");
 };
 

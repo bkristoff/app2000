@@ -8,7 +8,6 @@ import {
 
 const routes = (app) => {
   app.get("/varer", (req, res) => {
-    // #swagger.description = 'Henter alle varene i nettbutikken.'
     let varer = hentVarer();
     res.status(200);
     res.set("Content-Type", "text/json");
@@ -28,7 +27,7 @@ const routes = (app) => {
   app.post("/varer", (req, res) => {
     let { VNr, Betegnelse, Pris, KatNr, Antall, Hylle, Slettet, Bildefil } =
       req.body;
-    settInnVare(req.body);
+    settInnVare(VNr, Betegnelse, Pris, KatNr, Antall, Hylle, Slettet, Bildefil);
     res.status(200);
     res.set("Content-Type", "text/json");
     res.send(JSON.stringify(req.body)); // Sender bare request'en tilbake
@@ -38,7 +37,16 @@ const routes = (app) => {
   app.put("/varer", (req, res) => {
     let { VNr, Betegnelse, Pris, KatNr, Antall, Hylle, Slettet, Bildefil } =
       req.body;
-    oppdaterVare(req.body);
+    oppdaterVare(
+      VNr,
+      Betegnelse,
+      Pris,
+      KatNr,
+      Antall,
+      Hylle,
+      Slettet,
+      Bildefil
+    );
     res.status(200);
     res.set("Content-Type", "text/json");
     res.send(req.body); // Sender bare request'en tilbake
