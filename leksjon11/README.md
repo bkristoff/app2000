@@ -16,6 +16,6 @@ Løsningen bruker en PostgreSQL-database (dette er "default" database på Heroku
 
 ## Mappen nettbutikk
 
-KOMMER SNART ...
-
 Dette er den komplette nettbutikken med React/Vite/Express/Passport/MySQL organisert som et monorepo, altså at klient (frontend) og tjener (backend) er undermapper i samme GitHub-repo.
+
+README-filen forklarer hvordan man deployer et slikt monorepo til Heroku.
