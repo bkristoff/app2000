@@ -61,7 +61,6 @@ PROJECT_PATH=klient
 NPM_CONFIG_PRODUCTION=false
 VITE_API_URL=<URL TIL TJENERAPPEN PÅ HEROKU>
 VITE_CLIENT_URL=<URL TIL KLIENTAPPEN PÅ HEROKU>
-VITE_ALLOWED_HOST=<DOMENET TIL KLIENTAPPEN PÅ HEROKU>
 ```
 
 URL til appene finner du under Settings → Domain.
@@ -90,7 +89,7 @@ Noen alternativer (som jeg ikke har testet ut):
 
 ## Pluss en midlertidig (?) løsning for klienten
 
-Sett inn både "localhost" og HOST NAME til klienten i styrefilen vite.config.js (altså URL UTEN HTTPS-delen). Dette navnet burde det vel være mulig å hente fra en miljøvariabel (som kommentert i filen)?
+Sett inn både "localhost" og HOST NAME (altså URL UTEN HTTPS-delen og ikke skråstrek til slutt) til klienten i styrefilen vite.config.js under allowedHosts. Dette navnet burde det vel egentlig være mulig å hente fra en miljøvariabel (som kommentert i filen), men jeg fant ikke ut av dette.
 
 ## Deploy og kjør
 
