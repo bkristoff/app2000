@@ -8,6 +8,6 @@ export default defineConfig({
     host: true,
     port: 4173,
     // LEGG TIL DOMENET TIL KLIENTEN PÅ HEROKU FØR DEPLOYMENT HER:
-    allowedHosts: ["localhost", "butikk-klient-0ec4975ecd9e.herokuapp.com"],
+    allowedHosts: ["localhost"],
   },
 });
