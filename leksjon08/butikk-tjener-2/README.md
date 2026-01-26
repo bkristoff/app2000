@@ -31,7 +31,7 @@ FLUSH PRIVILEGES;
 
 Logg inn med bruker butikkapp og kjør SQL-skriptet for Hobbyhuset i butikk-databasen:
 
-- https://dbsys.info/Databasesystemer/1_Datasett/sqlskript.html
+- https://dbsys.info/Databasesystemer/1_Datasett/
 
 Kjør deretter hjelpeskriptet som tilpasser databasen til vår webapp:
 
