@@ -1,0 +1,146 @@
+/* Minimal, responsive styles for Discgolf Webapp */
+:root {
+  --bg: #0f172a;
+  --card: #111827;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --accent: #22c55e;
+  --accent-2: #2563eb;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Ubuntu,
+    Cantarell,
+    Noto Sans,
+    Arial,
+    "Apple Color Emoji",
+    "Segoe UI Emoji";
+  background: linear-gradient(180deg, #0b1020, #0f172a);
+  color: var(--text);
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.app-header h1 {
+  margin: 0.25rem 0;
+}
+.subtitle {
+  color: var(--muted);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+input,
+select {
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  background: #0b1324;
+  color: var(--text);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+button {
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #2c3b55;
+  background: var(--accent-2);
+  color: white;
+  cursor: pointer;
+}
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.secondary {
+  background: #334155;
+}
+.link {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.scroll {
+  overflow: auto;
+}
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.score-table th,
+.score-table td {
+  border: 1px solid #233046;
+  padding: 0.4rem;
+  text-align: center;
+}
+.score-table tfoot th {
+  background: #172033;
+}
+
+.results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.results li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom: 1px solid #233046;
+}
+.results li.winner {
+  background: rgba(34, 197, 94, 0.15);
+  border-left: 4px solid var(--accent);
+}
+.results li em {
+  margin-left: 0.5rem;
+  color: var(--accent);
+  font-style: normal;
+}
+
+.app-footer {
+  margin-top: 1rem;
+  text-align: center;
+}

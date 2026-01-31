@@ -1,0 +1,54 @@
+# GitHub Copilot Instruction File
+
+# Instruksjoner for hvordan Copilot skal generere kode i dette prosjektet.
+
+# Generelle retningslinjer
+
+- Bruk JavaScript (eller TypeScript hvis filen har .ts som filtype).
+- Følg ESLint-reglene som er definert i prosjektet.
+- Bruk moderne JavaScript-syntaks (ES6+), inkludert `const`, `let`, og arrow functions.
+- Bruk type "module" i package.json.
+- Kommenter generert kode med korte forklaringer.
+
+# Backend (Node.js og Express)
+
+- Bruk Express.js for å lage API-endepunkter.
+- Følg RESTful API-konvensjoner.
+- Bruk `async/await` for asynkrone operasjoner.
+- Når du jobber med MySQL, bruk `mysql2`-biblioteket for databaseoperasjoner.
+- Generer SQL-spørringer som er sikre mot SQL-injeksjon (bruk parameteriserte spørringer).
+
+# Frontend (React og Vite)
+
+- Bruk React-komponenter med funksjonsbasert syntaks.
+- Bruk React Hooks som `useState` og `useEffect` for tilstandshåndtering og sideeffekter.
+- Følg Vite-konvensjoner for prosjektstruktur og bygging.
+- Bruk Tailwind CSS for styling hvis det er installert i prosjektet.
+
+# Testing
+
+- Generer enhetstester for både backend og frontend.
+- Bruk `Mocha` for backend-tester og `React Testing Library` for frontend-tester.
+- Kommenter testene for å forklare hva som testes.
+
+# Dokumentasjon
+
+- Generer korte og presise kommentarer for funksjoner og metoder.
+- Bruk JSDoc-format for å dokumentere funksjoner og deres parametere.
+- Når du genererer API-dokumentasjon, bruk OpenAPI/Swagger-standarder.
+
+# Eksempler
+
+- Når du genererer kode for en API-rute, inkluder et eksempel på hvordan ruten kan brukes.
+- Når du genererer en React-komponent, inkluder et eksempel på hvordan komponenten kan brukes i en annen fil.
+
+# Feilhåndtering
+
+- Inkluder feilhåndtering i generert kode, spesielt for databaseoperasjoner og API-kall.
+- Bruk `try/catch`-blokker for asynkrone operasjoner.
+- Logg feil til konsollen eller en loggfil for debugging.
+
+# Optimalisering
+
+- Optimaliser kode for lesbarhet.
+- Unngå unødvendige avhengigheter og bruk native funksjoner der det er mulig.

@@ -1,0 +1,9 @@
+{
+  "name": "Discgolf Webapp",
+  "short_name": "Discgolf",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": []
+}
