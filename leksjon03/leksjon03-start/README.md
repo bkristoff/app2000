@@ -1,4 +1,4 @@
-# Leksjon 3. JavaScript: Funksjoner og objekter + JSON
+# Leksjon 3. JavaScript og TypeScript: Funksjoner, objekter og JSON
 
 Stikkord til forelesning + tips til øving.
 

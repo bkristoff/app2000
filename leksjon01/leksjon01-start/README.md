@@ -11,7 +11,6 @@
 - Faglig introduksjon
 - Canvas: Moduler og framdriftsplan
 - [Generelt om prosjektoppgaven] (https://dbsys.info/2000/prosjekt/index.html)
-- [Prosjektoppgaven 2025/2026] (https://dbsys.info/2000/prosjekt/oppgave.html)
 
 ## 2. Verktøy + HTML/CSS
 

@@ -4,8 +4,6 @@ Dette repoet inneholder eksempelkode til APP2000 Applikasjonsutvikling for web.
 
 Hver leksjon har også en egen nettside med flere undervisningsressurser:
 
-_Jeg har stokket om litt på leksjonene, så det er foreløpig ikke helt samsvar mellom repoet og leksjonssidene._
-
 1. KI-støttet applikasjonsutvikling for web (https://dbsys.info/2000/leksjon01/index.html)
 2. JavaScript: DOM-en og event-håndtering (https://dbsys.info/2000/leksjon02/index.html)
 3. JavaScript og TypeScript: Funksjoner, objekter og JSON (https://dbsys.info/2000/leksjon03/index.html)
