@@ -36,7 +36,7 @@
 - HTML+CSS kan testes lokalt i nettleser (Chrome / Firefox)
 - Publisere HTML-fil på GitHub Pages
 
-- Firefox Developer Tools CTRL + SHITF + I (tilsvarende i Chrome)
+- Firefox Developer Tools CTRL + SHIFT + I (tilsvarende i Chrome)
 - Inspector: klikk i HTML-koden og se at en del av nettsiden blir markert
 - "Docke" Inspector nederst eller til høyre
 - Console: Sjekk denne for feilmeldinger!
