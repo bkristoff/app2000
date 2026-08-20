@@ -9,8 +9,9 @@
 
 - Undervisningsopplegg
 - Faglig introduksjon
-- Canvas: Moduler og framdriftsplan
+- Arbeidskrav
 - [Generelt om prosjektoppgaven] (https://dbsys.info/2000/prosjekt/index.html)
+- Canvas, åpne nettsider og GitHub-repo
 
 ## 2. Verktøy + HTML/CSS
 
@@ -41,7 +42,7 @@
 - "Docke" Inspector nederst eller til høyre
 - Console: Sjekk denne for feilmeldinger!
 
-## 3. Snippets med Emmet +
+## 3. Snippets med Emmet (enkel bruk fortsatt aktuelt)
 
 Snippets er "forkortelser" som kan gjøre at du skriver kode raskere og med færre feil.
 
@@ -63,7 +64,7 @@ a{Click me}
 p>{Click }+a{here}+{ to continue}
 ```
 
-## 4. GitHub Copilot/Chat
+## 4. GitHub Copilot Chat
 
 Med GitHub Copilot får man enda kraftigere "skrivehjelp".
 
@@ -77,9 +78,9 @@ Flere måter å bruke verktøyet på:
     (bare å spørre hva de betyr...)
   - Sett opp i "modus": Edit, Ask eller Agent
     (igjen bare å spørre hva de betyr)
-  - Velg språkmodell? (Har ikke hatt behov for det foreløpig)
+  - Velg språkmodell? La stå på Auto i første omgang?
 
-Krever at man har GitHub-bruker. Søk nå (legg ved studentbevis), det tar noen dager:
+Krever at man har GitHub-bruker. Søk nå (legg ved studentbevis), det tar noen dager?
 
 [GitHub Education] (https://github.com/education/students)
 
@@ -88,7 +89,7 @@ Tips:
 - Ikke la KI løse alle kodeproblemer for deg.
 - For å bli god til å bruke KI, må du forstå faget (programmering).
 - Og for å forstå programmering, må du ha mengdetrening (også helt uten KI).
-- Samtidig: For å bli en konkurransedyktig utvikler, må du nok også bli god på KI.
+- Samtidig: For å bli en konkurransedyktig utvikler, må du også bli god på KI.
 
 ## 4. HTML
 
@@ -102,7 +103,7 @@ Standard HTML-side (HTML5)
 
 Prettyfier: ALT+SHIFT+F
 
-Noen viktige begreper (forklar til medstudent):
+Noen viktige begreper - forklar hverandre:
 
 - Element, tagg, attributt, verdi
 - DOM (hva står forkortelsen for og hva er det?)
@@ -118,7 +119,7 @@ br
 div, span
 ```
 
-Semantiske elementer (hva er fordelen med det?)
+Semantiske elementer - hva er fordelen med disse?
 
 - header, nav, section, article, aside, footer, summary
 
@@ -201,12 +202,12 @@ CSS i prosjektet
   - Skrive all CSS-kode selv uten biblioteker
   - Bootstrap
   - Tailwind
+  - ...
 
 ## 6. Nettsidedesign med Bootstrap (og CSS Grid)
 
-[Leksjon 1, oppgave 5] (https://dbsys.info/2000/leksjon01)
+Idéen er å designe nettsider i et "rutenett" med opp til 12 "celler" i bredden.
 
-- Idéen er å designe nettsider i et "rutenett" med opp til 12 "celler" i bredden.
 - Åpne HTML-filene på mappe bootstrap-demo.
 - Start med side1.html og følg instruksjonene i koden.
 - Gjør deretter side2.html tilsvarende (denne siden skal være responsiv).
@@ -217,8 +218,11 @@ Se deretter på filene i mappe grid-demo.
 - Rett opp grid-template-areas i CSS-filen slik at menyen kommer til venstre,
   faktaboksen til høyre og footeren nederst.
 
+Sjekk mot løsningen i ferdig-mappen.
+
 ## 7. Publisere nettside på GitHub
+
+Oppgave 3 på (https://dbsys.info/2000/leksjon01)
 
 - Lag GitHub-bruker
 - Publisere Bootstrap-nettsiden på GitHub Pages
-- Oppgave 3 på (https://dbsys.info/2000/leksjon01)
