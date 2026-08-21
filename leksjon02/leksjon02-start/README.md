@@ -21,11 +21,9 @@ Antar at dere kan litt Java (eller tilsvarende språk):
 
 Kjør JavaScript fra konsollet i nettleseren:
 
-- Start Visual Studio Code (VS Code) og nettleser Firefox eller Chrome.
-- Lag tom mappe og åpne denne i VS Code.
-- Lag en minimal HTML-side index.html ved å bruke snippets (skriv ! i kodevinduet og trykk enter). Legg til en overskrift.
-- Åpne siden i nettleseren og åpne Inspector (CTRL+SHIFT+I i Firefox). Velg Console.
-- Skriv alert("Hei verden!");
+- Åpne nettleseren på en hvilken som helst adresse
+- Fra Firefox: Åpne Inspector med CTRL+SHIFT+I. Velg Console.
+- Skriv f.eks. alert("Hei verden!");
 
 Hvis du har installert Node.js, kan du kjøre JavaScript fra terminalvinduet i VS Code:
 
@@ -37,7 +35,7 @@ Hvis du har installert Node.js, kan du kjøre JavaScript fra terminalvinduet i V
 Kjør JavaScript i nettleseren via script-taggen:
 
 - Se [hvor script-taggen skal plasseres] (https://www.w3schools.com/js/js_whereto.asp)
-- Prøv ut å legge script-taggen i henholdsvis head og body.
+- Prøv å legge script-taggen i henholdsvis head og body.
 - Eksempelkode: document.write("Hei verden!");
 - Flytt deretter koden ut på en egen fil (index.js) og lenk til filen fra script-taggen.
 
@@ -196,13 +194,13 @@ function sum(fra, til) {
 }
 ```
 
-## 2. Jobbe med DOM'en fra JavaScript
+## 2. Jobbe med DOM-en fra JavaScript
 
 Åpne Inspector i Firefox, se på DOM'en
 
 - https://www.w3schools.com/js/js_htmldom.asp
 
-Hvis hver node i DOM'en er et objekt, hvordan kunne vi laget noe slikt i Java?
+Hvis hver node i DOM-en er et objekt, hvordan kunne vi laget noe slikt i Java?
 
 Plassering av JS
 
