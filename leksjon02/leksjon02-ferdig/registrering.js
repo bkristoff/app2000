@@ -12,7 +12,7 @@ function sjekkSkjema(e) {
   return true; // Skjemaet kan sendes
 }
 
-// Fordi vi bruker defer i HTML-filen er DOM'en bygd opp når vi kommer hit.
+// Fordi vi bruker defer i HTML-filen er DOM-en bygd opp når vi kommer hit.
 
 // Får tak i skjemaet og legger til en lytter for klikk på submit-knappen:
 let skjema = document.querySelector("form");

@@ -196,7 +196,7 @@ function sum(fra, til) {
 
 ## 2. Jobbe med DOM-en fra JavaScript
 
-Åpne Inspector i Firefox, se på DOM'en
+Åpne Inspector i Firefox, se på DOM-en
 
 - https://www.w3schools.com/js/js_htmldom.asp
 
@@ -222,7 +222,7 @@ Finne HTML-elementer
 
 ```
 let elem = document.querySelector("p"); // finn første p
-let elem = document.querySelectorAll("p"); // finn alle p'er
+let elem = document.querySelectorAll("p"); // finn alle p-er
 ```
 
 Kan søke med et CSS-uttrykk, f.eks. "main li:last-child"
