@@ -1,0 +1,134 @@
+:root {
+  --bg: #f4f4f5;
+  --kort: #ffffff;
+  --tekst: #18181b;
+  --svak: #71717a;
+  --kant: #e4e4e7;
+  --aksent: #4f46e5;
+  --fare: #dc2626;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #18181b;
+    --kort: #27272a;
+    --tekst: #fafafa;
+    --svak: #a1a1aa;
+    --kant: #3f3f46;
+    --aksent: #818cf8;
+    --fare: #f87171;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background: var(--bg);
+  color: var(--tekst);
+  font: 16px/1.5 system-ui, sans-serif;
+}
+
+main {
+  width: 100%;
+  max-width: 30rem;
+  background: var(--kort);
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+}
+
+form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--kant);
+  border-radius: 8px;
+  background: var(--bg);
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--aksent);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.filtre {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.filter {
+  background: transparent;
+  color: var(--svak);
+  border-color: var(--kant);
+}
+
+.filter.valgt {
+  color: var(--tekst);
+  border-color: var(--aksent);
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--kant);
+  border-radius: 8px;
+}
+
+li span {
+  flex: 1;
+}
+
+li.ferdig span {
+  text-decoration: line-through;
+  color: var(--svak);
+}
+
+.slett {
+  background: transparent;
+  color: var(--fare);
+  border-color: var(--kant);
+  padding: 0.3rem 0.55rem;
+  font-size: 0.85rem;
+}
+
+#teller {
+  margin: 1rem 0 0;
+  color: var(--svak);
+  font-size: 0.9rem;
+}

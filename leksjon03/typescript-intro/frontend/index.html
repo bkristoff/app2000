@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TypeScript i frontend – oppgaveliste</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Mine oppgaver</h1>
+
+      <form id="nytt-skjema">
+        <input
+          id="ny-tittel"
+          type="text"
+          placeholder="Hva skal gjøres?"
+          autocomplete="off"
+          required
+        />
+        <button type="submit">Legg til</button>
+      </form>
+
+      <div class="filtre">
+        <button class="filter valgt" data-filter="alle">Alle</button>
+        <button class="filter" data-filter="aktive">Aktive</button>
+        <button class="filter" data-filter="ferdige">Ferdige</button>
+      </div>
+
+      <ul id="liste"></ul>
+      <p id="teller"></p>
+    </main>
+
+    <!-- app.js lages av TypeScript-kompilatoren fra app.ts -->
+    <script src="app.js" defer></script>
+  </body>
+</html>

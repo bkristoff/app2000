@@ -1,0 +1,23 @@
+{
+  "name": "innforing-typescript",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kodeeksempler til en 30 minutters innføring i TypeScript",
+  "scripts": {
+    "1": "ts-node ferdig/01-typer.ts",
+    "2": "ts-node ferdig/02-funksjoner.ts",
+    "3": "ts-node ferdig/03-interfaces.ts",
+    "4": "ts-node ferdig/04-union-narrowing.ts",
+    "5": "ts-node ferdig/05-generics.ts",
+    "6": "ts-node ferdig/06-klasser.ts",
+    "7": "ts-node ferdig/07-praktisk-eksempel.ts",
+    "typecheck": "tsc",
+    "frontend:build": "tsc -p frontend",
+    "frontend:watch": "tsc -p frontend --watch",
+    "frontend:serve": "npx --yes serve frontend"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
