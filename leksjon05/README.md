@@ -36,9 +36,18 @@ Men vi skal uansett lage et større prosjekt, så vi tar like godt i bruk et byg
 npx create-next-app@latest app1
 ```
 
+Hvis du koder med ren JavaScript, bør/må du legge til denne linjen i package.json, f.eks. etter linjen med "version":
+
+```
+  "type": "module",
+```
+
+Nytt 2026: TypeScript er nå standard. Eksempelkode i APP2000-repo fra høst 2025 er basert på JavaScript, men vi hopper til TypeScript nå...
+
 Du har nå laget en "ferdig" (men "tom") React-applikasjon. Se på README.md. Den tipser om at du kan kjøre applikasjonen slik:
 
 ```
+cd app1
 npm run dev
 ```
 
@@ -49,7 +58,7 @@ npm run dev
 
 ## 5-2. Forenkle startsiden
 
-Forenkle "startsiden" app/page.js til:
+Forenkle "startsiden" app/page.tsx til:
 
 ```
 export default function Home() {
@@ -92,17 +101,19 @@ En JSX-variabel kan tilordnes flere linjer med HTML-kode, f.eks. en HTML-tabell.
 
 ```
 const elem = (
-  <table>
+  <table><thead>
     <tr>
       <th>Varenavn</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
       <td>Hakke</td>
     </tr>
     <tr>
       <td>Spett</td>
     </tr>
-  </table>
+  </tbody></table>
 );
 ```
 
@@ -165,7 +176,11 @@ Props ("properties") er data som sendes inn til komponenten som parametre.
 - Sender inn en konkret farge ved å bruke attributt_verdi notasjon fra XML/HTML
 
 ```
-function Vare(props) {
+type VareProps = {
+  farge: string;
+};
+
+function Vare(props: VareProps) {
   return <h2>En {props.farge} Vare</h2>;
 }
 
@@ -177,8 +192,16 @@ function Vare(props) {
 Ved å omslutte props-parameter med krøllparenteser, så kan vi skrive farge i stedet for props.farge i funksjonskroppen.
 
 ```
-function Vare({farge}) {
+function Vare({farge}: VareProps) {
   return <h2>En {farge} Vare</h2>;
+}
+```
+
+Enda en variant, der vi skriver typen rett inn i komponenten (definerer altså ikke VareProps først):
+
+```
+function Vare(props: {farge: string}) {
+  return <h2>En {props.farge} Vare</h2>;
 }
 ```
 
@@ -187,7 +210,7 @@ function Vare({farge}) {
 Hvis forskjellige ting skal vises, avhengig av verdien til en JavaScript-variabel:
 
 ```
-let x = 1;
+const x = 1;
 let elem;
 if (x === 1) {
   elem = <Vare farge="rød" />;
@@ -198,9 +221,13 @@ if (x === 1) {
 
 ## 5-6. Komponenter på egne filer
 
-Lag ny fil app/components/vare.js:
+Lag ny fil app/components/vare.tsx:
 
 ```
+type VareProps = {
+  farge: string;
+};
+
 function Vare(props) {
   return <h2>En {props.farge} Vare</h2>;
 }
@@ -208,12 +235,14 @@ function Vare(props) {
 export default Vare;
 ```
 
-I app/page.js:
+I app/page.tsx:
 
 ```
-import Vare from './components/vare.js';
+import Vare from "./components/vare";
 
-<Vare />
+export default function Home() {
+  return <Vare farge="lilla" />;
+}
 ```
 
 ## 5-7. Sende objekter som props
@@ -221,7 +250,8 @@ import Vare from './components/vare.js';
 Objekter kan generelt brukes for å representere "sammensatte" datastrukturer.
 
 - Ved å sende objekter som props, kan vi f.eks. sende inn flere opplysninger om en vare til en React Vare-komponent.
-- Samler nå igjen all koden i page.js for enkelhets skyld.
+- Samler nå igjen all koden i page.tsx for enkelhets skyld.
+- Dropper typer i første omgang.
 
 ```
 function Vare({vare}) {
@@ -238,27 +268,50 @@ export default function Home() {
 }
 ```
 
+Med datatyper:
+
+```
+type VareType = { vare: { navn: string; pris: number } };
+
+function Vare({ vare }: VareType) {
+  return (
+    <h2>
+      Vare {vare.navn} koster {vare.pris} kr.
+    </h2>
+  );
+}
+
+export default function Home() {
+  const v = { navn: "Hakke", pris: 50.0 };
+  return (
+    <div>
+      <Vare vare={v} />
+    </div>
+  );
+}
+```
+
 ## 5-8. Opprett "standard Next/React" mappestruktur med routing
 
 Vi får blant annet routing "gratis" ved å utnytte standard mappestruktur:
 
-- Mappe med f.eks. navn faq og fil page.js gir side på url /faq
-- Legg til "use client" i toppen av alle page.js.
-- Håndter ukjent URL med not-found.js
+- Mappe med f.eks. navn faq og fil page.tsx gir side på url /faq
+- Legg til "use client" i toppen av alle page.tsx.
+- Håndter ukjent URL med not-found.tsx
 - Mappestruktur-eksempel:
 
 - app
   - components
-    - footer.js
-    - nav-bar.js
+    - footer.tsx
+    - nav-bar.tsx
   - faq
-    - page.js
-  - page.js
-  - layout.js
-  - not-found.js
+    - page.tsx
+  - page.tsx
+  - layout.tsx
+  - not-found.tsx
   - globals.css
 
-I nav-bar.js, legg til:
+I nav-bar.tsx, legg til:
 
 ```
 import Link from "next/link";
@@ -266,7 +319,7 @@ import Link from "next/link";
 <Link href="/faq">FAQ</Link>
 ```
 
-I layout.js, legg til import og "navbar".
+I layout.tsx, legg til import og "navbar".
 
 ## 5-9. Bruke vanlig CSS og/eller Tailwind CSS (eller MUI 5)
 
@@ -293,7 +346,9 @@ Tailwind-eksempel:
 <h1 className="text-3xl font-bold underline">Overskrift</h1>
 ```
 
-## 5-10. Fikse "The unknown at rule @tailwind warning"
+## 5-10. Fikse "The unknown at rule @tailwind warning" ?
+
+2026: Ser ikke ut til å være nødvendig lenger?
 
 - CTRL + SHIFT + P for åpne kommando-paletten.
 - Skriv: Open User Settings (JSON)
