@@ -226,7 +226,11 @@ function Vare(props: {farge: string}) {
 Hvis forskjellige ting skal vises, avhengig av verdien til en JavaScript-variabel:
 
 ```
-const x = 1;
+let x = 1;
+
+// Litt seinere...
+x = 2;
+
 let elem;
 if (x === 1) {
   elem = <Vare farge="rød" />;
