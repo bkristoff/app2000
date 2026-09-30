@@ -23,8 +23,10 @@ npm create vite@latest butikk-klient-vite -- --template react
 Du får et par spørsmål, svar gjerne som jeg gjorde:
 
 ```
-Installere create-vite@8.0.1 ?     [y]
-Use rolldown-vite (Experimental)?: [n]
+Need to install the following packages:
+create-vite@9.2.1
+Ok to proceed? (y)                 [y]
+Which linter to use?               [ESLint]
 Install with npm and start now?    [y]
 ```
 
@@ -32,9 +34,10 @@ En enkel Vite/React-løsning starter opp, typisk på http://localhost:5173/ (por
 
 - Avslutt serveren med CTRL-C.
 
-For å kjøre applikasjonen igjen, åpne mappen butikk-klient-vite i VS Code og kjør fra et terminalvindu:
+For å kjøre applikasjonen igjen, åpne et terminalvindu og kjør:
 
 ```
+cd butikk-klient-vite
 npm run dev
 ```
 
@@ -42,9 +45,11 @@ npm run dev
 
 Jeg synes det er lærerikt å skrelle ned den genererte koden til et minimum (første gangen).
 
-1. Fjern svg-filer på mappene public og src\assets
+1. Stopp serveren med CTLR-C (for å unngå lang dump av feilmeldinger mens vi forenkler).
 
-2. Forenkle App.css til:
+2. Fjern svg-filer på mappene public og src\assets
+
+3. Forenkle App.css til:
 
 ```
 h1 {
@@ -52,7 +57,7 @@ h1 {
 }
 ```
 
-3. Forenkle index.ccc til:
+4. Forenkle index.ccc til:
 
 ```
 * {
@@ -60,7 +65,7 @@ h1 {
 }
 ```
 
-4. Forenkle src/App.jsx til:
+5. Forenkle src/App.jsx til:
 
 ```
 import "./App.css";
@@ -76,7 +81,7 @@ function App() {
 export default App;
 ```
 
-Lagre alle filer og sjekk nettleseren.
+Lagre alle filer, start serveren med npm run dev og sjekk nettleseren (du må muligens friske opp nettleservinduet).
 
 ## 3. React Router (declarative mode)
 
@@ -88,14 +93,16 @@ npm i react-router
 
 Det enkleste er å bruke React Router i "declarative mode" .
 
-Rediger App.jsx som vist under.
-
+- Rediger App.jsx og Layout.jsx som vist under.
 - Lag deretter "dummy-versjoner" av alle filene som det blir importert fra.
-- Merk at alle filene er gitt filnavn med jsx-utvidelse.
+- Merk at NavBar.jsx og Footer.jsx skal ligge under mappe components og resten under mappe pages.
+- Merk også at alle filene er gitt filnavn med jsx-utvidelse.
 - I forhold til Next.js, blir altså "undersidene" samlet på mappe pages.
 
+Her er App.jsx:
+
 ```
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Hjem from "./pages/Hjem.jsx";
 import Butikk from "./pages/Butikk.jsx";
 import Om from "./pages/Om.jsx";
@@ -123,11 +130,29 @@ const App = () => {
 export default App;
 ```
 
+Og her er Layout.jsx:
+
+```
+import NavBar from "./components/NavBar.jsx";
+import Footer from "./components/Footer.jsx";
+
+const Layout = ({ children }) => {
+  return (
+    <>
+      <NavBar />
+      <main>{children}</main>
+      <Footer />
+    </>
+  );
+};
+
+export default Layout;
+```
+
 Legg deretter til navigering i NavBar.jsx:
 
 ```
-import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const NavBar = () => {
   return (
@@ -151,7 +176,16 @@ const NavBar = () => {
 };
 
 export default NavBar;
+```
 
+Eksempel på dummy-side pages/Om.jsx:
+
+```
+const Om = () => {
+  return <h1>Om oss</h1>;
+};
+
+export default Om;
 ```
 
 ## 4. Bruke Tailwind
