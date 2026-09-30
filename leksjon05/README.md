@@ -30,19 +30,35 @@ Men vi skal uansett lage et større prosjekt, så vi tar like godt i bruk et byg
 - "Skriptet" create-react-app, som i mange år var standardmåten å bygge React på, er nå faset ut.
   - (https://react.dev/blog/2025/02/14/sunsetting-create-react-app)
 - Bruker npx for å kjøre create-next-app (som altså installerer React på "Next-måten").
-- Stå på mappen over og godta alle standardvalg:
+- Stå på mappen over og kjør dette for å lage ny React-app på undermappe "app1":
 
 ```
 npx create-next-app@latest app1
 ```
 
-Hvis du koder med ren JavaScript, bør/må du legge til denne linjen i package.json, f.eks. etter linjen med "version":
+Du kan godta alle standardvalg, eller svare slik hvis du ber om muligheten for å tilpasse oppsettet:
+
+```
+Would you like to use the recommended Next.js defaults? [No, customize settings]
+Would you like to use TypeScript? [Yes]
+Which linter would you like to use? [ESLint]
+Would you like to use React Compiler? [No]
+Would you like to use Tailwind CSS? [Yes]
+Would you like your code inside a `src/` directory? [No]
+Would you like to use App Router? (recommended) [Yes]
+Would you like to customize the import alias (`@/*` by default)? [No]
+Would you like to include AGENTS.md to guide coding agents to write up-to-date Next.js code? [Yes]
+```
+
+TypeScript er nå standard. Kodefiler vil da få utvidelse "tsx", som betyr "TypeScript med JSX" (JSX er er en slags "HTML-aktig" React-syntaks for å beskrive nettsider, se under).
+
+Hvis du koder med ren JavaScript, bør/må du legge til følgende linje i package.json, f.eks. etter linjen med "version":
 
 ```
   "type": "module",
 ```
 
-Nytt 2026: TypeScript er nå standard. Eksempelkode i APP2000-repo fra høst 2025 er basert på JavaScript, men vi hopper til TypeScript nå...
+Merk: Eksempelkode i APP2000-repo fra høst 2025 er basert på JavaScript, men mye vil bli gjort om til TypeScript nå.
 
 Du har nå laget en "ferdig" (men "tom") React-applikasjon. Se på README.md. Den tipser om at du kan kjøre applikasjonen slik:
 
