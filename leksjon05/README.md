@@ -21,8 +21,8 @@ Men vi skal uansett lage et større prosjekt, så vi tar like godt i bruk et byg
 
 - Byggeverktøyet Vite (https://vite.dev/) og rammeverket Next.js (https://nextjs.org/docs) er to mye brukte alternativer.
 - Både Vite og Next.js blir omtalt i dokumentasjonen til React (https://react.dev/learn/installation).
-- I denne README-filen bruker vi Next.js. Egen README-fil for tilsvarende installering med Vite kommer.
-- Bortsett fra punkt 6-1-a og 6-2 samt 6-8 (om routing) er øvrige punkter like for Vite og Next.js.
+- I denne README-filen bruker vi Next.js. Se README-fil på undermappe for tilsvarende installering med Vite.
+- Bortsett fra punkt 5-1-a og 5-2 samt 5-8 (om routing) er øvrige punkter like for Vite og Next.js.
 
 ## 5-1-a. Installere React med create-next-app
 
