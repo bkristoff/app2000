@@ -316,30 +316,123 @@ export default function Home() {
 Vi får blant annet routing "gratis" ved å utnytte standard mappestruktur:
 
 - Mappe med f.eks. navn faq og fil page.tsx gir side på url /faq
-- Legg til "use client" i toppen av alle page.tsx.
+- Legg til "use client" i toppen av alle page.tsx
 - Håndter ukjent URL med not-found.tsx
+- Filen layout.tsx sørger for å lage en standard "sidemal", med navbar og footer
+- Filen page.tsx på rotmappen er landingssiden
+- Vi kan samle stilregler i filen globals.css, eller lage en til hver page.tsx
 - Mappestruktur-eksempel:
 
 - app
+  - butikk
+    - page.tsx
   - components
     - footer.tsx
     - nav-bar.tsx
   - faq
+    - page.tsx
+  - om
     - page.tsx
   - page.tsx
   - layout.tsx
   - not-found.tsx
   - globals.css
 
-I nav-bar.tsx, legg til:
+### 5-8-a Demokode for undersidene page.tsx
+
+Lag mapper for hver "underside" med en fil som skal hete page.tsx, f.eks. faq/page.tsx. Hver side kan se omtrent slik ut:
+
+```
+"use client";
+
+export default function Faq() {
+  return (
+    <>
+      <h1>FAQ</h1>
+      <p>Svar på vanlige spørsmål.</p>
+    </>
+  );
+}
+```
+
+Også page.tsx på rotmappen kan få samme oppbygging.
+
+### 5-8-b Layout
+
+Avslutt serveren med CTRL-C for å slippe land dump med feilmeldinger i nettleseren.
+
+I layout.tsx, legg til import og sørg for at NavBar og Footer blir med på alle undersider.
+
+```
+import "./globals.css";
+import type { ReactNode } from "react";
+import NavBar from "./components/nav-bar";
+import Footer from "./components/footer";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html>
+      <body>
+        <NavBar />
+        {children}
+        <Footer />
+      </body>
+    </html>
+  );
+}
+```
+
+### 5-8-c Komponent Footer
+
+Da må vi lage Footer. I components/footer.tsx, legg til:
+
+```
+export default function Footer() {
+  return (
+    <>
+      <h1>Footer</h1>
+    </>
+  );
+}
+```
+
+### 5-8-d Komponent NavBar
+
+Og vi må lage NavBar. I components/nav-bar.tsx, legg til:
 
 ```
 import Link from "next/link";
 
-<Link href="/faq">FAQ</Link>
+export default function NavBar() {
+  return (
+    <div>
+      <Link href="/">Hjem</Link> &nbsp;&#9734;&nbsp;
+      <Link href="/butikk">Butikk</Link> &nbsp;&#9734;&nbsp;
+      <Link href="/faq">FAQ</Link> &nbsp;&#9734;&nbsp;
+      <Link href="/om">Om</Link>
+    </div>
+  );
+}
 ```
 
-I layout.tsx, legg til import og "navbar".
+Start serveren igjen.
+
+### 5-8-a Håndtere 404
+
+For å håndtere oppslag på ukjent underside, legg til fil not-found.tsx:
+
+```
+"use client";
+
+export default function NotFound() {
+  return (
+    <>
+      <h1>404</h1>
+      <p>Siden finnes ikke!</p>
+    </>
+  );
+}
+```
 
 ## 5-9. Bruke vanlig CSS og/eller Tailwind CSS (eller MUI 5)
 
