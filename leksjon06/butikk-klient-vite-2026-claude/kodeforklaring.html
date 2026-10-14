@@ -1,0 +1,5291 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Hobbyhuset under panseret</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <meta
+      name="description"
+      content="Interaktiv gjennomgang av React-koden bak nettbutikken Hobbyhuset, laget for IT-studenter." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" />
+    <style>
+      /* Layout: én lesekolonne (ca. 70 tegn) for forklaringer, og brede «laboratorieflater» (opptil 1180px) der app, tilstand og kode står side om side.
+   Fargespråk: grønn = data som flyter NED (props/state), oransje = hendelser som går OPP (callbacks). */
+      :root {
+        --bg: #f1f4f1;
+        --surface: #ffffff;
+        --surface-2: #e6ebe6;
+        --ink: #15201a;
+        --muted: #55635a;
+        --line: #d2dbd4;
+        --accent: #0b6b4c;
+        --accent-ink: #ffffff;
+        --accent-soft: #d5ebe0;
+        --signal: #b25407;
+        --signal-soft: #fbe6cc;
+        --danger: #b42318;
+        --danger-soft: #fde2dd;
+
+        --code-bg: #0f1915;
+        --code-ink: #d7e3dc;
+        --code-muted: #6b8075;
+        --code-hl: #1b3a2d;
+        --code-hl-signal: #3a2a14;
+        --tk-kw: #7fd6ae;
+        --tk-str: #f2c27b;
+        --tk-tag: #8cc4ff;
+        --tk-num: #f59ab3;
+        --tk-com: #6f8379;
+        --tk-at: #c4a7ff;
+
+        /* Appens eget utseende (stone/emerald fra index.css). Appen er lys i begge temaer, som i virkeligheten. */
+        --app-bg: #fafaf9;
+        --app-ink: #292524;
+        --app-muted: #78716c;
+        --app-line: #e7e5e4;
+        --app-card: #ffffff;
+        --app-accent: #047857;
+        --app-accent-2: #065f46;
+        --app-tag: #a8a29e;
+        --app-change: #fde68a;
+
+        --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+        --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+        --f-mono:
+          "JetBrains Mono", ui-monospace, Consolas, "Courier New", monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0b110f;
+          --surface: #121a17;
+          --surface-2: #19231f;
+          --ink: #e2eae5;
+          --muted: #93a39a;
+          --line: #25322c;
+          --accent: #3cc795;
+          --accent-ink: #05110c;
+          --accent-soft: #133427;
+          --signal: #f2a541;
+          --signal-soft: #3a2810;
+          --danger: #ff8b7b;
+          --danger-soft: #3c1913;
+          --code-bg: #070d0b;
+          --code-hl: #163125;
+          --code-hl-signal: #33240f;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0b110f;
+        --surface: #121a17;
+        --surface-2: #19231f;
+        --ink: #e2eae5;
+        --muted: #93a39a;
+        --line: #25322c;
+        --accent: #3cc795;
+        --accent-ink: #05110c;
+        --accent-soft: #133427;
+        --signal: #f2a541;
+        --signal-soft: #3a2810;
+        --danger: #ff8b7b;
+        --danger-soft: #3c1913;
+        --code-bg: #070d0b;
+        --code-hl: #163125;
+        --code-hl-signal: #33240f;
+        color-scheme: dark;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 64px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font: 400 16px/1.62 var(--f-body);
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: var(--f-display);
+        text-wrap: balance;
+        margin: 0;
+        line-height: 1.1;
+      }
+      h2 {
+        font-size: clamp(1.8rem, 1.2rem + 2.2vw, 2.6rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0;
+      }
+      code,
+      kbd {
+        font-family: var(--f-mono);
+        font-size: 0.88em;
+      }
+      :not(pre) > code {
+        background: var(--surface-2);
+        padding: 0.08em 0.35em;
+        border-radius: 4px;
+      }
+      a {
+        color: var(--accent);
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      button {
+        font: inherit;
+      }
+
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+      }
+      .prose {
+        max-width: 70ch;
+        display: grid;
+        gap: 14px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .mono {
+        font-family: var(--f-mono);
+      }
+
+      /* Hero */
+      .hero {
+        padding-block: 64px 48px;
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+        gap: 48px;
+        align-items: center;
+      }
+      .path {
+        font: 500 13px/1.4 var(--f-mono);
+        color: var(--muted);
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .path b {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .hero h1 {
+        font-size: clamp(2.7rem, 1.4rem + 5.4vw, 5rem);
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        line-height: 0.98;
+        margin-block: 18px 22px;
+      }
+      .hero h1 em {
+        font-style: normal;
+        color: var(--accent);
+      }
+      .hero .lead {
+        font-size: 1.15rem;
+        max-width: 52ch;
+        color: var(--muted);
+      }
+      .stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 26px;
+      }
+      .stack span {
+        font: 500 12.5px var(--f-mono);
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+      }
+      .hero-fig {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+      }
+      .hero-fig svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .legend {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .legend div {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .sw {
+        width: 26px;
+        height: 4px;
+        border-radius: 2px;
+        flex: none;
+      }
+      .sw.data {
+        background: var(--accent);
+      }
+      .sw.ev {
+        background: var(--signal);
+      }
+
+      /* Innholdsfortegnelse */
+      .toc {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        z-index: 30;
+        background: color-mix(in srgb, var(--bg) 90%, transparent);
+        backdrop-filter: blur(10px);
+        border-block: 1px solid var(--line);
+      }
+      .toc .wrap {
+        display: flex;
+        gap: 2px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .toc a {
+        flex: none;
+        font: 500 12.5px var(--f-mono);
+        color: var(--muted);
+        text-decoration: none;
+        padding: 13px 10px;
+        border-bottom: 2px solid transparent;
+      }
+      .toc a:hover {
+        color: var(--ink);
+      }
+      .toc a.on {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+      .toc a span {
+        opacity: 0.55;
+        margin-right: 4px;
+      }
+
+      /* Seksjoner */
+      section.part {
+        padding-block: 72px;
+        border-top: 1px solid var(--line);
+      }
+      section.part:first-of-type {
+        border-top: 0;
+      }
+      .sec-head {
+        display: grid;
+        gap: 14px;
+        margin-bottom: 32px;
+        max-width: 72ch;
+      }
+      .eyebrow {
+        font: 600 12px var(--f-mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .sec-head p {
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+      .note {
+        border-left: 3px solid var(--signal);
+        background: var(--signal-soft);
+        padding: 12px 16px;
+        border-radius: 0 10px 10px 0;
+        font-size: 15px;
+      }
+      .note.data {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        min-width: 0;
+      }
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        font: 600 12px var(--f-mono);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink);
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition:
+          background-color 0.15s,
+          border-color 0.15s;
+      }
+      .btn:hover {
+        border-color: var(--muted);
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: var(--accent-ink);
+        border-color: transparent;
+      }
+      .btn.primary:hover {
+        filter: brightness(1.08);
+      }
+      .btn[disabled] {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .btn.on {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: var(--ink);
+      }
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      /* Kodevisning */
+      .code {
+        background: var(--code-bg);
+        color: var(--code-ink);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .code-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 9px 14px;
+        font: 500 12px var(--f-mono);
+        color: var(--code-muted);
+        border-bottom: 1px solid rgb(255 255 255 / 0.07);
+      }
+      .code-file {
+        color: var(--code-ink);
+      }
+      .code-body {
+        position: relative;
+        overflow: auto;
+        max-height: 440px;
+        padding-block: 10px;
+        font: 400 12.8px/1.65 var(--f-mono);
+      }
+      .code.tall .code-body {
+        max-height: 620px;
+      }
+      .code.short .code-body {
+        max-height: 300px;
+      }
+      .code-lines {
+        display: inline-block;
+        min-width: 100%;
+      }
+      .ln {
+        display: block;
+        white-space: pre;
+        padding: 0 18px 0 3.6em;
+        position: relative;
+        transition: background-color 0.25s;
+      }
+      .ln::before {
+        content: attr(data-n);
+        position: absolute;
+        left: 0;
+        width: 2.6em;
+        text-align: right;
+        color: var(--code-muted);
+      }
+      .ln.hl {
+        background: var(--code-hl);
+        box-shadow: inset 3px 0 var(--accent);
+      }
+      .ln.hl-signal {
+        background: var(--code-hl-signal);
+        box-shadow: inset 3px 0 var(--signal);
+      }
+      .t-kw {
+        color: var(--tk-kw);
+      }
+      .t-str {
+        color: var(--tk-str);
+      }
+      .t-tag {
+        color: var(--tk-tag);
+      }
+      .t-num {
+        color: var(--tk-num);
+      }
+      .t-com {
+        color: var(--tk-com);
+        font-style: italic;
+      }
+      .t-at {
+        color: var(--tk-at);
+      }
+      pre.snip {
+        margin: 0;
+        background: var(--code-bg);
+        color: var(--code-ink);
+        border-radius: 10px;
+        padding: 12px 14px;
+        font: 12.5px/1.6 var(--f-mono);
+        overflow-x: auto;
+      }
+
+      /* Nettleserramme og appkopi */
+      .browser {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--app-bg);
+        color: var(--app-ink);
+        min-width: 0;
+        position: relative;
+      }
+      .bar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        background: var(--surface-2);
+        border-bottom: 1px solid var(--line);
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+        flex: none;
+      }
+      .dots i {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--line);
+      }
+      .url {
+        flex: 1;
+        min-width: 0;
+        font: 500 12px var(--f-mono);
+        background: var(--surface);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 4px 10px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      input.url {
+        outline-offset: 0;
+      }
+      .loadbar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 3px;
+        background: var(--signal);
+        width: 0;
+        z-index: 3;
+      }
+      .browser.reloading .loadbar {
+        animation: load 0.6s ease-out;
+      }
+      .browser.reloading .page {
+        animation: blank 0.6s ease-out;
+      }
+      @keyframes load {
+        from {
+          width: 0;
+        }
+        70% {
+          width: 100%;
+          opacity: 1;
+        }
+        to {
+          width: 100%;
+          opacity: 0;
+        }
+      }
+      @keyframes blank {
+        0% {
+          opacity: 1;
+        }
+        25%,
+        55% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .app {
+        font:
+          14px/1.5 system-ui,
+          "Segoe UI",
+          sans-serif;
+        color: var(--app-ink);
+        background: var(--app-bg);
+      }
+      .app h2 {
+        font:
+          600 16px/1.3 system-ui,
+          "Segoe UI",
+          sans-serif;
+        color: #1c1917;
+        margin-bottom: 8px;
+        letter-spacing: 0;
+      }
+      .app h1 {
+        font:
+          700 22px/1.2 system-ui,
+          "Segoe UI",
+          sans-serif;
+        color: #1c1917;
+        letter-spacing: -0.01em;
+      }
+      .app-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: #fff;
+        border-bottom: 1px solid var(--app-line);
+      }
+      .app-brand {
+        font-weight: 700;
+        color: var(--app-accent-2);
+      }
+      .app-links {
+        display: flex;
+        gap: 2px;
+        flex-wrap: wrap;
+      }
+      .app-links a,
+      .app-links span {
+        padding: 4px 9px;
+        border-radius: 6px;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: #57534e;
+        text-decoration: none;
+      }
+      .app-links .active {
+        background: var(--app-accent);
+        color: #fff;
+      }
+      .app-main {
+        padding: 16px;
+        display: grid;
+        gap: 16px;
+      }
+      .app-card {
+        position: relative;
+        background: var(--app-card);
+        border: 1px solid var(--app-line);
+        border-radius: 10px;
+        padding: 14px;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+        min-width: 0;
+      }
+      .app-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .app-input {
+        font: inherit;
+        font-size: 13px;
+        padding: 6px 9px;
+        border: 1px solid #d6d3d1;
+        border-radius: 7px;
+        background: #fff;
+        color: var(--app-ink);
+        width: 7.5em;
+        min-width: 0;
+      }
+      .app-input.wide {
+        flex: 1;
+        min-width: 8em;
+      }
+      .app-input:focus {
+        outline: none;
+        border-color: var(--app-accent);
+        box-shadow: 0 0 0 3px rgb(4 120 87 / 0.2);
+      }
+      .app-btn {
+        font: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 6px 12px;
+        border: 0;
+        border-radius: 7px;
+        background: var(--app-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .app-btn:hover {
+        background: var(--app-accent-2);
+      }
+      .app-hero {
+        background: var(--app-accent-2);
+        color: #fff;
+        border-radius: 12px;
+        padding: 22px 18px;
+      }
+      .app-hero h2 {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .app-hero p {
+        color: #d1fae5;
+        font-size: 13px;
+      }
+      .app-hero-btn {
+        display: inline-block;
+        margin-top: 12px;
+        background: #fff;
+        color: var(--app-accent-2);
+        font-weight: 500;
+        font-size: 12.5px;
+        padding: 6px 12px;
+        border-radius: 7px;
+      }
+      .app-footer {
+        border-top: 1px solid var(--app-line);
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 14px;
+        font-size: 12px;
+        color: var(--app-muted);
+      }
+      .logo {
+        font: 800 13px var(--f-display);
+        color: #fff;
+        background: var(--app-accent-2);
+        border-radius: 6px;
+        padding: 4px 8px;
+      }
+      .app-muted {
+        color: var(--app-muted);
+        font-size: 13px;
+      }
+      .comp-tag {
+        position: absolute;
+        top: -9px;
+        right: 10px;
+        font: 500 10.5px var(--f-mono);
+        color: var(--app-tag);
+        background: var(--app-bg);
+        padding: 0 5px;
+        border-radius: 4px;
+      }
+      [data-comp].rerender {
+        animation: rr 0.8s ease-out;
+      }
+      @keyframes rr {
+        0% {
+          box-shadow: 0 0 0 2px var(--app-accent);
+        }
+        100% {
+          box-shadow: 0 0 0 2px transparent;
+        }
+      }
+      .dom-change {
+        animation: dc 1.2s ease-out;
+      }
+      @keyframes dc {
+        0%,
+        30% {
+          background: var(--app-change);
+        }
+        100% {
+          background: transparent;
+        }
+      }
+
+      /* Del 1: oppstart */
+      .boot {
+        display: grid;
+        grid-template-columns: minmax(0, 330px) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+      .steps {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 4px;
+        counter-reset: s;
+      }
+      .steps button {
+        width: 100%;
+        text-align: left;
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-weight: 500;
+      }
+      .steps button .n {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font: 600 12px var(--f-mono);
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .steps button:hover {
+        color: var(--ink);
+      }
+      .steps button.done .n {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: var(--ink);
+      }
+      .steps button.cur {
+        background: var(--surface);
+        border-color: var(--line);
+        color: var(--ink);
+      }
+      .steps button.cur .n {
+        background: var(--accent);
+        color: var(--accent-ink);
+        border-color: var(--accent);
+      }
+      .step-text {
+        margin-top: 16px;
+        padding: 16px;
+        font-size: 15px;
+        display: grid;
+        gap: 10px;
+      }
+      .boot-right {
+        display: grid;
+        gap: 14px;
+        min-width: 0;
+      }
+      .boot-pair {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 14px;
+      }
+      .term {
+        background: var(--code-bg);
+        color: var(--code-ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font: 12px/1.7 var(--f-mono);
+        min-height: 190px;
+        overflow-x: auto;
+      }
+      .term div {
+        white-space: pre;
+      }
+      .term .new {
+        color: var(--tk-kw);
+        animation: fadein 0.4s;
+      }
+      .term .cmd {
+        color: var(--tk-str);
+      }
+      .boot-view {
+        min-height: 230px;
+        display: grid;
+      }
+      .bv-note,
+      .bv-dom,
+      .bv-jsx {
+        padding: 18px;
+        display: grid;
+        gap: 10px;
+        align-content: center;
+        justify-items: start;
+        font-size: 13px;
+        color: var(--app-muted);
+      }
+      .bv-dom code,
+      .bv-jsx code {
+        background: #f5f5f4;
+        color: #292524;
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+      }
+      .bv-jsx {
+        grid-template-columns: auto auto auto;
+        align-items: center;
+        justify-content: start;
+      }
+      .bv-jsx div {
+        display: grid;
+        gap: 4px;
+      }
+      .bv-arrow {
+        font-size: 20px;
+        color: var(--app-accent);
+      }
+      .bv-app {
+        position: relative;
+        outline: 2px dashed rgb(4 120 87 / 0.5);
+        outline-offset: -4px;
+        display: flex;
+        flex-direction: column;
+        min-height: 230px;
+      }
+      .bv-root-label {
+        position: absolute;
+        right: 8px;
+        bottom: 6px;
+        font: 500 10.5px var(--f-mono);
+        color: var(--app-accent);
+      }
+      .bv-slot {
+        border: 1.5px dashed #d6d3d1;
+        border-radius: 10px;
+        padding: 26px 12px;
+        text-align: center;
+        font: 12px var(--f-mono);
+        color: var(--app-muted);
+      }
+      .bv-empty-app {
+        margin: auto;
+        font: 12px var(--f-mono);
+        color: var(--app-muted);
+        padding: 20px;
+        text-align: center;
+      }
+      .bv-app .app-main {
+        flex: 1;
+      }
+      .pop {
+        animation: pop 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateY(8px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .spinner {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid #d6d3d1;
+        border-top-color: var(--app-accent);
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Del 2: filkart */
+      .files {
+        display: grid;
+        grid-template-columns: minmax(0, 270px) minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+      .tree {
+        padding: 10px 8px;
+        font: 13px/1.5 var(--f-mono);
+      }
+      .tree ul {
+        list-style: none;
+        margin: 0;
+        padding-left: 14px;
+      }
+      .tree > ul {
+        padding-left: 0;
+      }
+      .tree .dir {
+        color: var(--muted);
+        padding: 3px 8px;
+        display: block;
+      }
+      .tree button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+        background: none;
+        border: 0;
+        color: var(--ink);
+        padding: 3px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .tree button:hover {
+        background: var(--surface-2);
+      }
+      .tree button.sel {
+        background: var(--accent);
+        color: var(--accent-ink);
+      }
+      .tree button .mk {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex: none;
+        background: transparent;
+      }
+      .tree button.imp .mk {
+        background: var(--accent);
+      }
+      .tree button.used .mk {
+        background: var(--signal);
+      }
+      .tree button.sel .mk {
+        background: var(--accent-ink);
+      }
+      .tree-legend {
+        display: grid;
+        gap: 4px;
+        padding: 10px 14px;
+        border-top: 1px solid var(--line);
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .tree-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tree-legend i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+      }
+      .file-info {
+        display: grid;
+        gap: 14px;
+        min-width: 0;
+      }
+      .file-card {
+        padding: 16px 18px;
+        display: grid;
+        gap: 10px;
+      }
+      .file-card h3 {
+        font-family: var(--f-mono);
+        font-size: 1rem;
+        font-weight: 600;
+      }
+      .rel {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .chip {
+        font: 500 12px var(--f-mono);
+        padding: 3px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--surface-2);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .chip.data {
+        border-color: var(--accent);
+      }
+      .chip.ev {
+        border-color: var(--signal);
+      }
+      .chip:hover {
+        background: var(--surface);
+      }
+
+      /* Del 3: ruting */
+      .router {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 20px;
+        align-items: start;
+      }
+      .router-side {
+        display: grid;
+        gap: 14px;
+        min-width: 0;
+      }
+      .page {
+        min-height: 250px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .stat {
+        padding: 12px 14px;
+        display: grid;
+        gap: 2px;
+      }
+      .stat b {
+        font: 700 1.8rem/1 var(--f-display);
+        font-variant-numeric: tabular-nums;
+      }
+      .stat small {
+        color: var(--muted);
+        font-size: 12.5px;
+      }
+      .stat.bump b {
+        animation: bump 0.5s;
+      }
+      @keyframes bump {
+        40% {
+          transform: scale(1.25);
+          color: var(--signal);
+        }
+      }
+      .switch {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 14px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .switch input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--signal);
+      }
+      .navtable {
+        width: 100%;
+        border-collapse: collapse;
+        font: 12px var(--f-mono);
+      }
+      .navtable td,
+      .navtable th {
+        padding: 7px 12px;
+        border-top: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+      .navtable th {
+        font-weight: 600;
+        color: var(--muted);
+        border-top: 0;
+      }
+      .navtable .t {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .navtable .f {
+        color: var(--muted);
+      }
+      .table-scroll {
+        overflow-x: auto;
+      }
+
+      /* Del 4: props-tre */
+      .props-fig {
+        padding: 10px;
+        overflow-x: auto;
+      }
+      .props-fig svg {
+        display: block;
+        width: 100%;
+        min-width: 640px;
+        height: auto;
+      }
+      .node rect {
+        fill: var(--surface);
+        stroke: var(--line);
+        stroke-width: 1.5;
+      }
+      .node text {
+        fill: var(--ink);
+        font: 700 15px var(--f-display);
+      }
+      .node text.sub {
+        fill: var(--muted);
+        font: 400 10.5px var(--f-mono);
+      }
+      .node {
+        cursor: pointer;
+      }
+      .node:hover rect,
+      .node:focus-visible rect {
+        stroke: var(--muted);
+      }
+      .node.sel rect {
+        stroke: var(--accent);
+        stroke-width: 2.5;
+      }
+      .node:focus {
+        outline: none;
+      }
+      .edge {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 2;
+        transition:
+          stroke 0.3s,
+          opacity 0.3s;
+      }
+      .edge.data.lit {
+        stroke: var(--accent);
+      }
+      .edge.fn.lit {
+        stroke: var(--signal);
+      }
+      .edge.imp {
+        stroke-dasharray: 4 5;
+      }
+      .elabel {
+        font: 500 12px var(--f-mono);
+        paint-order: stroke;
+        stroke: var(--surface);
+        stroke-width: 5px;
+        stroke-linejoin: round;
+        transition: opacity 0.3s;
+      }
+      .elabel.data {
+        fill: var(--accent);
+      }
+      .elabel.fn {
+        fill: var(--signal);
+      }
+      .elabel.imp {
+        fill: var(--muted);
+      }
+      .dim {
+        opacity: 0.28;
+      }
+      .pdot.data {
+        fill: var(--accent);
+      }
+      .pdot.fn {
+        fill: var(--signal);
+      }
+      .props-info {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .props-info .panel {
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+      .props-info h3 {
+        font-size: 1rem;
+      }
+
+      /* Del 5: laboratoriet */
+      .lab {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-areas: "app code" "state code";
+        gap: 16px;
+        align-items: start;
+      }
+      .lab-app {
+        grid-area: app;
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+      }
+      .lab-state {
+        grid-area: state;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 12px;
+        min-width: 0;
+      }
+      .lab-code {
+        grid-area: code;
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+        position: sticky;
+        top: 60px;
+      }
+      .app-grid2 {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+      }
+      .app-vgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+        gap: 8px;
+      }
+      .vcard {
+        background: #fff;
+        border: 1px solid var(--app-line);
+        border-radius: 9px;
+        padding: 10px;
+        display: grid;
+        gap: 1px;
+      }
+      .vcard b {
+        font-size: 13.5px;
+        color: #1c1917;
+      }
+      .vcard small {
+        color: var(--app-muted);
+        font-size: 11.5px;
+      }
+      .vcard span {
+        color: var(--app-accent-2);
+        font-weight: 600;
+        font-size: 13px;
+        margin-top: 4px;
+      }
+      .kurv-line {
+        padding: 6px 0;
+        border-bottom: 1px solid #f5f5f4;
+        font-size: 13px;
+      }
+      .kurv-line b {
+        font-weight: 600;
+        color: #1c1917;
+      }
+      .kurv-foot {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--app-line);
+      }
+      .kurv-foot p {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .fake-alert {
+        margin-top: 10px;
+        border: 1px solid #d6d3d1;
+        border-radius: 10px;
+        padding: 12px;
+        background: #fff;
+        box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+        font-size: 13px;
+        display: grid;
+        gap: 10px;
+        justify-items: end;
+      }
+      .fake-alert p {
+        justify-self: stretch;
+      }
+      .fake-alert small {
+        justify-self: start;
+        color: var(--app-muted);
+        font: 11px var(--f-mono);
+      }
+      .state-list {
+        margin: 0;
+        padding: 6px 0;
+        font: 12.5px/1.45 var(--f-mono);
+      }
+      .srow {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 2px 10px;
+        padding: 6px 14px;
+        transition: background-color 0.3s;
+      }
+      .srow dt {
+        color: var(--muted);
+      }
+      .srow dt i {
+        font-style: normal;
+        display: block;
+        font-size: 10.5px;
+        opacity: 0.7;
+      }
+      .srow dd {
+        margin: 0;
+        text-align: right;
+        color: var(--ink);
+        word-break: break-word;
+        min-width: 0;
+      }
+      .srow.kurv {
+        grid-template-columns: 1fr;
+      }
+      .srow.kurv dd {
+        text-align: left;
+        font-size: 11.5px;
+      }
+      .srow.flash {
+        animation: sflash 1s ease-out;
+      }
+      @keyframes sflash {
+        0%,
+        35% {
+          background: var(--signal-soft);
+        }
+        100% {
+          background: transparent;
+        }
+      }
+      .renders {
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 500;
+      }
+      .renders b {
+        color: var(--ink);
+        display: inline-block;
+      }
+      .renders.bump b {
+        animation: bump 0.5s;
+      }
+      .console-out {
+        padding: 6px 0;
+        font: 12px/1.5 var(--f-mono);
+        max-height: 330px;
+        overflow-y: auto;
+      }
+      .console-out:empty::before {
+        content: "Ingen meldinger ennå. Skriv i skjemaet.";
+        display: block;
+        padding: 6px 14px;
+        color: var(--muted);
+        font-family: var(--f-body);
+        font-size: 13px;
+      }
+      .cl {
+        padding: 4px 14px;
+        border-bottom: 1px solid var(--line);
+        word-break: break-word;
+        animation: fadein 0.3s;
+      }
+      .cl.warn {
+        background: var(--signal-soft);
+        color: var(--ink);
+      }
+      .cl .tag {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--signal);
+        margin-left: 6px;
+        white-space: nowrap;
+      }
+      .chain {
+        padding: 12px 14px;
+        font-size: 13.5px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        align-items: center;
+        min-height: 52px;
+      }
+      .chain .st {
+        font: 500 12px var(--f-mono);
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: var(--surface-2);
+        animation: pop 0.4s backwards;
+      }
+      .chain .st.ev {
+        background: var(--signal-soft);
+      }
+      .chain .st.data {
+        background: var(--accent-soft);
+      }
+      .chain .arr {
+        color: var(--muted);
+      }
+      .chain .hint {
+        flex-basis: 100%;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .fly-layer {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 60;
+      }
+      .fly-dot {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 12px;
+        height: 12px;
+        margin: -6px 0 0 -6px;
+        border-radius: 50%;
+      }
+      .fly-dot.ev {
+        background: var(--signal);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--signal) 30%, transparent);
+      }
+      .fly-dot.data {
+        background: var(--accent);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
+      }
+
+      /* Del 6: kopi vs mutasjon */
+      .imm {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 16px;
+      }
+      .lane {
+        padding: 16px;
+        display: grid;
+        gap: 14px;
+        align-content: start;
+      }
+      .lane h3 {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .badge {
+        font: 600 11px var(--f-mono);
+        padding: 3px 8px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .badge.bad {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
+      .badge.good {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      .lane-code {
+        margin: 0;
+        padding: 8px 0;
+        background: var(--code-bg);
+        color: var(--code-ink);
+        border-radius: 10px;
+        font: 12.5px/1.7 var(--f-mono);
+        overflow-x: auto;
+      }
+      .lane-code div {
+        padding: 0 14px;
+        white-space: pre;
+        transition: background-color 0.3s;
+      }
+      .lane-code div.on {
+        background: var(--code-hl);
+        box-shadow: inset 3px 0 var(--accent);
+      }
+      .mem {
+        display: grid;
+        gap: 10px;
+        min-height: 170px;
+        align-content: start;
+      }
+      .mem-var {
+        font: 13px var(--f-mono);
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .mem-var code {
+        color: var(--accent);
+      }
+      .boxes {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .mbox {
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        padding: 8px;
+        display: grid;
+        gap: 6px;
+        min-width: 130px;
+        background: var(--surface);
+        transition:
+          opacity 0.4s,
+          border-color 0.3s;
+      }
+      .mbox.cur {
+        border-color: var(--accent);
+      }
+      .mbox.old {
+        opacity: 0.45;
+      }
+      .mbox .addr {
+        font: 600 11px var(--f-mono);
+        color: var(--muted);
+      }
+      .mbox .addr b {
+        color: var(--ink);
+      }
+      .item {
+        font: 12px var(--f-mono);
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: var(--surface-2);
+      }
+      .item.new {
+        background: var(--signal-soft);
+      }
+      .cmp {
+        font: 12.5px var(--f-mono);
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: var(--surface-2);
+      }
+      .verdict {
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+      .verdict.bad {
+        background: var(--danger-soft);
+      }
+      .verdict.good {
+        background: var(--accent-soft);
+      }
+      .screen-mini {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .screen-mini b {
+        color: var(--ink);
+      }
+
+      /* Del 7: map og reduce */
+      .mr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+      .mr .panel {
+        padding: 16px;
+        display: grid;
+        gap: 14px;
+      }
+      .maprow {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr);
+        gap: 10px;
+        align-items: center;
+        font: 12px var(--f-mono);
+      }
+      .maprow .obj {
+        background: var(--surface-2);
+        padding: 6px 8px;
+        border-radius: 6px;
+      }
+      .maprow .el {
+        background: #fff;
+        color: var(--app-ink);
+        border: 1px solid var(--app-line);
+        padding: 6px 8px;
+        border-radius: 6px;
+        font-family: system-ui, sans-serif;
+        font-size: 12.5px;
+      }
+      .maprow .arr {
+        color: var(--accent);
+      }
+      .maprow.waiting .el {
+        opacity: 0.2;
+      }
+      .maprow.now .obj {
+        box-shadow: 0 0 0 2px var(--accent);
+      }
+      .acc {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 6px 14px;
+        align-items: center;
+        font: 13px var(--f-mono);
+      }
+      .acc-sum {
+        font: 800 2.4rem/1 var(--f-display);
+        font-variant-numeric: tabular-nums;
+        color: var(--accent);
+      }
+      .calc {
+        font: 12.5px var(--f-mono);
+        color: var(--muted);
+        min-height: 1.6em;
+      }
+      .rrow {
+        display: grid;
+        grid-template-columns: 4.5em 3em 4em 1fr;
+        gap: 8px;
+        font: 12.5px var(--f-mono);
+        padding: 5px 8px;
+        border-radius: 6px;
+        font-variant-numeric: tabular-nums;
+      }
+      .rrow.now {
+        background: var(--accent-soft);
+      }
+      .rrow.head {
+        color: var(--muted);
+      }
+      .pipe {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .pipe .box {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+        display: grid;
+        gap: 2px;
+        background: var(--surface-2);
+      }
+      .pipe .box small {
+        color: var(--muted);
+        font: 11px var(--f-mono);
+      }
+      .pipe .box b {
+        font: 600 15px var(--f-mono);
+        font-variant-numeric: tabular-nums;
+      }
+      .pipe .fn {
+        font: 12px var(--f-mono);
+        color: var(--accent);
+      }
+      .pipe input {
+        width: 7em;
+        font: 600 15px var(--f-mono);
+        background: var(--surface);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 2px 6px;
+      }
+      .pipe .box.lit {
+        animation: litbox 0.7s;
+      }
+      @keyframes litbox {
+        0% {
+          border-color: var(--accent);
+          background: var(--accent-soft);
+        }
+        100% {
+        }
+      }
+
+      /* Del 8: Tailwind */
+      .tw-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+      .tw-grid > .panel {
+        padding: 16px;
+        display: grid;
+        gap: 14px;
+      }
+      .tw-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tw-chips button {
+        font: 500 12px var(--f-mono);
+        padding: 4px 9px;
+        border-radius: 6px;
+        border: 1px solid var(--accent);
+        background: var(--accent-soft);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .tw-chips button.off {
+        border-color: var(--line);
+        background: none;
+        color: var(--muted);
+        text-decoration: line-through;
+      }
+      .tw-stage {
+        background: var(--app-bg);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 28px;
+        display: grid;
+        place-items: center;
+        min-height: 120px;
+      }
+      .tw button {
+        border: 0;
+        background: none;
+        padding: 0;
+        margin: 0;
+        font:
+          14px/1.5 system-ui,
+          "Segoe UI",
+          sans-serif;
+        color: #292524;
+        border-radius: 0;
+        cursor: default;
+      }
+      .tw .cursor-pointer {
+        cursor: pointer;
+      }
+      .tw .rounded-lg {
+        border-radius: 0.5rem;
+      }
+      .tw .bg-emerald-700 {
+        background-color: #047857;
+      }
+      .tw .px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .tw .py-2 {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+      .tw .font-medium {
+        font-weight: 500;
+      }
+      .tw .text-white {
+        color: #fff;
+      }
+      .tw .shadow-sm {
+        box-shadow:
+          0 1px 3px 0 rgb(0 0 0 / 0.1),
+          0 1px 2px -1px rgb(0 0 0 / 0.1);
+      }
+      .tw .transition-colors {
+        transition:
+          background-color 0.15s,
+          color 0.15s;
+      }
+      .tw .hover\:bg-emerald-800:hover {
+        background-color: #065f46;
+      }
+      .gridsim {
+        overflow: hidden;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--surface-2);
+      }
+      .gridframe {
+        transform-origin: top left;
+        background: var(--app-bg);
+        padding: 16px;
+      }
+      .gridframe .app-vgrid {
+        gap: 14px;
+      }
+      .range {
+        display: grid;
+        gap: 6px;
+        font-size: 14px;
+      }
+      .range input {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+      .bp {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .bp span {
+        font: 500 12px var(--f-mono);
+        padding: 4px 9px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .bp span.on {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--ink);
+      }
+
+      /* Del 9: Vite */
+      .vite {
+        padding: 20px;
+        display: grid;
+        gap: 18px;
+      }
+      .flow {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 70px minmax(0, 1.1fr) 70px minmax(
+            0,
+            1fr
+          );
+        align-items: center;
+        gap: 0;
+      }
+      .fcol {
+        display: grid;
+        gap: 6px;
+      }
+      .fcol h3 {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+      }
+      .fchip {
+        font: 500 12px var(--f-mono);
+        padding: 5px 9px;
+        border-radius: 6px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .fchip.out {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+      }
+      .vbox {
+        border: 2px solid var(--accent);
+        border-radius: 14px;
+        padding: 14px;
+        display: grid;
+        gap: 8px;
+        background: var(--surface);
+      }
+      .vbox .plug {
+        font: 500 12px var(--f-mono);
+        padding: 6px 9px;
+        border-radius: 6px;
+        background: var(--surface-2);
+      }
+      .track {
+        position: relative;
+        height: 2px;
+        background: var(--line);
+        margin-inline: 8px;
+      }
+      .track i {
+        position: absolute;
+        top: -4px;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: travel 1.8s linear infinite;
+      }
+      .track i:nth-child(2) {
+        animation-delay: 0.6s;
+      }
+      .track i:nth-child(3) {
+        animation-delay: 1.2s;
+      }
+      @keyframes travel {
+        from {
+          left: 0;
+          opacity: 0;
+        }
+        15% {
+          opacity: 1;
+        }
+        85% {
+          opacity: 1;
+        }
+        to {
+          left: calc(100% - 10px);
+          opacity: 0;
+        }
+      }
+      .vite-text {
+        max-width: 75ch;
+        display: grid;
+        gap: 10px;
+      }
+
+      /* Del 10: forbedringer */
+      .issues {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .issue {
+        padding: 18px;
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+      .issue .where {
+        font: 500 12px var(--f-mono);
+        color: var(--muted);
+      }
+      .issue .try {
+        font-size: 13.5px;
+        color: var(--muted);
+      }
+      .issue .try b {
+        color: var(--signal);
+        font-weight: 600;
+      }
+      .tasks {
+        counter-reset: t;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+        max-width: 75ch;
+      }
+      .tasks li {
+        counter-increment: t;
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 10px;
+      }
+      .tasks li::before {
+        content: counter(t);
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent-soft);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+        font: 700 13px var(--f-mono);
+      }
+
+      footer.site {
+        border-top: 1px solid var(--line);
+        padding-block: 32px 48px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 980px) {
+        .hero-grid,
+        .boot,
+        .files,
+        .router,
+        .tw-grid,
+        .mr {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .lab {
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-areas: "app" "code" "state";
+        }
+        .lab-code {
+          position: static;
+        }
+        .issues,
+        .imm,
+        .props-info {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .flow {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 10px;
+        }
+        .track {
+          height: 34px;
+          width: 2px;
+          margin: 0 auto;
+        }
+        .track i {
+          left: -4px;
+          animation-name: travelv;
+        }
+        @keyframes travelv {
+          from {
+            top: 0;
+            opacity: 0;
+          }
+          15% {
+            opacity: 1;
+          }
+          85% {
+            opacity: 1;
+          }
+          to {
+            top: calc(100% - 10px);
+            opacity: 0;
+          }
+        }
+      }
+      @media (max-width: 620px) {
+        .boot-pair,
+        .lab-state,
+        .stats {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .bv-jsx {
+          grid-template-columns: auto;
+        }
+        section.part {
+          padding-block: 52px;
+        }
+        .maprow {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .maprow .arr {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+        .track i {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="path">
+            <span>~/</span><b>butikk-klient-vite-2026-claude</b
+            ><span>/src</span>
+          </div>
+          <h1>Hobbyhuset <em>under panseret</em></h1>
+          <p class="lead">
+            En guidet tur gjennom React-koden bak nettbutikken. Vi følger koden
+            fra <code>npm run dev</code> til en vare havner i handlekurven, og
+            du kan prøve alt selv underveis. Følgende Claude-instruks ble brukt
+            for å lage denne "html-forklaringen": Denne mappen inneholder
+            frontend til en enkel nettbutikk, programmert med React/Tailwind og
+            bygd med Vite. Bygg en nettside som kan brukes for å forklare
+            IT-studenter hvordan de ulike delene av koden fungerer. Nettsiden
+            bør vise sammenhengen mellom oppførselen til løsningen og de ulike
+            delene av koden. Lag et moderne design på nettsiden, og bruk
+            animasjoner for å forklare krevende konsepter. Nettsiden skal bygges
+            kun ved hjelp av HTML, CSS og JavaScript, og bestå av en enkelt
+            HTML-fil.
+          </p>
+          <div class="stack">
+            <span>React 19.2</span><span>React Router 8.4</span
+            ><span>Tailwind 4.3</span><span>Vite 8.3</span>
+          </div>
+        </div>
+        <figure class="hero-fig" style="margin: 0">
+          <svg
+            id="heroSvg"
+            viewBox="0 0 360 230"
+            role="img"
+            aria-label="Butikk sender data ned til Handlekurv og får hendelser opp fra Bestilling">
+            <path
+              id="hp1"
+              d="M200 64 C 200 120, 270 120, 270 166"
+              fill="none"
+              stroke="var(--accent)"
+              stroke-width="2.5" />
+            <path
+              id="hp2"
+              d="M90 166 C 90 120, 160 120, 160 64"
+              fill="none"
+              stroke="var(--signal)"
+              stroke-width="2.5" />
+            <g class="node">
+              <rect x="110" y="18" width="140" height="46" rx="10" />
+              <text x="180" y="47" text-anchor="middle">Butikk</text>
+            </g>
+            <g class="node">
+              <rect x="20" y="166" width="140" height="46" rx="10" />
+              <text x="90" y="195" text-anchor="middle">Bestilling</text>
+            </g>
+            <g class="node">
+              <rect x="200" y="166" width="140" height="46" rx="10" />
+              <text x="270" y="195" text-anchor="middle">Handlekurv</text>
+            </g>
+            <text x="282" y="118" class="elabel data">kurv</text>
+            <text x="30" y="118" class="elabel fn">bestillVare()</text>
+            <circle r="6" fill="var(--accent)">
+              <animateMotion dur="2.2s" repeatCount="indefinite">
+                <mpath href="#hp1" />
+              </animateMotion>
+            </circle>
+            <circle r="6" fill="var(--signal)">
+              <animateMotion dur="2.2s" begin="1.1s" repeatCount="indefinite">
+                <mpath href="#hp2" />
+              </animateMotion>
+            </circle>
+          </svg>
+          <div class="legend">
+            <div>
+              <span class="sw data"></span
+              ><span><b>Data flyter ned</b> som props og state</span>
+            </div>
+            <div>
+              <span class="sw ev"></span
+              ><span><b>Hendelser går opp</b> som kall til funksjoner</span>
+            </div>
+          </div>
+        </figure>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="Innhold">
+      <div class="wrap">
+        <a href="#oppstart"><span>1</span>Oppstart</a>
+        <a href="#filer"><span>2</span>Filene</a>
+        <a href="#ruting"><span>3</span>Ruting</a>
+        <a href="#props"><span>4</span>Props</a>
+        <a href="#lab"><span>5</span>State-laboratoriet</a>
+        <a href="#kopi"><span>6</span>Kopier, ikke endre</a>
+        <a href="#mapreduce"><span>7</span>map og reduce</a>
+        <a href="#tailwind"><span>8</span>Tailwind</a>
+        <a href="#vite"><span>9</span>Vite</a>
+        <a href="#forbedre"><span>10</span>Forbedringer</a>
+      </div>
+    </nav>
+
+    <main>
+      <!-- 1 Oppstart -->
+      <section class="part" id="oppstart">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 1 · Oppstart</div>
+            <h2>Fra <code>npm run dev</code> til første side</h2>
+            <p>
+              Det skjer mye før du ser forsiden. Gå gjennom stegene og se hvilke
+              filer som hentes, hvilken kode som kjører, og hva som dukker opp i
+              nettleseren.
+            </p>
+          </div>
+          <div class="boot">
+            <div>
+              <ol class="steps" id="bootSteps"></ol>
+              <div class="panel step-text" id="bootText"></div>
+              <div class="btn-row" style="margin-top: 12px">
+                <button class="btn" id="bootPrev">Forrige</button>
+                <button class="btn primary" id="bootNext">Neste steg</button>
+                <button class="btn" id="bootPlay">Spill av alt</button>
+              </div>
+            </div>
+            <div class="boot-right">
+              <div class="boot-pair">
+                <div class="term" id="bootTerm" aria-label="Terminal"></div>
+                <div class="browser">
+                  <div class="bar">
+                    <div class="dots"><i></i><i></i><i></i></div>
+                    <div class="url" id="bootUrl">&nbsp;</div>
+                  </div>
+                  <div class="boot-view" id="bootView">
+                    <div class="bv-note" data-only="0">
+                      <span class="spinner"></span>Tjeneren venter. Nettleseren
+                      har ikke bedt om noe ennå.
+                    </div>
+                    <div class="bv-dom" data-only="1">
+                      <code
+                        >&lt;body&gt;<br />&nbsp;&nbsp;&lt;div
+                        id="root"&gt;&lt;/div&gt;<br />&nbsp;&nbsp;&lt;script
+                        type="module" src="/src/main.jsx"&gt;<br />&lt;/body&gt;</code
+                      >
+                      <p>Siden er helt hvit. Ingen synlige elementer ennå.</p>
+                    </div>
+                    <div class="bv-jsx" data-only="2">
+                      <div>
+                        <small>Du skriver (JSX)</small
+                        ><code>&lt;App /&gt;</code>
+                      </div>
+                      <span class="bv-arrow">→</span>
+                      <div>
+                        <small>Nettleseren får (forenklet)</small
+                        ><code>jsx(App, {})</code>
+                      </div>
+                    </div>
+                    <div class="app bv-app" data-from="3">
+                      <div class="bv-empty-app" data-only="3">
+                        &lt;App /&gt; er koblet til #root
+                      </div>
+                      <div class="app-nav" data-from="4">
+                        <span class="app-brand">Hobbyhuset</span
+                        ><span class="app-links"
+                          ><span class="active">Hjem</span><span>Butikk</span
+                          ><span>Om</span><span>FAQ</span></span
+                        >
+                      </div>
+                      <div class="app-main" data-from="4">
+                        <div class="bv-slot" data-only="4">
+                          children → &lt;Routes&gt;
+                        </div>
+                        <div class="app-hero" data-from="5">
+                          <h2>Velkommen til Hobbyhuset</h2>
+                          <p>
+                            Dette er landingsiden med demo-bruk av Tailwind.
+                          </p>
+                          <span class="app-hero-btn">Gå til butikken</span>
+                        </div>
+                      </div>
+                      <div class="app-footer" data-from="4">
+                        <span class="logo">HH</span>Kontakt oss.
+                      </div>
+                      <div class="bv-root-label">#root</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="code" id="bootCode"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 Filer -->
+      <section class="part" id="filer">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 2 · Filene</div>
+            <h2>Kart over prosjektet</h2>
+            <p>
+              Hver fil har én oppgave. Klikk på en fil for å se hva den gjør.
+              Prikkene i treet viser sammenhengen: grønn prikk betyr at den
+              valgte filen importerer filen, oransje betyr at filen bruker den
+              valgte.
+            </p>
+          </div>
+          <div class="files">
+            <div class="panel">
+              <div class="tree" id="tree"></div>
+              <div class="tree-legend">
+                <span
+                  ><i style="background: var(--accent)"></i>importeres av valgt
+                  fil</span
+                ><span
+                  ><i style="background: var(--signal)"></i>importerer valgt
+                  fil</span
+                >
+              </div>
+            </div>
+            <div class="file-info">
+              <div class="panel file-card" id="fileCard"></div>
+              <div class="code" id="fileCode"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 Ruting -->
+      <section class="part" id="ruting">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 3 · Ruting</div>
+            <h2>Én HTML-side, mange adresser</h2>
+            <p>
+              Appen er en <em>single page application</em>. Tjeneren sender bare
+              <code>index.html</code> én gang. Når du klikker i menyen, bytter
+              React Router ut innholdet uten å laste siden på nytt. Klikk i
+              menyen, og skriv gjerne en adresse som ikke finnes.
+            </p>
+          </div>
+          <div class="router">
+            <div class="browser" id="rBrowser">
+              <div class="loadbar"></div>
+              <form class="bar" id="rForm">
+                <div class="dots"><i></i><i></i><i></i></div>
+                <input
+                  class="url"
+                  id="rUrl"
+                  value="localhost:5173/"
+                  aria-label="Adressefelt"
+                  spellcheck="false"
+                  autocomplete="off" />
+              </form>
+              <div class="page app">
+                <div class="app-nav">
+                  <span class="app-brand">Hobbyhuset</span
+                  ><span class="app-links" id="rLinks"></span>
+                </div>
+                <div class="app-main" id="rMain"></div>
+                <div class="app-footer">
+                  <span class="logo">HH</span>Kontakt oss.
+                </div>
+              </div>
+            </div>
+            <div class="router-side">
+              <div class="stats">
+                <div class="panel stat" id="statLoads">
+                  <small>Ganger index.html er hentet fra tjeneren</small
+                  ><b>1</b>
+                </div>
+                <div class="panel stat" id="statClicks">
+                  <small>Klikk lagret i React-state</small><b>0</b>
+                </div>
+              </div>
+              <label class="panel switch"
+                ><input type="checkbox" id="rPlain" /><span
+                  >Bytt ut <code>&lt;NavLink&gt;</code> med vanlig
+                  <code>&lt;a href&gt;</code> og se hva som skjer med
+                  tellerne</span
+                ></label
+              >
+              <div class="code short" id="rCode"></div>
+              <div class="panel table-scroll">
+                <table class="navtable">
+                  <thead>
+                    <tr>
+                      <th>NavLink</th>
+                      <th>isActive</th>
+                      <th>lenkeStil gir</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="note data" style="margin-top: 18px; max-width: 75ch">
+            Legg merke til <code>end</code> på lenken til <code>/</code> i
+            NavBar.jsx. Uten den ville <code>/</code> regnes som aktiv på alle
+            sider, fordi alle adresser starter med <code>/</code>.
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 Props -->
+      <section class="part" id="props">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 4 · Komponenter og props</div>
+            <h2>Data ned, funksjoner ned, kall opp</h2>
+            <p>
+              <code>Butikk</code> eier alle dataene. Barna får det de trenger
+              som <em>props</em>. Skjemaene får i tillegg funksjoner. Når
+              brukeren skriver, kaller barnet funksjonen, og da havner verdien
+              hos <code>Butikk</code>. Klikk på en komponent for å se begge
+              ender av koden.
+            </p>
+          </div>
+          <div class="btn-row" style="margin-bottom: 12px" id="propModes">
+            <button class="btn on" data-mode="data">Data ned (props)</button>
+            <button class="btn" data-mode="fn">
+              Hendelser opp (callbacks)
+            </button>
+            <button class="btn" data-mode="all">Begge</button>
+          </div>
+          <div class="panel props-fig">
+            <svg
+              id="propSvg"
+              viewBox="0 0 900 430"
+              role="img"
+              aria-label="Komponenttreet til Butikk-siden"></svg>
+          </div>
+          <div class="props-info" id="propInfo"></div>
+        </div>
+      </section>
+
+      <!-- 5 Lab -->
+      <section class="part" id="lab">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 5 · State-laboratoriet</div>
+            <h2>Butikk-siden i sakte film</h2>
+            <p>
+              Dette er en kopi av butikk-siden som oppfører seg som den ekte
+              koden. Skriv i feltene og send skjemaene. Du ser hvilken funksjon
+              i <code>Butikk.jsx</code> som kjører, hvordan state endres, og hva
+              som skrives til konsollen. Komponenter som tegnes på nytt får en
+              grønn ramme. Tekst som faktisk endres på skjermen lyser gult.
+            </p>
+          </div>
+          <div class="lab">
+            <div class="lab-app">
+              <div class="btn-row">
+                <button class="btn primary" id="labDemo">
+                  Spill av eksempel
+                </button>
+                <button class="btn" id="labReset">Start på nytt</button>
+              </div>
+              <div class="browser">
+                <div class="bar">
+                  <div class="dots"><i></i><i></i><i></i></div>
+                  <div class="url">localhost:5173/butikk</div>
+                </div>
+                <div
+                  class="app app-main"
+                  id="labApp"
+                  data-comp="Butikk"
+                  style="position: relative">
+                  <span class="comp-tag">&lt;Butikk&gt;</span>
+                  <h1>Nettbutikken</h1>
+                  <form class="app-card" id="fLogin" data-comp="Innlogging">
+                    <span class="comp-tag">&lt;Innlogging&gt;</span>
+                    <h2>Innlogging</h2>
+                    <p class="app-muted" style="margin-bottom: 10px">
+                      Logg inn for å bestille varer.
+                    </p>
+                    <div class="app-row">
+                      <input
+                        class="app-input wide"
+                        id="inBruker"
+                        name="brukernavn"
+                        placeholder="Brukernavn"
+                        autocomplete="off" />
+                      <input
+                        class="app-input wide"
+                        id="inPass"
+                        name="passord"
+                        type="password"
+                        placeholder="Passord"
+                        autocomplete="off" />
+                      <button class="app-btn">Logg inn</button>
+                    </div>
+                  </form>
+                  <div class="app-grid2" id="loggedIn" hidden>
+                    <form class="app-card" id="fBest" data-comp="Bestilling">
+                      <span class="comp-tag">&lt;Bestilling&gt;</span>
+                      <h2>Bestill vare</h2>
+                      <div class="app-row">
+                        <input
+                          class="app-input"
+                          id="inVnr"
+                          name="vnr"
+                          placeholder="VNr"
+                          autocomplete="off" />
+                        <input
+                          class="app-input"
+                          id="inAnt"
+                          name="antall"
+                          placeholder="Antall"
+                          autocomplete="off" />
+                        <button class="app-btn">Legg i handlekurv</button>
+                      </div>
+                    </form>
+                    <div class="app-card" id="cKurv" data-comp="Handlekurv">
+                      <span class="comp-tag">&lt;Handlekurv&gt;</span>
+                      <h2>Handlekurv for <span id="kurvNavn"></span></h2>
+                      <div id="kurvLinjer"></div>
+                      <div class="kurv-foot">
+                        <p id="kurvTotal"></p>
+                        <button type="button" class="app-btn" id="btnKasse">
+                          Gå til kasse
+                        </button>
+                      </div>
+                      <div class="fake-alert" id="kasseAlert" hidden>
+                        <small>alert() fra localhost:5173</small>
+                        <p>
+                          Gå til kasse og lagring av bestilling i databasen er
+                          ikke implementert!
+                        </p>
+                        <button type="button" class="app-btn" id="alertOk">
+                          OK
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    data-comp="Vareliste"
+                    style="position: relative; display: grid; gap: 8px">
+                    <span class="comp-tag" style="top: -4px"
+                      >&lt;Vareliste&gt;</span
+                    >
+                    <h2>Varer på lager</h2>
+                    <div class="app-vgrid" id="labVarer"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lab-state">
+              <div class="panel">
+                <div class="panel-head">
+                  <span>State i Butikk</span
+                  ><span class="renders" id="renders"
+                    >renderinger: <b>1</b></span
+                  >
+                </div>
+                <dl class="state-list" id="stateList"></dl>
+              </div>
+              <div class="panel">
+                <div class="panel-head">
+                  <span>Konsoll</span
+                  ><button class="chip" id="consoleClear" type="button">
+                    Tøm
+                  </button>
+                </div>
+                <div class="console-out" id="consoleOut"></div>
+              </div>
+            </div>
+            <div class="lab-code">
+              <div class="panel chain" id="chain">
+                <span class="hint"
+                  >Når du skriver i et felt, vises veien fra hendelse til state
+                  her.</span
+                >
+              </div>
+              <div class="code tall" id="labCode"></div>
+            </div>
+          </div>
+          <div class="note" style="margin-top: 18px; max-width: 75ch">
+            <b>Se på konsollen når du skriver varenummer.</b>
+            <code>lesVnr</code> skriver ut verdien <em>før</em> tastetrykket.
+            <code>setVnr</code> endrer ikke variabelen <code>vnr</code> med en
+            gang. Den ber React om å kjøre <code>Butikk</code> på nytt, og først
+            i den nye kjøringen har <code>vnr</code> den nye verdien.
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 Kopi -->
+      <section class="part" id="kopi">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 6 · Uforanderlige data</div>
+            <h2>Hvorfor <code>oppdaterKurv</code> lager en kopi</h2>
+            <p>
+              React finner ut om noe er endret ved å sammenligne den gamle og
+              den nye verdien med <code>Object.is</code>. For en array
+              sammenlignes <em>adressen</em> i minnet, ikke innholdet. Endrer du
+              den gamle arrayen, ser React ingen forskjell. Kjør de to
+              variantene og se resultatet.
+            </p>
+          </div>
+          <div class="btn-row" style="margin-bottom: 14px">
+            <button class="btn primary" id="immPlay">Kjør begge</button
+            ><button class="btn" id="immReset">Tilbakestill</button>
+          </div>
+          <div class="imm">
+            <div class="panel lane" id="laneBad"></div>
+            <div class="panel lane" id="laneGood"></div>
+          </div>
+          <div class="prose" style="margin-top: 18px">
+            <p>
+              <code>JSON.parse(JSON.stringify(kurv))</code> lager en dyp kopi,
+              men har en bieffekt: verdier som <code>NaN</code> blir til
+              <code>null</code>. En vanligere måte å skrive det samme på er med
+              spredningsoperatoren:
+            </p>
+            <pre class="snip" data-hl>
+setKurv([...kurv, { vnr: vnr, antall: antall, pris: pris }]);</pre
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- 7 map/reduce -->
+      <section class="part" id="mapreduce">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 7 · Høyere ordens funksjoner</div>
+            <h2>
+              <code>map</code> tegner linjene, <code>reduce</code> regner summen
+            </h2>
+            <p>
+              Handlekurv.jsx bruker to array-funksjoner som tar en annen
+              funksjon som argument. Prisene lagres uten mva. Merverdiavgiften
+              legges først på når beløpet vises, i <code>visBeløp</code> fra
+              hjelpere.js.
+            </p>
+          </div>
+          <div class="mr">
+            <div class="panel">
+              <div class="btn-row" style="justify-content: space-between">
+                <h3><code>kurv.map(...)</code></h3>
+                <button class="btn" id="mapPlay">Spill av map</button>
+              </div>
+              <pre class="snip" data-hl>
+{kurv.map((linje) =&gt; (
+  &lt;p key={linje.vnr}&gt;{linje.antall} stk. av vare {linje.vnr} ...&lt;/p&gt;
+))}</pre
+              >
+              <div id="mapRows" style="display: grid; gap: 8px"></div>
+              <p class="muted" style="font-size: 14px">
+                Én JSX-linje per objekt i arrayen. <code>key</code> hjelper
+                React å kjenne igjen hver linje når listen endres.
+              </p>
+            </div>
+            <div class="panel">
+              <div class="btn-row" style="justify-content: space-between">
+                <h3><code>kurv.reduce(...)</code></h3>
+                <button class="btn" id="redPlay">Spill av reduce</button>
+              </div>
+              <pre class="snip" data-hl>
+kurv.reduce((sum, elem) =&gt; sum + elem.pris * elem.antall, 0);</pre
+              >
+              <div id="redRows"></div>
+              <div class="acc">
+                <span class="mono muted">sum =</span
+                ><span class="acc-sum" id="redSum">0</span>
+              </div>
+              <div class="calc" id="redCalc">
+                Startverdien er 0 (siste argument til reduce).
+              </div>
+              <h3 style="font-size: 1rem">
+                Så formateres summen med <code>visBeløp</code>
+              </h3>
+              <div class="pipe" id="pipe">
+                <div class="box">
+                  <small>pris</small
+                  ><input
+                    id="pipeIn"
+                    type="number"
+                    step="0.5"
+                    value="786.5"
+                    aria-label="Pris uten mva" />
+                </div>
+                <span class="fn">prisInklMva →</span>
+                <div class="box" id="pipeMid">
+                  <small>× 1.25</small><b id="pipeMva"></b>
+                </div>
+                <span class="fn">formatter.format →</span>
+                <div class="box" id="pipeOut">
+                  <small>vises</small><b id="pipeFmt"></b>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8 Tailwind -->
+      <section class="part" id="tailwind">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 8 · Tailwind</div>
+            <h2>Utseende bygget av små klasser</h2>
+            <p>
+              Hver Tailwind-klasse gjør én ting. <code>px-4</code> gir luft til
+              sidene, <code>bg-emerald-700</code> gir grønn bakgrunn. I
+              index.css er de vanligste kombinasjonene samlet i egne klasser med
+              <code>@apply</code>, for eksempel <code>.knapp</code>. Slå
+              klassene av og på og se knappen endre seg.
+            </p>
+          </div>
+          <div class="tw-grid">
+            <div class="panel">
+              <h3>Klassene i <code>.knapp</code></h3>
+              <div class="tw-chips" id="twChips"></div>
+              <div class="tw-stage tw">
+                <button id="twBtn" type="button">Legg i handlekurv</button>
+              </div>
+              <pre class="snip" id="twCss"></pre>
+            </div>
+            <div class="panel">
+              <h3>Responsivt rutenett i Vareliste.jsx</h3>
+              <div class="range">
+                <label for="twWidth"
+                  >Skjermbredde: <b class="mono" id="twWidthOut"></b></label
+                ><input
+                  type="range"
+                  id="twWidth"
+                  min="320"
+                  max="1280"
+                  step="10"
+                  value="1100" />
+              </div>
+              <div class="bp" id="twBp">
+                <span data-bp="0">grid-cols-1</span
+                ><span data-bp="640">sm:grid-cols-2 <small>≥ 640px</small></span
+                ><span data-bp="1024"
+                  >lg:grid-cols-4 <small>≥ 1024px</small></span
+                >
+              </div>
+              <div class="gridsim" id="gridSim">
+                <div class="gridframe app" id="gridFrame">
+                  <div class="app-vgrid" id="gridCards"></div>
+                </div>
+              </div>
+              <p class="muted" style="font-size: 14px">
+                Tailwind er laget «mobil først». Klasser uten prefiks gjelder
+                alltid. <code>sm:</code> og <code>lg:</code> slår inn fra en
+                minste bredde og overstyrer det som kom før.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9 Vite -->
+      <section class="part" id="vite">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 9 · Vite</div>
+            <h2>Utvikling og ferdig bygg</h2>
+            <p>
+              Vite brukes på to måter. Under utvikling oversetter den filer
+              etter hvert som nettleseren ber om dem. Før publisering pakker den
+              alt sammen til noen få optimaliserte filer.
+            </p>
+          </div>
+          <div class="btn-row" style="margin-bottom: 12px" id="viteModes">
+            <button class="btn on" data-v="dev"><code>npm run dev</code></button
+            ><button class="btn" data-v="build">
+              <code>npm run build</code>
+            </button>
+          </div>
+          <div class="panel vite">
+            <div class="flow">
+              <div class="fcol">
+                <h3>Kildekoden din</h3>
+                <div class="fchip">src/main.jsx</div>
+                <div class="fchip">src/App.jsx</div>
+                <div class="fchip">src/pages/*.jsx</div>
+                <div class="fchip">src/components/*.jsx</div>
+                <div class="fchip">src/index.css</div>
+              </div>
+              <div class="track"><i></i><i></i><i></i></div>
+              <div class="vbox">
+                <h3>Vite</h3>
+                <div class="plug">
+                  @vitejs/plugin-react<br /><span class="muted"
+                    >JSX → JavaScript</span
+                  >
+                </div>
+                <div class="plug">
+                  @tailwindcss/vite<br /><span class="muted"
+                    >finner klasser → lager CSS</span
+                  >
+                </div>
+              </div>
+              <div class="track"><i></i><i></i><i></i></div>
+              <div class="fcol" id="viteOut"></div>
+            </div>
+            <div class="vite-text" id="viteText"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10 Forbedringer -->
+      <section class="part" id="forbedre">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="eyebrow">Del 10 · Svakheter og oppgaver</div>
+            <h2>Det koden ikke gjør ennå</h2>
+            <p>
+              Koden er laget for å lære bort, og kommentarene i den peker selv
+              på flere ting som bør forbedres. Alle svakhetene under kan du se i
+              laboratoriet i del 5.
+            </p>
+          </div>
+          <div class="issues" id="issues"></div>
+          <h3 style="margin-block: 40px 16px; font-size: 1.4rem">
+            Oppgaver å prøve selv
+          </h3>
+          <ol class="tasks">
+            <li>
+              <span
+                >Rett <code>lesVnr</code> og <code>lesAntall</code> slik at
+                konsollen viser den nye verdien.</span
+              >
+            </li>
+            <li>
+              <span
+                >Slå sammen linjer i handlekurven når samme varenummer bestilles
+                flere ganger.</span
+              >
+            </li>
+            <li>
+              <span
+                >Vis en feilmelding i <code>Bestilling</code> når varenummeret
+                ikke finnes eller antallet ikke er et tall.</span
+              >
+            </li>
+            <li>
+              <span
+                >Lag en knapp i <code>Handlekurv</code> som fjerner en linje.
+                Husk å lage en ny array med <code>filter</code>.</span
+              >
+            </li>
+            <li>
+              <span
+                >Hent varene fra REST-API-et på
+                <code>http://localhost:3030/varer</code> med
+                <code>useEffect</code> og <code>fetch</code>.</span
+              >
+            </li>
+            <li>
+              <span
+                >Del opp <code>Butikk</code>: flytt handlekurv-logikken til en
+                egen hook, eller bytt til <code>useReducer</code>.</span
+              >
+            </li>
+            <li>
+              <span
+                >Endre <code>lang="en"</code> til <code>lang="no"</code> i
+                index.html, og legg til en <code>favicon.svg</code> i en
+                <code>public</code>-mappe.</span
+              >
+            </li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site">
+      <div class="wrap">
+        Laget for undervisning med utgangspunkt i
+        <code>butikk-klient-vite-2026-claude</code>. Kodeutdragene på siden er
+        hentet direkte fra prosjektfilene.
+      </div>
+    </footer>
+
+    <script type="text/plain" data-file="index.html">
+      <!doctype html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>HH</title>
+        </head>
+        <body>
+          <div id="root"></div>
+          <script type="module" src="/src/main.jsx"><\/script>
+        </body>
+      </html>
+    </script>
+    <script type="text/plain" data-file="package.json">
+      {
+        "name": "butikk-klient-vite",
+        "private": true,
+        "version": "0.0.0",
+        "type": "module",
+        "scripts": {
+          "dev": "vite",
+          "build": "vite build",
+          "lint": "eslint .",
+          "preview": "vite preview"
+        },
+        "dependencies": {
+          "@tailwindcss/vite": "^4.3.3",
+          "react": "^19.2.8",
+          "react-dom": "^19.2.8",
+          "react-router": "^8.4.0",
+          "tailwindcss": "^4.3.3"
+        },
+        "devDependencies": {
+          "@eslint/js": "^10.0.1",
+          "@types/react": "^19.2.18",
+          "@types/react-dom": "^19.2.7",
+          "@vitejs/plugin-react": "^6.1.1",
+          "eslint": "^10.10.0",
+          "eslint-plugin-react-hooks": "^7.1.1",
+          "eslint-plugin-react-refresh": "^0.5.6",
+          "globals": "^17.12.0",
+          "vite": "^8.3.0"
+        }
+      }
+    </script>
+    <script type="text/plain" data-file="vite.config.js">
+      import react from "@vitejs/plugin-react";
+      import { defineConfig } from "vite";
+      import tailwindcss from "@tailwindcss/vite";
+
+      export default defineConfig({
+        plugins: [react(), tailwindcss()],
+      });
+    </script>
+    <script type="text/plain" data-file="src/main.jsx">
+      import { StrictMode } from 'react'
+      import { createRoot } from 'react-dom/client'
+      import './index.css'
+      import App from './App.jsx'
+
+      createRoot(document.getElementById('root')).render(
+        <StrictMode>
+          <App />
+        </StrictMode>,
+      )
+    </script>
+    <script type="text/plain" data-file="src/App.jsx">
+      import { BrowserRouter as Router, Routes, Route } from "react-router";
+      import Hjem from "./pages/Hjem.jsx";
+      import Butikk from "./pages/Butikk.jsx";
+      import Om from "./pages/Om.jsx";
+      import Faq from "./pages/Faq.jsx";
+      import NotFound from "./pages/NotFound.jsx";
+      import Layout from "./Layout.jsx";
+      import "./App.css";
+
+      const App = () => {
+        return (
+          <Router>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Hjem />} />
+                <Route path="/butikk" element={<Butikk />} />
+                <Route path="/om" element={<Om />} />
+                <Route path="/faq" element={<Faq />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          </Router>
+        );
+      };
+
+      export default App;
+    </script>
+    <script type="text/plain" data-file="src/Layout.jsx">
+      import NavBar from "./components/NavBar.jsx";
+      import Footer from "./components/Footer.jsx";
+
+      const Layout = ({ children }) => {
+        return (
+          <div className="flex min-h-screen flex-col">
+            <NavBar />
+            <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        );
+      };
+
+      export default Layout;
+    </script>
+    <script type="text/plain" data-file="src/index.css">
+      @import "tailwindcss";
+
+      @layer base {
+        body {
+          @apply bg-stone-50 text-stone-800 antialiased;
+        }
+        h1 {
+          @apply text-3xl font-bold tracking-tight text-stone-900;
+        }
+        h2 {
+          @apply mb-3 text-xl font-semibold text-stone-900;
+        }
+        h3 {
+          @apply text-lg font-semibold text-stone-900;
+        }
+      }
+
+      @layer components {
+        .kort {
+          @apply rounded-xl border border-stone-200 bg-white p-6 shadow-sm;
+        }
+        .felt {
+          @apply rounded-lg border border-stone-300 bg-white px-3 py-2 placeholder:text-stone-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none;
+        }
+        .knapp {
+          @apply cursor-pointer rounded-lg bg-emerald-700 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-emerald-800 focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:outline-none;
+        }
+      }
+    </script>
+    <script type="text/plain" data-file="src/App.css">
+      /* Stilene ligger i index.css og som Tailwind-klasser i komponentene. */
+    </script>
+    <script type="text/plain" data-file="src/lib/hjelpere.js">
+      // Et eksempel på en hjelpefunksjon vi trenger i flere komponenter.
+
+      // Presentasjon av beløp i norske kroner
+      var formatter = new Intl.NumberFormat("NO", {
+        style: "currency",
+        currency: "NOK",
+      });
+
+      const prisInklMva = (p) => p * 1.25;
+
+      const visBeløp = (pris) => formatter.format(prisInklMva(pris));
+
+      export { visBeløp };
+    </script>
+    <script type="text/plain" data-file="src/components/NavBar.jsx">
+      import { Link, NavLink } from "react-router";
+
+      // NavLink fungerer som Link, men vet om lenken peker til siden vi står på,
+      // slik at vi kan markere den aktive menylenken.
+      const lenkeStil = ({ isActive }) =>
+        "rounded-md px-3 py-2 text-sm font-medium transition-colors " +
+        (isActive
+          ? "bg-emerald-700 text-white"
+          : "text-stone-600 hover:bg-stone-100 hover:text-stone-900");
+
+      const NavBar = () => {
+        return (
+          <nav className="border-b border-stone-200 bg-white">
+            <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-3">
+              <Link to="/" className="text-lg font-bold tracking-tight text-emerald-800">
+                Hobbyhuset
+              </Link>
+              <div className="flex gap-1">
+                <NavLink to="/" end className={lenkeStil}>
+                  Hjem
+                </NavLink>
+                <NavLink to="/butikk" className={lenkeStil}>
+                  Butikk
+                </NavLink>
+                <NavLink to="/om" className={lenkeStil}>
+                  Om
+                </NavLink>
+                <NavLink to="/faq" className={lenkeStil}>
+                  FAQ
+                </NavLink>
+              </div>
+            </div>
+          </nav>
+        );
+      };
+
+      export default NavBar;
+    </script>
+    <script type="text/plain" data-file="src/components/Footer.jsx">
+      import logo from "../assets/logo.JPG";
+
+      const Footer = () => {
+        return (
+          <footer className="border-t border-stone-200 bg-white">
+            <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4 py-8 text-sm text-stone-500">
+              <img src={logo} alt="Firma logo" className="h-12 w-auto" />
+              <p>Kontakt oss.</p>
+            </div>
+          </footer>
+        );
+      };
+
+      export default Footer;
+    </script>
+    <script type="text/plain" data-file="src/components/Innlogging.jsx">
+      // Enkel demo av HTML-skjema, der event-funksjoner
+      // for å håndtere inndata er sendt med fra en "superkomponent"
+      // (i dette tilfellet Butikk). Merk at samme event-funksjon lesInndata
+      // blir brukt for å håndtere endring både i brukernavn og passord,
+      // denne funksjonen må dermed sjekke event-objektet for å finne ut
+      // hvilken tekstboks som ble endret (se Butikk for koden).
+
+      const Innlogging = ({ sjekkInnlogging, lesInndata }) => {
+        return (
+          <div className="kort max-w-2xl">
+            <form onSubmit={sjekkInnlogging}>
+              <h2>Innlogging</h2>
+              <p className="mb-4 text-stone-600">Logg inn for å bestille varer.</p>
+              <div className="flex flex-wrap gap-3">
+                <input
+                  type="text"
+                  className="felt min-w-40 flex-1"
+                  id="brukernavn"
+                  name="brukernavn"
+                  placeholder="Brukernavn"
+                  onChange={lesInndata}
+                />
+                <input
+                  type="password"
+                  className="felt min-w-40 flex-1"
+                  id="passord"
+                  name="passord"
+                  placeholder="Passord"
+                  onChange={lesInndata}
+                />
+                <button className="knapp">Logg inn</button>
+              </div>
+            </form>
+          </div>
+        );
+      };
+
+      export default Innlogging;
+    </script>
+    <script type="text/plain" data-file="src/components/Bestilling.jsx">
+      // Enkel demo av HTML-skjema, der event-funksjoner for å håndtere inndata
+      // er sendt med fra en "mor-komponent" (i dette tilfellet Butikk).
+      // Event-funksjonene lesVnr og lesAntall er altså definert i Butikk
+      // og sørger for at innholdet i disse tekstboksene blir tatt vare på
+      // i hooks-variabler. Event-funksjonen bestillVare er også definert
+      // i Butikk og håndterer submit-knappen (sjekker lovlig innlogging).
+
+      const Bestilling = ({ lesVnr, lesAntall, bestillVare }) => {
+        return (
+          <div className="kort">
+            <form onSubmit={bestillVare}>
+              <h2>Bestill vare</h2>
+              <div className="flex flex-wrap gap-3">
+                <input
+                  type="text"
+                  className="felt w-28"
+                  name="vnr"
+                  placeholder="VNr"
+                  onChange={lesVnr}
+                />
+                <input
+                  type="text"
+                  className="felt w-28"
+                  name="antall"
+                  placeholder="Antall"
+                  onChange={lesAntall}
+                />
+                <button className="knapp">Legg i handlekurv</button>
+              </div>
+            </form>
+          </div>
+        );
+      };
+
+      export default Bestilling;
+    </script>
+    <script type="text/plain" data-file="src/components/Handlekurv.jsx">
+      import { visBeløp } from "../lib/hjelpere.js";
+
+      // Handlekurv får inn brukernavn og handlekurv som props-parametre
+      // og viser fram innholdet med beregnet totalsum. Merk bruk av
+      // høyere ordens funksjoner reduce og map.
+
+      const Handlekurv = ({ brukernavn, kurv }) => {
+        // Finn samlet verdi av handlekurven
+        const handlekurvTotal = () => {
+          return kurv.reduce((sum, elem) => sum + elem.pris * elem.antall, 0);
+        };
+
+        const gåTilKasse = () => {
+          // Handlekurven bør lagres som en ordre i databasen!
+          alert(
+            "Gå til kasse og lagring av bestilling i databasen er ikke implementert!"
+          );
+        };
+
+        return (
+          <div className="kort">
+            <h2>Handlekurv for {brukernavn}</h2>
+            <div className="divide-y divide-stone-100">
+              {kurv.map((linje) => (
+                <p key={linje.vnr} className="py-2 text-stone-700">
+                  {linje.antall} stk. av vare {linje.vnr} til {visBeløp(linje.pris)} ={" "}
+                  <span className="font-medium text-stone-900">
+                    {visBeløp(linje.antall * linje.pris)}
+                  </span>
+                </p>
+              ))}
+            </div>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-stone-200 pt-4">
+              <p className="text-lg font-semibold">
+                Verdi av handlekurv: {visBeløp(handlekurvTotal())}
+              </p>
+              <button onClick={gåTilKasse} className="knapp">
+                Gå til kasse
+              </button>
+            </div>
+          </div>
+        );
+      };
+
+      export default Handlekurv;
+    </script>
+    <script type="text/plain" data-file="src/components/Vareliste.jsx">
+      import Vare from "./Vare.jsx";
+
+      // Hver vare blir vist som et "kort" og presentert med grid-systemet til Tailwind.
+
+      const Vareliste = ({ varer }) => {
+        return (
+          <>
+            <h2>Varer på lager</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {varer.map((vare) => (
+                <Vare
+                  key={vare.VNr}
+                  vnr={vare.VNr}
+                  betegnelse={vare.Betegnelse}
+                  pris={vare.Pris}
+                />
+              ))}
+            </div>
+          </>
+        );
+      };
+
+      export default Vareliste;
+    </script>
+    <script type="text/plain" data-file="src/components/Vare.jsx">
+      import { visBeløp } from "../lib/hjelpere.js";
+
+      const Vare = ({ vnr, betegnelse, pris }) => {
+        return (
+          <div className="kort flex flex-col gap-1 p-5 transition-shadow hover:shadow-md">
+            <h3>{betegnelse}</h3>
+            <p className="text-sm text-stone-500">VNr: {vnr}</p>
+            <p className="mt-2 text-lg font-semibold text-emerald-800">
+              Pris: {visBeløp(pris)}
+            </p>
+          </div>
+        );
+      };
+
+      export default Vare;
+    </script>
+    <script type="text/plain" data-file="src/pages/Butikk.jsx">
+      import { useState } from "react";
+
+      import Vareliste from "../components/Vareliste.jsx";
+      import Innlogging from "../components/Innlogging.jsx";
+      import Bestilling from "../components/Bestilling.jsx";
+      import Handlekurv from "../components/Handlekurv.jsx";
+
+      // Dette er "hovedkomponenten". Den inneholder litt vel mange ting,
+      // og burde kanskje vært delt opp?
+
+      // Den tar vare på datastrukturen i et antall hooks (useState). Brukernavn
+      // og passord blir lest inn i komponenten Innlogging. Ved vellykket innlogging
+      // blir Bestilling og Handlekurv synlig. Varenummer og antall blir lest inn
+      // i komponenten Bestilling og dataene lagt inn i handlekurven.
+      //
+      // Butikk sender data ned i "barn-komponentene" ved å sende med
+      // "hook-variabler" som props-parametre, og får tak i data som blir
+      // lest inn i HTML-skjemaer i "barn-komponentene" ved å sende med
+      // event-funksjoner som props-parametre.
+      //
+      // Handlekurven er et eksempel på en "kompleks datastruktur" (en array
+      // av objekter). For å håndtere endringer i slike variabler (når man
+      // bruker useState), bør man erstatte gammel verdi med en kopi - og ikke
+      // oppdatere det gamle objektet. Et (bedre?) alternativ er å bruke hook'en
+      // useReducer - prøv gjerne dette selv.
+      //
+      // Varedata skal etter hvert hentes på JSON-format fra tjener-delen av
+      // applikasjonen (et REST-basert API basert på Express). Foreløpig blir
+      // varelisten bare hardkodet.
+      //
+      // I en større applikasjon kunne det vært aktuelt å samle
+      // komponenter som hører sammen i undermapper. Kanskje også
+      // lage undermapper for css, bilder. Les mer her:
+      // https://reactjs.org/docs/faq-structure.html
+
+      // Hardkoding av varelisten bør erstattes med henting fra tjener.
+      const varer = [
+        { VNr: "10820", Betegnelse: "Hakke", Pris: 99.5 },
+        { VNr: "10830", Betegnelse: "Spett", Pris: 430.5 },
+        { VNr: "10840", Betegnelse: "Øks", Pris: 234.0 },
+        { VNr: "10850", Betegnelse: "Spade", Pris: 122.0 },
+        { VNr: "10860", Betegnelse: "Rive", Pris: 98.5 },
+      ];
+
+      const Butikk = () => {
+        // Klienten bruker kun denne ene ruten:
+        // const url = `http://localhost:3030/varer`;
+
+        let [innlogget, setInnlogget] = useState(false);
+        let [brukernavn, setBrukernavn] = useState("");
+        let [passord, setPassord] = useState("");
+        let [vnr, setVnr] = useState("");
+        let [antall, setAntall] = useState(0);
+
+        // Hardkoder litt innhold i handlekurven.
+        // I en reell løsning vil handlekurven initieres til [].
+        let startKurv = [
+          { vnr: "10820", antall: 3, pris: 99.5 },
+          { vnr: "10850", antall: 4, pris: 122.0 },
+        ];
+        let [kurv, setKurv] = useState(startKurv);
+
+        // Henter prisen til en vare.
+        const varepris = (vnr) => {
+          for (const elem of varer) {
+            if (elem.VNr === vnr) {
+              return parseFloat(elem.Pris);
+            }
+          }
+          return 0; // Her bør brukeren få en feilmelding!
+        };
+
+        // Legger til en ny vare i handlekurven.
+        // Men gjør dette ved å opprette en helt ny handlekurv (en kopi)!
+        const oppdaterKurv = () => {
+          console.log(`oppdaterKurv: vnr = ${vnr}, antall = ${antall}`);
+
+          // Enkel løsning for å få en kopi:
+          let kurvKopi = JSON.parse(JSON.stringify(kurv));
+
+          let pris = varepris(vnr);
+          kurvKopi.push({ vnr: vnr, antall: antall, pris: pris });
+          setKurv(kurvKopi);
+        };
+
+        // Håndterer endring av inndata i Innlogging.
+        const lesInndata = (event) => {
+          const target = event.target.name;
+          const value = event.target.value;
+          if (target === "brukernavn") {
+            setBrukernavn(value);
+          } else {
+            setPassord(value);
+          }
+        };
+
+        // Håndterer submit i Innlogging.
+        const sjekkInnlogging = (event) => {
+          console.log(
+            `sjekkInnlogging: brukernavn = ${brukernavn}, passord = ${passord}`,
+          );
+          event.preventDefault();
+          setInnlogget(true); // TODO: Sjekk mot databasen!
+        };
+
+        // Håndterer endring i varenummer i Bestilling.
+        const lesVnr = (event) => {
+          setVnr(event.target.value);
+          console.log("lesVnr: " + vnr);
+        };
+
+        // Håndterer endring i antall i Bestilling.
+        const lesAntall = (event) => {
+          setAntall(parseInt(event.target.value));
+          console.log("lesAntall: " + antall);
+        };
+
+        // Håndterer submit i Bestilling.
+        const bestillVare = (event) => {
+          event.preventDefault();
+          oppdaterKurv();
+        };
+
+        let toppDel;
+        if (!innlogget) {
+          toppDel = (
+            <Innlogging sjekkInnlogging={sjekkInnlogging} lesInndata={lesInndata} />
+          );
+        } else {
+          toppDel = (
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Bestilling
+                lesVnr={lesVnr}
+                lesAntall={lesAntall}
+                bestillVare={bestillVare}
+              />
+              <Handlekurv brukernavn={brukernavn} kurv={kurv} />
+            </div>
+          );
+        }
+        return (
+          <div className="space-y-10">
+            <h1>Nettbutikken</h1>
+            {toppDel}
+            <Vareliste varer={varer} />
+          </div>
+        );
+      };
+
+      export default Butikk;
+    </script>
+    <script type="text/plain" data-file="src/pages/Hjem.jsx">
+      import { Link } from "react-router";
+
+      const Hjem = () => {
+        return (
+          <div className="space-y-8">
+            <section className="rounded-2xl bg-emerald-800 px-8 py-14 text-white shadow-sm">
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Velkommen til Hobbyhuset
+              </h2>
+              <p className="mt-4 max-w-xl text-lg text-emerald-50">
+                Dette er landingsiden med demo-bruk av Tailwind.
+              </p>
+              <Link
+                to="/butikk"
+                className="mt-8 inline-block rounded-lg bg-white px-5 py-2.5 font-medium text-emerald-800 shadow-sm transition-colors hover:bg-emerald-50">
+                Gå til butikken
+              </Link>
+            </section>
+          </div>
+        );
+      };
+
+      export default Hjem;
+    </script>
+    <script type="text/plain" data-file="src/pages/Om.jsx">
+      const Om = () => {
+        return (
+          <div className="kort space-y-3">
+            <h2>Om oss</h2>
+            <p className="text-stone-600">Her finner du informasjon om bedriften og våre ansatte.</p>
+          </div>
+        );
+      };
+
+      export default Om;
+    </script>
+    <script type="text/plain" data-file="src/pages/Faq.jsx">
+      const Faq = () => {
+        return (
+          <div className="kort space-y-3">
+            <h2>Faq</h2>
+            <p className="text-stone-600">Svar på vanlige spørsmål.</p>
+          </div>
+        );
+      };
+
+      export default Faq;
+    </script>
+    <script type="text/plain" data-file="src/pages/NotFound.jsx">
+      const NotFound = () => {
+        return (
+          <div className="kort space-y-3">
+            <h2>Nettsiden finnes ikke (feilkode 404)</h2>
+            <p className="text-stone-600">Du er altså kommet til slutten av internett.</p>
+          </div>
+        );
+      };
+
+      export default NotFound;
+    </script>
+
+    <script>
+      (() => {
+        "use strict";
+        document.documentElement.lang = "no";
+        const $ = (s, r = document) => r.querySelector(s);
+        const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+        const reduceMotion = matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const sleep = (ms) =>
+          new Promise((r) =>
+            setTimeout(r, reduceMotion ? Math.min(ms, 80) : ms),
+          );
+        const esc = (s) =>
+          String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        const restart = (el, cls) => {
+          if (!el) return;
+          el.classList.remove(cls);
+          void el.offsetWidth;
+          el.classList.add(cls);
+        };
+
+        // ---------- Kildefiler ----------
+        const SRC = {};
+        $$('script[type="text/plain"][data-file]').forEach((s) => {
+          SRC[s.dataset.file] = s.textContent
+            .replace(/^\n/, "")
+            .replace(/<\\\/script/g, "<\/script")
+            .replace(/\s+$/, "");
+        });
+        const linesOf = (f) => (SRC[f] || "").split("\n");
+        function lineOf(f, needle, from = 1) {
+          const L = linesOf(f);
+          for (let i = from - 1; i < L.length; i++)
+            if (L[i].includes(needle)) return i + 1;
+          return 0;
+        }
+        function blockOf(f, needle) {
+          const L = linesOf(f),
+            s = lineOf(f, needle);
+          if (!s) return [0, 0];
+          const ind = L[s - 1].match(/^\s*/)[0].length;
+          for (let i = s; i < L.length; i++) {
+            if (
+              L[i].match(/^\s*/)[0].length === ind &&
+              /^\s*[)}\]][;,]?\s*$/.test(L[i])
+            )
+              return [s, i + 1];
+          }
+          return [s, s];
+        }
+        function untilLine(f, needle, endNeedle) {
+          const s = lineOf(f, needle);
+          return [s, lineOf(f, endNeedle, s) || s];
+        }
+
+        // ---------- Syntaksfarging (enkel, linje for linje) ----------
+        const TOK =
+          /(\/\/.*$|\/\*.*?\*\/|<\!--.*?--\>)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)|(<\/?[A-Za-z][\w.-]*|(?<![=\-])\/?>)|\b(const|let|var|return|if|else|for|of|import|from|export|default|new|true|false|null)\b|\b(\d+(?:\.\d+)?)\b|(@[\w-]+)/g;
+        function hl(line) {
+          let out = "",
+            last = 0;
+          line.replace(TOK, (m, com, str, tag, kw, num, at, idx) => {
+            out += esc(line.slice(last, idx));
+            const c = com
+              ? "com"
+              : str
+                ? "str"
+                : tag
+                  ? "tag"
+                  : kw
+                    ? "kw"
+                    : num
+                      ? "num"
+                      : "at";
+            out += `<span class="t-${c}">${esc(m)}</span>`;
+            last = idx + m.length;
+            return m;
+          });
+          return out + esc(line.slice(last));
+        }
+        const hlBlock = (text) => text.split("\n").map(hl).join("\n");
+        $$("pre[data-hl]").forEach((p) => {
+          p.innerHTML = hlBlock(p.textContent);
+        });
+
+        class CodeView {
+          constructor(el) {
+            this.el = el;
+            this.file = null;
+          }
+          show(file, ranges = [], opts = {}) {
+            if (file !== this.file) {
+              this.file = file;
+              const L = linesOf(file);
+              this.el.innerHTML = `<div class="code-head"><span class="code-file">${esc(file)}</span><span>${L.length} linjer</span></div><div class="code-body"><div class="code-lines">${L.map((l, i) => `<span class="ln" data-n="${i + 1}">${hl(l) || " "}</span>`).join("")}</div></div>`;
+              this.body = $(".code-body", this.el);
+              this.lines = $$(".ln", this.el);
+            }
+            this.mark(ranges, opts);
+          }
+          mark(ranges, { tone = "accent", scroll = true } = {}) {
+            this.lines.forEach((l) => l.classList.remove("hl", "hl-signal"));
+            let first = null;
+            for (const [a, b] of ranges)
+              for (let n = a; n <= b; n++) {
+                const l = this.lines[n - 1];
+                if (!l) continue;
+                l.classList.add(tone === "signal" ? "hl-signal" : "hl");
+                if (!first) first = l;
+              }
+            if (scroll && first) {
+              const top = first.offsetTop - this.body.clientHeight * 0.2;
+              this.body.scrollTo({
+                top: Math.max(0, top),
+                behavior: reduceMotion ? "auto" : "smooth",
+              });
+            }
+          }
+        }
+
+        // ---------- Felles: data fra Butikk.jsx og hjelpere.js ----------
+        const VARER = [
+          { VNr: "10820", Betegnelse: "Hakke", Pris: 99.5 },
+          { VNr: "10830", Betegnelse: "Spett", Pris: 430.5 },
+          { VNr: "10840", Betegnelse: "Øks", Pris: 234.0 },
+          { VNr: "10850", Betegnelse: "Spade", Pris: 122.0 },
+          { VNr: "10860", Betegnelse: "Rive", Pris: 98.5 },
+        ];
+        const START_KURV = () => [
+          { vnr: "10820", antall: 3, pris: 99.5 },
+          { vnr: "10850", antall: 4, pris: 122.0 },
+        ];
+        const formatter = new Intl.NumberFormat("NO", {
+          style: "currency",
+          currency: "NOK",
+        });
+        const prisInklMva = (p) => p * 1.25;
+        const visBeløp = (pris) => formatter.format(prisInklMva(pris));
+        const vareKort = (v) =>
+          `<div class="vcard"><b>${esc(v.Betegnelse)}</b><small>VNr: ${v.VNr}</small><span>Pris: ${visBeløp(v.Pris)}</span></div>`;
+
+        // ---------- Flygende prikker ----------
+        const flyLayer = document.createElement("div");
+        flyLayer.className = "fly-layer";
+        document.body.append(flyLayer);
+        let lastFly = 0;
+        function fly(a, b, tone = "ev", force = false) {
+          if (reduceMotion || !a || !b || !a.animate) return;
+          const now = performance.now();
+          if (!force && now - lastFly < 160) return;
+          lastFly = now;
+          const ra = a.getBoundingClientRect(),
+            rb = b.getBoundingClientRect();
+          if (!ra.width || !rb.width) return;
+          const x1 = ra.left + ra.width / 2,
+            y1 = ra.top + ra.height / 2;
+          const x2 = rb.left + Math.min(24, rb.width / 2),
+            y2 = rb.top + rb.height / 2;
+          const mx = (x1 + x2) / 2,
+            my = Math.min(y1, y2) - 50;
+          const d = document.createElement("span");
+          d.className = "fly-dot " + tone;
+          flyLayer.append(d);
+          d.animate(
+            [
+              { transform: `translate(${x1}px,${y1}px) scale(.5)` },
+              {
+                transform: `translate(${mx}px,${my}px) scale(1.15)`,
+                offset: 0.5,
+              },
+              { transform: `translate(${x2}px,${y2}px) scale(.8)` },
+            ],
+            { duration: 560, easing: "cubic-bezier(.5,0,.3,1)" },
+          ).onfinish = () => d.remove();
+        }
+
+        // =====================================================================
+        // Del 1: Oppstart
+        // =====================================================================
+        (() => {
+          const nLines = (f) => linesOf(f).length;
+          const STEPS = [
+            {
+              t: "npm run dev",
+              url: "",
+              file: "vite.config.js",
+              r: () => [[1, nLines("vite.config.js")]],
+              term: [
+                ["cmd", "$ npm run dev"],
+                ["", ""],
+                ["", "  VITE v8.3.0  ready"],
+                ["", "  ➜  Local:   http://localhost:5173/"],
+              ],
+              x: `Kommandoen kjører skriptet <code>"dev": "vite"</code> fra package.json. Vite starter en utviklingstjener og leser <code>vite.config.js</code>.<br><br>Konfigurasjonen slår på to tillegg: <b>react()</b> lærer Vite å forstå JSX, og <b>tailwindcss()</b> lager CSS ut fra klassene du bruker i koden.`,
+            },
+            {
+              t: "Nettleseren henter index.html",
+              url: "localhost:5173/",
+              file: "index.html",
+              r: () => [
+                [
+                  lineOf("index.html", 'id="root"'),
+                  lineOf("index.html", "main.jsx"),
+                ],
+              ],
+              term: [["", "GET /                        index.html"]],
+              x: `Når du åpner adressen, sender Vite filen <code>index.html</code>. Den inneholder nesten ingenting: en tom <code>&lt;div id="root"&gt;</code> og et skript som peker på <code>main.jsx</code>.<br><br>Alt du ser i butikken blir laget av JavaScript etterpå.`,
+            },
+            {
+              t: "Vite oversetter JSX",
+              url: "localhost:5173/",
+              file: "src/main.jsx",
+              r: () => [
+                [
+                  lineOf("src/main.jsx", "<App />"),
+                  lineOf("src/main.jsx", "<App />"),
+                ],
+              ],
+              term: [
+                ["", "GET /src/main.jsx             JSX → JavaScript"],
+                ["", "GET /src/index.css            Tailwind lager CSS"],
+              ],
+              x: `Nettleseren forstår ikke JSX. Når den ber om <code>main.jsx</code>, oversetter Vite filen til vanlig JavaScript før den sendes.<br><br><code>&lt;App /&gt;</code> blir til et funksjonskall som lager et React-element, en liten beskrivelse av hva som skal tegnes.`,
+            },
+            {
+              t: "React tar over #root",
+              url: "localhost:5173/",
+              file: "src/main.jsx",
+              r: () => [
+                [lineOf("src/main.jsx", "createRoot("), nLines("src/main.jsx")],
+              ],
+              term: [["", "GET /src/App.jsx"]],
+              x: `<code>createRoot</code> kobler React til den tomme div-en, og <code>render</code> tegner komponenten <code>App</code> inni den.<br><br><code>StrictMode</code> gir ekstra advarsler under utvikling. Den har ingen effekt i det ferdige bygget.`,
+            },
+            {
+              t: "App bygger rammen",
+              url: "localhost:5173/",
+              file: "src/App.jsx",
+              r: () => [
+                [
+                  lineOf("src/App.jsx", "<Router>"),
+                  lineOf("src/App.jsx", "</Router>"),
+                ],
+              ],
+              term: [
+                ["", "GET /src/Layout.jsx"],
+                ["", "GET /src/components/NavBar.jsx"],
+                ["", "GET /src/components/Footer.jsx"],
+              ],
+              x: `<code>App</code> pakker alt inn i en <code>Router</code>, som følger med på adressefeltet, og en <code>Layout</code> med meny øverst og bunntekst nederst.<br><br>Det som står mellom <code>&lt;Layout&gt;</code> og <code>&lt;/Layout&gt;</code> kommer inn i Layout som propen <code>children</code> og havner i <code>&lt;main&gt;</code>.`,
+            },
+            {
+              t: "Ruten velger side",
+              url: "localhost:5173/",
+              file: "src/App.jsx",
+              r: () => {
+                const n = lineOf("src/App.jsx", 'path="/"');
+                return [[n, n]];
+              },
+              term: [["", "GET /src/pages/Hjem.jsx"]],
+              x: `<code>Routes</code> sammenligner adressen <code>/</code> med hver <code>Route</code>. Den som passer, viser sitt <code>element</code>. Her er det <code>&lt;Hjem /&gt;</code>.<br><br>Siden er ferdig tegnet. Fra nå av hentes ingen ny HTML fra tjeneren, selv om du klikker deg rundt i menyen.`,
+            },
+          ];
+          const list = $("#bootSteps"),
+            text = $("#bootText"),
+            term = $("#bootTerm"),
+            view = $("#bootView");
+          const code = new CodeView($("#bootCode"));
+          list.innerHTML = STEPS.map(
+            (s, i) =>
+              `<li><button type="button" data-i="${i}"><span class="n">${i + 1}</span><span>${s.t}</span></button></li>`,
+          ).join("");
+          let cur = -1,
+            playing = false;
+          function go(n) {
+            const prev = cur;
+            cur = Math.max(0, Math.min(STEPS.length - 1, n));
+            const s = STEPS[cur];
+            $$("button", list).forEach((b, i) => {
+              b.classList.toggle("cur", i === cur);
+              b.classList.toggle("done", i < cur);
+            });
+            text.innerHTML = `<h3>${cur + 1}. ${s.t}</h3><p>${s.x}</p>`;
+            $("#bootUrl").innerHTML = s.url ? esc(s.url) : "&nbsp;";
+            let html = "";
+            STEPS.slice(0, cur + 1).forEach((st, i) =>
+              st.term.forEach(([c, l]) => {
+                const cls = [c, i === cur && cur !== prev ? "new" : ""]
+                  .join(" ")
+                  .trim();
+                html += `<div class="${cls}">${esc(l) || " "}</div>`;
+              }),
+            );
+            term.innerHTML = html;
+            $$("[data-only],[data-from]", view).forEach((el) => {
+              const vis =
+                el.dataset.only != null
+                  ? el.dataset.only.split(" ").map(Number).includes(cur)
+                  : cur >= Number(el.dataset.from);
+              const was = !el.hidden;
+              el.hidden = !vis;
+              if (vis && !was) restart(el, "pop");
+            });
+            code.show(s.file, s.r(), { scroll: true });
+            $("#bootPrev").disabled = cur === 0;
+            $("#bootNext").disabled = cur === STEPS.length - 1;
+          }
+          list.addEventListener("click", (e) => {
+            const b = e.target.closest("button");
+            if (b) go(+b.dataset.i);
+          });
+          $("#bootPrev").onclick = () => go(cur - 1);
+          $("#bootNext").onclick = () => go(cur + 1);
+          $("#bootPlay").onclick = async () => {
+            if (playing) return;
+            playing = true;
+            $("#bootPlay").disabled = true;
+            for (let i = 0; i < STEPS.length; i++) {
+              go(i);
+              await sleep(1900);
+            }
+            playing = false;
+            $("#bootPlay").disabled = false;
+          };
+          go(STEPS.length - 1);
+        })();
+
+        // =====================================================================
+        // Del 2: Filkart
+        // =====================================================================
+        (() => {
+          const D = {
+            "index.html": [
+              "Startpunktet. Nettleseren henter denne filen først. Den har en tom <code>div#root</code> og laster <code>main.jsx</code>.",
+              ["src/main.jsx"],
+            ],
+            "package.json": [
+              "Prosjektets innholdsliste: navn, skript (<code>dev</code>, <code>build</code>, <code>lint</code>, <code>preview</code>) og hvilke pakker <code>npm install</code> skal hente.",
+              [],
+            ],
+            "vite.config.js": [
+              "Oppsett for byggeverktøyet Vite. Slår på React-tillegget (JSX) og Tailwind-tillegget.",
+              [],
+            ],
+            "src/main.jsx": [
+              "Inngangen til JavaScript-koden. Laster den globale CSS-en og tegner <code>App</code> inn i <code>#root</code>.",
+              ["src/index.css", "src/App.jsx"],
+            ],
+            "src/App.jsx": [
+              "Rotkomponenten. Bestemmer hvilken side som vises for hvilken adresse, og legger alle sider inn i <code>Layout</code>.",
+              [
+                "src/Layout.jsx",
+                "src/pages/Hjem.jsx",
+                "src/pages/Butikk.jsx",
+                "src/pages/Om.jsx",
+                "src/pages/Faq.jsx",
+                "src/pages/NotFound.jsx",
+                "src/App.css",
+              ],
+            ],
+            "src/Layout.jsx": [
+              "Felles ramme for alle sider: meny, innholdsområde og bunntekst. Sideinnholdet kommer inn som <code>children</code>.",
+              ["src/components/NavBar.jsx", "src/components/Footer.jsx"],
+            ],
+            "src/index.css": [
+              "Global CSS. Importerer Tailwind, gir <code>body</code> og overskriftene standardstil, og lager egne klasser: <code>.kort</code>, <code>.felt</code> og <code>.knapp</code>.",
+              [],
+            ],
+            "src/App.css": [
+              "Nesten tom. All stil ligger i index.css og som Tailwind-klasser i komponentene.",
+              [],
+            ],
+            "src/lib/hjelpere.js": [
+              "Hjelpefunksjonen <code>visBeløp</code> legger til 25 % mva. og viser beløpet i norske kroner. Brukes av både Vare og Handlekurv.",
+              [],
+            ],
+            "src/assets/logo.JPG": [
+              "Bildefil med logoen. Når Footer importerer den, gir Vite tilbake en URL som kan brukes i <code>&lt;img src&gt;</code>.",
+              [],
+              true,
+            ],
+            "src/components/NavBar.jsx": [
+              "Menyen øverst. Bruker <code>NavLink</code> fra React Router, som vet hvilken lenke som er aktiv.",
+              [],
+            ],
+            "src/components/Footer.jsx": [
+              "Bunnteksten med logo.",
+              ["src/assets/logo.JPG"],
+            ],
+            "src/components/Innlogging.jsx": [
+              "Innloggingsskjema uten egen state. Alt den leser, sendes videre til funksjoner den har fått fra Butikk.",
+              [],
+            ],
+            "src/components/Bestilling.jsx": [
+              "Skjema for varenummer og antall. Fungerer som Innlogging: funksjonene kommer fra Butikk.",
+              [],
+            ],
+            "src/components/Handlekurv.jsx": [
+              "Viser innholdet i kurven med <code>map</code> og regner ut totalen med <code>reduce</code>.",
+              ["src/lib/hjelpere.js"],
+            ],
+            "src/components/Vareliste.jsx": [
+              "Lager ett <code>Vare</code>-kort per vare i et responsivt rutenett.",
+              ["src/components/Vare.jsx"],
+            ],
+            "src/components/Vare.jsx": [
+              "Ett varekort med navn, varenummer og pris.",
+              ["src/lib/hjelpere.js"],
+            ],
+            "src/pages/Butikk.jsx": [
+              "Hovedkomponenten. Eier all state (innlogging, skjemaverdier og handlekurv) og bestemmer hva som vises.",
+              [
+                "src/components/Vareliste.jsx",
+                "src/components/Innlogging.jsx",
+                "src/components/Bestilling.jsx",
+                "src/components/Handlekurv.jsx",
+              ],
+            ],
+            "src/pages/Hjem.jsx": [
+              "Forsiden med en stor velkomstboks og lenke til butikken.",
+              [],
+            ],
+            "src/pages/Om.jsx": ["Enkel informasjonsside.", []],
+            "src/pages/Faq.jsx": ["Enkel side for ofte stilte spørsmål.", []],
+            "src/pages/NotFound.jsx": [
+              'Vises når ingen annen rute passer (<code>path="*"</code>).',
+              [],
+            ],
+          };
+          const usedBy = {};
+          Object.entries(D).forEach(([f, [, imp]]) =>
+            imp.forEach((i) => (usedBy[i] ||= []).push(f)),
+          );
+          const TREE = [
+            "index.html",
+            "package.json",
+            "vite.config.js",
+            [
+              "src",
+              [
+                "main.jsx",
+                "App.jsx",
+                "Layout.jsx",
+                "index.css",
+                "App.css",
+                ["assets", ["logo.JPG"]],
+                [
+                  "components",
+                  [
+                    "Bestilling.jsx",
+                    "Footer.jsx",
+                    "Handlekurv.jsx",
+                    "Innlogging.jsx",
+                    "NavBar.jsx",
+                    "Vare.jsx",
+                    "Vareliste.jsx",
+                  ],
+                ],
+                ["lib", ["hjelpere.js"]],
+                [
+                  "pages",
+                  [
+                    "Butikk.jsx",
+                    "Faq.jsx",
+                    "Hjem.jsx",
+                    "NotFound.jsx",
+                    "Om.jsx",
+                  ],
+                ],
+              ],
+            ],
+          ];
+          const build = (items, pre) =>
+            "<ul>" +
+            items
+              .map((it) =>
+                Array.isArray(it)
+                  ? `<li><span class="dir">${it[0]}/</span>${build(it[1], pre + it[0] + "/")}</li>`
+                  : `<li><button type="button" data-f="${pre + it}"><span class="mk"></span>${it}</button></li>`,
+              )
+              .join("") +
+            "</ul>";
+          const tree = $("#tree");
+          tree.innerHTML = build(TREE, "");
+          const code = new CodeView($("#fileCode"));
+          const short = (f) => f.split("/").pop();
+          function sel(f) {
+            const [desc, imp, nocode] = D[f];
+            const ub = usedBy[f] || [];
+            $$("button", tree).forEach((b) => {
+              b.classList.toggle("sel", b.dataset.f === f);
+              b.classList.toggle("imp", imp.includes(b.dataset.f));
+              b.classList.toggle("used", ub.includes(b.dataset.f));
+            });
+            const chips = (arr, cls) =>
+              arr.length
+                ? arr
+                    .map(
+                      (x) =>
+                        `<button type="button" class="chip ${cls}" data-f="${x}">${short(x)}</button>`,
+                    )
+                    .join("")
+                : `<span>ingen</span>`;
+            $("#fileCard").innerHTML =
+              `<h3>${f}</h3><p>${desc}</p><div class="rel"><span>Importerer:</span>${chips(imp, "data")}</div><div class="rel"><span>Brukes av:</span>${chips(ub, "ev")}</div>`;
+            if (nocode) {
+              $("#fileCode").hidden = true;
+              code.file = null;
+            } else {
+              $("#fileCode").hidden = false;
+              code.show(f, []);
+              code.body.scrollTop = 0;
+            }
+          }
+          tree.addEventListener("click", (e) => {
+            const b = e.target.closest("button");
+            if (b) sel(b.dataset.f);
+          });
+          $("#fileCard").addEventListener("click", (e) => {
+            const b = e.target.closest("button[data-f]");
+            if (b) sel(b.dataset.f);
+          });
+          sel("src/App.jsx");
+        })();
+
+        // =====================================================================
+        // Del 3: Ruting
+        // =====================================================================
+        (() => {
+          const LINKS = [
+            ["/", "Hjem", true],
+            ["/butikk", "Butikk"],
+            ["/om", "Om"],
+            ["/faq", "FAQ"],
+          ];
+          const ROUTES = [
+            ["/", "Hjem"],
+            ["/butikk", "Butikk"],
+            ["/om", "Om"],
+            ["/faq", "Faq"],
+            ["*", "NotFound"],
+          ];
+          const PAGES = {
+            Hjem: `<div class="app-hero"><h2>Velkommen til Hobbyhuset</h2><p>Dette er landingsiden med demo-bruk av Tailwind.</p><a class="app-hero-btn" href="/butikk" data-to="/butikk" style="text-decoration:none">Gå til butikken</a></div>`,
+            Butikk: `<h1>Nettbutikken</h1><div class="app-card"><h2>Innlogging</h2><p class="app-muted">Logg inn for å bestille varer. (Prøv skjemaet i del 5.)</p></div><h2 style="margin:0">Varer på lager</h2><div class="app-vgrid">${VARER.slice(0, 3).map(vareKort).join("")}</div>`,
+            Om: `<div class="app-card"><h2>Om oss</h2><p class="app-muted">Her finner du informasjon om bedriften og våre ansatte.</p></div>`,
+            Faq: `<div class="app-card"><h2>Faq</h2><p class="app-muted">Svar på vanlige spørsmål.</p></div>`,
+            NotFound: `<div class="app-card"><h2>Nettsiden finnes ikke (feilkode 404)</h2><p class="app-muted">Du er altså kommet til slutten av internett.</p></div>`,
+          };
+          const code = new CodeView($("#rCode"));
+          let path = "/",
+            loads = 1,
+            clicks = 0;
+          const norm = (p) => {
+            p = ("/" + p.replace(/^\/+/, "")).replace(/\/+$/, "") || "/";
+            return p.toLowerCase();
+          };
+          const match = (p) => ROUTES.find(([r]) => r === "*" || r === p);
+          const isActive = (to, end, p) =>
+            end ? p === to : p === to || p.startsWith(to + "/");
+          function bump(id, val) {
+            const el = $(id);
+            $("b", el).textContent = val;
+            restart(el, "bump");
+          }
+          function render() {
+            const [r, comp] = match(path);
+            $("#rUrl").value = "localhost:5173" + path;
+            $("#rLinks").innerHTML = LINKS.map(
+              ([to, label, end]) =>
+                `<a href="${to}" data-to="${to}" class="${isActive(to, end, path) ? "active" : ""}">${label}</a>`,
+            ).join("");
+            $("#rMain").innerHTML = PAGES[comp];
+            const n = lineOf("src/App.jsx", `path="${r}"`);
+            code.show("src/App.jsx", [[n, n]]);
+            $("#rTable").innerHTML = LINKS.map(([to, label, end]) => {
+              const a = isActive(to, end, path);
+              return `<tr><td>to="${to}"${end ? " end" : ""}</td><td class="${a ? "t" : "f"}">${a}</td><td class="${a ? "t" : "f"}">${a ? "bg-emerald-700 text-white" : "text-stone-600 hover:bg-stone-100 …"}</td></tr>`;
+            }).join("");
+          }
+          function navigate(p, full) {
+            path = norm(p);
+            if (full) {
+              loads++;
+              clicks = 0;
+              bump("#statLoads", loads);
+              bump("#statClicks", clicks);
+              restart($("#rBrowser"), "reloading");
+              setTimeout(render, reduceMotion ? 0 : 200);
+            } else {
+              clicks++;
+              bump("#statClicks", clicks);
+              render();
+            }
+          }
+          $("#rBrowser").addEventListener("click", (e) => {
+            const a = e.target.closest("a[data-to]");
+            if (!a) return;
+            e.preventDefault();
+            navigate(a.dataset.to, $("#rPlain").checked);
+          });
+          $("#rForm").addEventListener("submit", (e) => {
+            e.preventDefault();
+            navigate(
+              $("#rUrl")
+                .value.replace(/^.*?localhost:5173/, "")
+                .replace(/^https?:\/\/[^/]+/, ""),
+              true,
+            );
+          });
+          render();
+        })();
+
+        // =====================================================================
+        // Del 4: Props-treet
+        // =====================================================================
+        (() => {
+          const svg = $("#propSvg");
+          const W = 170,
+            H = 58;
+          const N = {
+            butikk: {
+              x: 450,
+              y: 52,
+              l: "Butikk",
+              s: "eier all state",
+              f: "src/pages/Butikk.jsx",
+            },
+            innlogging: {
+              x: 120,
+              y: 230,
+              l: "Innlogging",
+              s: "skjema",
+              f: "src/components/Innlogging.jsx",
+            },
+            bestilling: {
+              x: 340,
+              y: 230,
+              l: "Bestilling",
+              s: "skjema",
+              f: "src/components/Bestilling.jsx",
+            },
+            handlekurv: {
+              x: 560,
+              y: 230,
+              l: "Handlekurv",
+              s: "viser kurven",
+              f: "src/components/Handlekurv.jsx",
+            },
+            vareliste: {
+              x: 780,
+              y: 230,
+              l: "Vareliste",
+              s: "rutenett",
+              f: "src/components/Vareliste.jsx",
+            },
+            hjelper: {
+              x: 560,
+              y: 380,
+              l: "visBeløp()",
+              s: "lib/hjelpere.js",
+              f: "src/lib/hjelpere.js",
+            },
+            vare: {
+              x: 780,
+              y: 380,
+              l: "Vare × 5",
+              s: "ett kort per vare",
+              f: "src/components/Vare.jsx",
+            },
+          };
+          const E = [
+            {
+              a: "butikk",
+              b: "innlogging",
+              k: "fn",
+              p: ["sjekkInnlogging", "lesInndata"],
+            },
+            {
+              a: "butikk",
+              b: "bestilling",
+              k: "fn",
+              p: ["lesVnr", "lesAntall", "bestillVare"],
+            },
+            {
+              a: "butikk",
+              b: "handlekurv",
+              k: "data",
+              p: ["brukernavn", "kurv"],
+            },
+            { a: "butikk", b: "vareliste", k: "data", p: ["varer"] },
+            {
+              a: "vareliste",
+              b: "vare",
+              k: "data",
+              p: ["vnr", "betegnelse", "pris"],
+            },
+            { a: "handlekurv", b: "hjelper", k: "imp", p: ["import"] },
+          ];
+          const cub = (p0, p1, p2, p3, t) => {
+            const u = 1 - t;
+            return (
+              u * u * u * p0 +
+              3 * u * u * t * p1 +
+              3 * u * t * t * p2 +
+              t * t * t * p3
+            );
+          };
+          let html = "";
+          E.forEach((e, i) => {
+            const A = N[e.a],
+              B = N[e.b];
+            const x1 = A.x,
+              y1 = A.y + H / 2,
+              x2 = B.x,
+              y2 = B.y - H / 2,
+              c = (y2 - y1) * 0.5;
+            e.d = `M${x1} ${y1} C ${x1} ${y1 + c}, ${x2} ${y2 - c}, ${x2} ${y2}`;
+            const t = 0.55,
+              lx = cub(x1, x1, x2, x2, t),
+              ly = cub(y1, y1 + c, y2 - c, y2, t);
+            html += `<path id="pe${i}" class="edge ${e.k}" d="${e.d}"/>`;
+            const lines = e.p.length,
+              top = ly - (lines - 1) * 7.5;
+            e.label = `<text class="elabel ${e.k}" data-e="${i}" x="${lx + (e.k === "imp" ? 8 : 0)}" y="${top}" text-anchor="${e.k === "imp" ? "start" : "middle"}">${e.p.map((p, j) => `<tspan x="${lx + (e.k === "imp" ? 8 : 0)}" dy="${j ? 15 : 0}">${p}</tspan>`).join("")}</text>`;
+          });
+          // Vare -> visBeløp (vannrett)
+          const vi = E.length;
+          E.push({
+            a: "vare",
+            b: "hjelper",
+            k: "imp",
+            p: ["import"],
+            d: `M${N.vare.x - W / 2} ${N.vare.y} L ${N.hjelper.x + W / 2} ${N.hjelper.y}`,
+          });
+          html += `<path id="pe${vi}" class="edge imp" d="${E[vi].d}"/>`;
+          E[vi].label =
+            `<text class="elabel imp" x="${(N.vare.x + N.hjelper.x) / 2}" y="${N.vare.y - 8}" text-anchor="middle">import</text>`;
+          Object.entries(N).forEach(([k, n]) => {
+            html += `<g class="node" data-n="${k}" tabindex="0" role="button" aria-label="${n.l}"><rect x="${n.x - W / 2}" y="${n.y - H / 2}" width="${W}" height="${H}" rx="12"/><text x="${n.x}" y="${n.y - 2}" text-anchor="middle">${n.l}</text><text class="sub" x="${n.x}" y="${n.y + 16}" text-anchor="middle">${n.s}</text></g>`;
+          });
+          html += E.map((e) => e.label).join("") + `<g id="pdots"></g>`;
+          svg.innerHTML = html;
+
+          let mode = "data";
+          function setMode(m) {
+            mode = m;
+            $$("#propModes .btn").forEach((b) =>
+              b.classList.toggle("on", b.dataset.mode === m),
+            );
+            const show = (k) => k !== "imp" && (m === "all" || m === k);
+            $$(".edge", svg).forEach((p, i) => {
+              const k = E[i].k;
+              p.classList.toggle("lit", show(k));
+              p.classList.toggle("dim", k !== "imp" && !show(k));
+            });
+            $$(".elabel", svg).forEach((t) => {
+              const k = [...t.classList].find((c) =>
+                ["data", "fn", "imp"].includes(c),
+              );
+              t.classList.toggle("dim", k !== "imp" && !show(k));
+            });
+            const g = $("#pdots", svg);
+            g.innerHTML = "";
+            if (reduceMotion) return;
+            E.forEach((e, i) => {
+              if (!show(e.k)) return;
+              for (let j = 0; j < 2; j++) {
+                const rev = e.k === "fn";
+                g.insertAdjacentHTML(
+                  "beforeend",
+                  `<circle r="5.5" class="pdot ${e.k}"><animateMotion dur="2.4s" begin="${j * 1.2}s" repeatCount="indefinite" ${rev ? 'keyPoints="1;0" keyTimes="0;1" calcMode="linear"' : ""}><mpath href="#pe${i}"/></animateMotion></circle>`,
+                );
+              }
+            });
+          }
+          $("#propModes").addEventListener("click", (e) => {
+            const b = e.target.closest("button");
+            if (b) setMode(b.dataset.mode);
+          });
+
+          const INFO = {
+            butikk: () => ({
+              a: [
+                "Butikk lager state",
+                "src/pages/Butikk.jsx",
+                untilLine(
+                  "src/pages/Butikk.jsx",
+                  "let [innlogget",
+                  "let [antall",
+                ),
+              ],
+              b: [
+                "… og sender den videre",
+                "src/pages/Butikk.jsx",
+                untilLine("src/pages/Butikk.jsx", "<Bestilling", "<Handlekurv"),
+              ],
+            }),
+            innlogging: () => ({
+              a: [
+                "Forelderen sender funksjoner (Butikk.jsx)",
+                "src/pages/Butikk.jsx",
+                untilLine("src/pages/Butikk.jsx", "<Innlogging", "<Innlogging"),
+              ],
+              b: [
+                "Barnet tar imot og kobler til skjemaet (Innlogging.jsx)",
+                "src/components/Innlogging.jsx",
+                [
+                  [
+                    lineOf("src/components/Innlogging.jsx", "const Innlogging"),
+                    lineOf("src/components/Innlogging.jsx", "const Innlogging"),
+                  ],
+                  [
+                    lineOf("src/components/Innlogging.jsx", "onSubmit"),
+                    lineOf("src/components/Innlogging.jsx", "onSubmit"),
+                  ],
+                  [
+                    lineOf("src/components/Innlogging.jsx", "onChange"),
+                    lineOf("src/components/Innlogging.jsx", "onChange"),
+                  ],
+                ],
+              ],
+            }),
+            bestilling: () => ({
+              a: [
+                "Forelderen sender funksjoner (Butikk.jsx)",
+                "src/pages/Butikk.jsx",
+                untilLine("src/pages/Butikk.jsx", "<Bestilling", "/>"),
+              ],
+              b: [
+                "Barnet tar imot og kobler til skjemaet (Bestilling.jsx)",
+                "src/components/Bestilling.jsx",
+                [
+                  [
+                    lineOf("src/components/Bestilling.jsx", "const Bestilling"),
+                    lineOf("src/components/Bestilling.jsx", "const Bestilling"),
+                  ],
+                  [
+                    lineOf("src/components/Bestilling.jsx", "onSubmit"),
+                    lineOf("src/components/Bestilling.jsx", "onSubmit"),
+                  ],
+                  [
+                    lineOf(
+                      "src/components/Bestilling.jsx",
+                      "onChange={lesVnr}",
+                    ),
+                    lineOf(
+                      "src/components/Bestilling.jsx",
+                      "onChange={lesVnr}",
+                    ),
+                  ],
+                  [
+                    lineOf(
+                      "src/components/Bestilling.jsx",
+                      "onChange={lesAntall}",
+                    ),
+                    lineOf(
+                      "src/components/Bestilling.jsx",
+                      "onChange={lesAntall}",
+                    ),
+                  ],
+                ],
+              ],
+            }),
+            handlekurv: () => ({
+              a: [
+                "Forelderen sender data (Butikk.jsx)",
+                "src/pages/Butikk.jsx",
+                untilLine("src/pages/Butikk.jsx", "<Handlekurv", "<Handlekurv"),
+              ],
+              b: [
+                "Barnet bruker dataene (Handlekurv.jsx)",
+                "src/components/Handlekurv.jsx",
+                [
+                  [
+                    lineOf("src/components/Handlekurv.jsx", "const Handlekurv"),
+                    lineOf("src/components/Handlekurv.jsx", "const Handlekurv"),
+                  ],
+                  [
+                    lineOf("src/components/Handlekurv.jsx", "Handlekurv for"),
+                    lineOf("src/components/Handlekurv.jsx", "Handlekurv for"),
+                  ],
+                  [
+                    lineOf("src/components/Handlekurv.jsx", "kurv.map"),
+                    lineOf("src/components/Handlekurv.jsx", "kurv.map"),
+                  ],
+                ],
+              ],
+            }),
+            vareliste: () => ({
+              a: [
+                "Forelderen sender data (Butikk.jsx)",
+                "src/pages/Butikk.jsx",
+                untilLine("src/pages/Butikk.jsx", "<Vareliste", "<Vareliste"),
+              ],
+              b: [
+                "Vareliste lager én Vare per element",
+                "src/components/Vareliste.jsx",
+                [untilLine("src/components/Vareliste.jsx", "varer.map", "/>")],
+              ],
+            }),
+            vare: () => ({
+              a: [
+                "Vareliste sender props (Vareliste.jsx)",
+                "src/components/Vareliste.jsx",
+                [untilLine("src/components/Vareliste.jsx", "<Vare", "/>")],
+              ],
+              b: [
+                "Vare tar imot dem (Vare.jsx)",
+                "src/components/Vare.jsx",
+                [
+                  [
+                    lineOf("src/components/Vare.jsx", "const Vare"),
+                    lineOf("src/components/Vare.jsx", "const Vare"),
+                  ],
+                  [
+                    lineOf("src/components/Vare.jsx", "{betegnelse}"),
+                    lineOf("src/components/Vare.jsx", "visBeløp(pris)"),
+                  ],
+                ],
+              ],
+            }),
+            hjelper: () => ({
+              a: [
+                "Handlekurv og Vare importerer funksjonen",
+                "src/components/Vare.jsx",
+                [[1, 1]],
+              ],
+              b: [
+                "hjelpere.js eksporterer den",
+                "src/lib/hjelpere.js",
+                [
+                  [
+                    lineOf("src/lib/hjelpere.js", "var formatter"),
+                    linesOf("src/lib/hjelpere.js").length,
+                  ],
+                ],
+              ],
+            }),
+          };
+          const fix = (r) => (Array.isArray(r[0]) ? r : [r]);
+          const snipOf = (f, ranges) => {
+            const L = linesOf(f);
+            return fix(ranges)
+              .map(([a, b]) => L.slice(a - 1, b).join("\n"))
+              .join("\n  …\n");
+          };
+          function selNode(k) {
+            $$(".node", svg).forEach((g) =>
+              g.classList.toggle("sel", g.dataset.n === k),
+            );
+            const info = INFO[k]();
+            $("#propInfo").innerHTML = [info.a, info.b]
+              .map(
+                ([h, f, r]) =>
+                  `<div class="panel"><h3>${h}</h3><pre class="snip">${hlBlock(snipOf(f, r))}</pre></div>`,
+              )
+              .join("");
+          }
+          svg.addEventListener("click", (e) => {
+            const g = e.target.closest(".node");
+            if (g) selNode(g.dataset.n);
+          });
+          svg.addEventListener("keydown", (e) => {
+            const g = e.target.closest(".node");
+            if (g && (e.key === "Enter" || e.key === " ")) {
+              e.preventDefault();
+              selNode(g.dataset.n);
+            }
+          });
+          setMode("data");
+          selNode("bestilling");
+        })();
+
+        // =====================================================================
+        // Del 5: Laboratoriet
+        // =====================================================================
+        (() => {
+          const F = "src/pages/Butikk.jsx";
+          const code = new CodeView($("#labCode"));
+          code.show(
+            F,
+            [[lineOf(F, "let [innlogget"), lineOf(F, "let [kurv")]],
+            { scroll: true },
+          );
+          const SETTER = {
+            innlogget: "setInnlogget",
+            brukernavn: "setBrukernavn",
+            passord: "setPassord",
+            vnr: "setVnr",
+            antall: "setAntall",
+            kurv: "setKurv",
+          };
+          let S,
+            renders,
+            demoToken = 0;
+          const show = (v) =>
+            typeof v === "string"
+              ? JSON.stringify(v)
+              : Number.isNaN(v)
+                ? "NaN"
+                : String(v);
+          const kurvTxt = (k) =>
+            "[\n" +
+            k
+              .map(
+                (l) =>
+                  `  { vnr: ${JSON.stringify(l.vnr)}, antall: ${show(l.antall)}, pris: ${show(l.pris)} }`,
+              )
+              .join(",\n") +
+            "\n]";
+
+          $("#labVarer").innerHTML = VARER.map(vareKort).join("");
+
+          function stateRows() {
+            $("#stateList").innerHTML = Object.keys(SETTER)
+              .map(
+                (k) =>
+                  `<div class="srow ${k === "kurv" ? "kurv" : ""}" data-k="${k}"><dt>${k}<i>${SETTER[k]}</i></dt><dd>${k === "kurv" ? `<pre style="margin:0;font:inherit;white-space:pre-wrap">${esc(kurvTxt(S.kurv))}</pre>` : esc(show(S[k]))}</dd></div>`,
+              )
+              .join("");
+          }
+          const row = (k) => $(`.srow[data-k="${k}"]`);
+
+          function log(txt, extra = "", warn = false) {
+            const out = $("#consoleOut");
+            out.insertAdjacentHTML(
+              "beforeend",
+              `<div class="cl${warn ? " warn" : ""}">${esc(txt)}${extra ? `<span class="tag">${extra}</span>` : ""}</div>`,
+            );
+            while (out.children.length > 80) out.firstChild.remove();
+            out.scrollTop = out.scrollHeight;
+          }
+          function chain(parts, hint) {
+            $("#chain").innerHTML =
+              parts
+                .map(
+                  ([t, c], i) =>
+                    `${i ? '<span class="arr">→</span>' : ""}<span class="st ${c || ""}" style="animation-delay:${i * 90}ms">${esc(t)}</span>`,
+                )
+                .join("") + (hint ? `<span class="hint">${hint}</span>` : "");
+          }
+
+          // Tegner det som avhenger av state. Markerer komponenter som rendres og tekst som faktisk endres.
+          function paint(changedText) {
+            $("#fLogin").hidden = S.innlogget;
+            $("#loggedIn").hidden = !S.innlogget;
+            const navn = $("#kurvNavn"),
+              linjer = $("#kurvLinjer"),
+              total = $("#kurvTotal");
+            const newLines = S.kurv.map(
+              (l) =>
+                `<p class="kurv-line">${l.antall == null ? "" : esc(show(l.antall))} stk. av vare ${esc(l.vnr)} til ${visBeløp(l.pris)} = <b>${visBeløp(l.antall * l.pris)}</b></p>`,
+            );
+            const newTotal =
+              "Verdi av handlekurv: " +
+              visBeløp(S.kurv.reduce((sum, e) => sum + e.pris * e.antall, 0));
+            if (navn.textContent !== S.brukernavn) {
+              navn.textContent = S.brukernavn;
+              if (changedText) restart(navn, "dom-change");
+            }
+            const old = $$(".kurv-line", linjer).map((p) => p.outerHTML);
+            if (old.join("") !== newLines.join("")) {
+              linjer.innerHTML = newLines.join("");
+              if (changedText)
+                $$(".kurv-line", linjer).forEach((p, i) => {
+                  if (old[i] !== newLines[i]) restart(p, "dom-change");
+                });
+            }
+            if (total.textContent !== newTotal) {
+              total.textContent = newTotal;
+              if (changedText) restart(total, "dom-change");
+            }
+          }
+          function rerenderFlash() {
+            $$("#labApp [data-comp], #labApp").forEach((el) => {
+              if (el.offsetParent !== null || el.id === "labApp")
+                restart(el, "rerender");
+            });
+          }
+
+          // setState: oppdaterer S med en gang, animerer verdien inn i state-panelet, og tegner på nytt når den er fremme.
+          function setS(k, v, from) {
+            const same = Object.is(S[k], v);
+            S[k] = v;
+            fly(from, row(k), "ev");
+            const myRenders = same ? renders : ++renders;
+            setTimeout(
+              () => {
+                const r = row(k);
+                if (r) {
+                  $("dd", r).innerHTML =
+                    k === "kurv"
+                      ? `<pre style="margin:0;font:inherit;white-space:pre-wrap">${esc(kurvTxt(S.kurv))}</pre>`
+                      : esc(show(S[k]));
+                  restart(r, "flash");
+                }
+                if (!same) {
+                  const el = $("#renders");
+                  $("b", el).textContent = myRenders;
+                  restart(el, "bump");
+                  paint(true);
+                  rerenderFlash();
+                }
+              },
+              reduceMotion ? 0 : 480,
+            );
+            return same;
+          }
+
+          // ----- Hendelsesfunksjonene, oppført som i Butikk.jsx -----
+          function lesInndata(e) {
+            const target = e.target.name,
+              value = e.target.value;
+            code.mark([blockOf(F, "const lesInndata")]);
+            const setter =
+              target === "brukernavn" ? "setBrukernavn" : "setPassord";
+            chain(
+              [
+                ["onChange i <Innlogging>", "ev"],
+                ["lesInndata(event)", "ev"],
+                [`event.target.name = "${target}"`],
+                [`${setter}(${JSON.stringify(value)})`, "data"],
+              ],
+              "Samme funksjon håndterer begge feltene. Den ser på <code>name</code> for å vite hvilket felt som ble endret.",
+            );
+            setS(
+              target === "brukernavn" ? "brukernavn" : "passord",
+              value,
+              e.target,
+            );
+          }
+          function sjekkInnlogging(e) {
+            e.preventDefault();
+            code.mark([blockOf(F, "const sjekkInnlogging")]);
+            log(
+              `sjekkInnlogging: brukernavn = ${S.brukernavn}, passord = ${S.passord}`,
+              "passord i klartekst!",
+            );
+            chain(
+              [
+                ["onSubmit i <Innlogging>", "ev"],
+                ["sjekkInnlogging(event)", "ev"],
+                ["event.preventDefault()"],
+                ["setInnlogget(true)", "data"],
+              ],
+              "<code>preventDefault()</code> hindrer nettleseren i å laste siden på nytt. Brukernavn og passord sjekkes ikke mot noe (se TODO i koden).",
+            );
+            setS("innlogget", true, e.submitter || $("#fLogin button"));
+          }
+          function lesVnr(e) {
+            code.mark([blockOf(F, "const lesVnr")]);
+            const old = S.vnr,
+              v = e.target.value;
+            setS("vnr", v, e.target);
+            log("lesVnr: " + old, old !== v ? "gammel verdi" : "");
+            chain(
+              [
+                ["onChange i <Bestilling>", "ev"],
+                ["lesVnr(event)", "ev"],
+                [`setVnr(${JSON.stringify(v)})`, "data"],
+                [`console.log viser ${JSON.stringify(old)}`],
+              ],
+              "Variabelen <code>vnr</code> får ikke ny verdi før Butikk kjøres på nytt. Derfor logges forrige verdi.",
+            );
+          }
+          function lesAntall(e) {
+            code.mark([blockOf(F, "const lesAntall")]);
+            const old = S.antall,
+              v = parseInt(e.target.value);
+            const same = setS("antall", v, e.target);
+            log(
+              "lesAntall: " + show(old),
+              Number.isNaN(v)
+                ? "parseInt ga NaN"
+                : !Object.is(old, v)
+                  ? "gammel verdi"
+                  : "",
+            );
+            chain(
+              [
+                ["onChange i <Bestilling>", "ev"],
+                ["lesAntall(event)", "ev"],
+                [`parseInt(${JSON.stringify(e.target.value)}) = ${show(v)}`],
+                [`setAntall(${show(v)})`, "data"],
+              ],
+              same
+                ? "Verdien er den samme som før, så React hopper over ny rendering."
+                : Number.isNaN(v)
+                  ? "Et tomt felt eller tekst gir <code>NaN</code>, og det blir med videre i handlekurven."
+                  : "",
+            );
+          }
+          function bestillVare(e) {
+            e.preventDefault();
+            code.mark([
+              blockOf(F, "const bestillVare"),
+              blockOf(F, "const oppdaterKurv"),
+              blockOf(F, "const varepris"),
+            ]);
+            log(`oppdaterKurv: vnr = ${S.vnr}, antall = ${show(S.antall)}`);
+            const kurvKopi = JSON.parse(JSON.stringify(S.kurv));
+            let pris = 0;
+            for (const elem of VARER)
+              if (elem.VNr === S.vnr) {
+                pris = parseFloat(elem.Pris);
+                break;
+              }
+            const dup = S.kurv.some((l) => l.vnr === S.vnr);
+            kurvKopi.push({ vnr: S.vnr, antall: S.antall, pris: pris });
+            chain(
+              [
+                ["onSubmit i <Bestilling>", "ev"],
+                ["bestillVare(event)", "ev"],
+                ["oppdaterKurv()"],
+                ["JSON-kopi av kurv"],
+                [`varepris(${JSON.stringify(S.vnr)}) = ${pris}`],
+                ["kurvKopi.push(…)"],
+                ["setKurv(kurvKopi)", "data"],
+              ],
+              pris === 0
+                ? "Varenummeret finnes ikke, så <code>varepris</code> returnerer 0. Brukeren får ingen feilmelding."
+                : dup
+                  ? "Varen ligger allerede i kurven. Nå finnes to linjer med samme <code>key</code>."
+                  : "Kurven erstattes med en ny array, så React ser endringen. Handlekurv tegnes på nytt.",
+            );
+            setS("kurv", kurvKopi, e.submitter || $("#fBest button"));
+            if (dup)
+              setTimeout(
+                () =>
+                  log(
+                    `Warning: Encountered two children with the same key, \`${S.vnr}\`. Keys should be unique so that components maintain their identity across updates.`,
+                    "React",
+                    true,
+                  ),
+                reduceMotion ? 0 : 500,
+              );
+          }
+
+          $("#inBruker").addEventListener("input", lesInndata);
+          $("#inPass").addEventListener("input", lesInndata);
+          $("#fLogin").addEventListener("submit", sjekkInnlogging);
+          $("#inVnr").addEventListener("input", lesVnr);
+          $("#inAnt").addEventListener("input", lesAntall);
+          $("#fBest").addEventListener("submit", bestillVare);
+          $("#btnKasse").addEventListener("click", () => {
+            code.show("src/components/Handlekurv.jsx", [
+              blockOf("src/components/Handlekurv.jsx", "const gåTilKasse"),
+            ]);
+            chain(
+              [
+                ["onClick i <Handlekurv>", "ev"],
+                ["gåTilKasse()", "ev"],
+                ["alert(…)"],
+              ],
+              "Denne funksjonen ligger i Handlekurv selv, fordi den ikke trenger å endre state i Butikk.",
+            );
+            $("#kasseAlert").hidden = false;
+          });
+          $("#alertOk").addEventListener("click", () => {
+            $("#kasseAlert").hidden = true;
+            code.show(F, []);
+          });
+          $("#consoleClear").addEventListener("click", () => {
+            $("#consoleOut").innerHTML = "";
+          });
+
+          function reset() {
+            demoToken++;
+            S = {
+              innlogget: false,
+              brukernavn: "",
+              passord: "",
+              vnr: "",
+              antall: 0,
+              kurv: START_KURV(),
+            };
+            renders = 1;
+            ["#inBruker", "#inPass", "#inVnr", "#inAnt"].forEach((s) => {
+              $(s).value = "";
+            });
+            $("#consoleOut").innerHTML = "";
+            $("b", $("#renders")).textContent = "1";
+            $("#kasseAlert").hidden = true;
+            $("#labDemo").disabled = false;
+            code.show(F, [
+              [lineOf(F, "let [innlogget"), lineOf(F, "let [kurv")],
+            ]);
+            chain(
+              [],
+              "Når du skriver i et felt, vises veien fra hendelse til state her.",
+            );
+            stateRows();
+            $("#kurvNavn").textContent = "";
+            paint(false);
+          }
+          $("#labReset").addEventListener("click", reset);
+
+          async function typeInto(el, text, tok) {
+            el.focus({ preventScroll: true });
+            el.value = "";
+            for (const ch of text) {
+              if (tok !== demoToken) return false;
+              el.value += ch;
+              el.dispatchEvent(new Event("input", { bubbles: true }));
+              await sleep(170);
+            }
+            return tok === demoToken;
+          }
+          $("#labDemo").addEventListener("click", async () => {
+            reset();
+            const tok = demoToken;
+            $("#labDemo").disabled = true;
+            const ok = () => tok === demoToken;
+            const steps = [
+              () => typeInto($("#inBruker"), "kari", tok),
+              () => typeInto($("#inPass"), "hemmelig", tok),
+              async () => {
+                $("#fLogin").requestSubmit();
+                await sleep(1400);
+                return ok();
+              },
+              () => typeInto($("#inVnr"), "10840", tok),
+              () => typeInto($("#inAnt"), "2", tok),
+              async () => {
+                $("#fBest").requestSubmit();
+                await sleep(1800);
+                return ok();
+              },
+              () => typeInto($("#inVnr"), "10820", tok),
+              () => typeInto($("#inAnt"), "1", tok),
+              async () => {
+                $("#fBest").requestSubmit();
+                await sleep(600);
+                return ok();
+              },
+            ];
+            for (const s of steps) {
+              if (!(await s())) return;
+              await sleep(350);
+            }
+            document.activeElement && document.activeElement.blur();
+            if (ok()) $("#labDemo").disabled = false;
+          });
+          reset();
+        })();
+
+        // =====================================================================
+        // Del 6: Kopier, ikke endre
+        // =====================================================================
+        (() => {
+          const A = "#4F2A",
+            B = "#9C31";
+          const base = [
+            ["10820", 3],
+            ["10850", 4],
+          ];
+          const LANES = {
+            bad: {
+              el: $("#laneBad"),
+              title: "Endre den gamle arrayen",
+              badge: ["bad", "virker ikke"],
+              code: [
+                'kurv.push({ vnr: "10840", antall: 2, pris: 234 });',
+                "setKurv(kurv);",
+                "// React: Object.is(forrige, ny)",
+              ],
+              steps: [
+                { line: -1, boxes: [{ a: A, items: base, cur: true }], ptr: A },
+                {
+                  line: 0,
+                  boxes: [
+                    { a: A, items: [...base, ["10840", 2, 1]], cur: true },
+                  ],
+                  ptr: A,
+                },
+                {
+                  line: 1,
+                  boxes: [{ a: A, items: [...base, ["10840", 2]], cur: true }],
+                  ptr: A,
+                  sent: A,
+                },
+                {
+                  line: 2,
+                  boxes: [{ a: A, items: [...base, ["10840", 2]], cur: true }],
+                  ptr: A,
+                  sent: A,
+                  cmp: [A, A, true],
+                },
+              ],
+            },
+            good: {
+              el: $("#laneGood"),
+              title: "Lag en kopi (slik Butikk gjør)",
+              badge: ["good", "virker"],
+              code: [
+                "let kurvKopi = JSON.parse(JSON.stringify(kurv));",
+                'kurvKopi.push({ vnr: "10840", antall: 2, pris: 234 });',
+                "setKurv(kurvKopi);",
+                "// React: Object.is(forrige, ny)",
+              ],
+              steps: [
+                { line: -1, boxes: [{ a: A, items: base, cur: true }], ptr: A },
+                {
+                  line: 0,
+                  boxes: [
+                    { a: A, items: base, cur: true },
+                    { a: B, items: base, fresh: true, name: "kurvKopi" },
+                  ],
+                  ptr: A,
+                },
+                {
+                  line: 1,
+                  boxes: [
+                    { a: A, items: base, cur: true },
+                    {
+                      a: B,
+                      items: [...base, ["10840", 2, 1]],
+                      name: "kurvKopi",
+                    },
+                  ],
+                  ptr: A,
+                },
+                {
+                  line: 2,
+                  boxes: [
+                    { a: A, items: base, cur: true },
+                    { a: B, items: [...base, ["10840", 2]], name: "kurvKopi" },
+                  ],
+                  ptr: A,
+                  sent: B,
+                },
+                {
+                  line: 3,
+                  boxes: [
+                    { a: A, items: base, old: true },
+                    {
+                      a: B,
+                      items: [...base, ["10840", 2]],
+                      cur: true,
+                      name: "kurvKopi",
+                    },
+                  ],
+                  ptr: B,
+                  sent: B,
+                  cmp: [A, B, false],
+                },
+              ],
+            },
+          };
+          function draw(L, i) {
+            const s = L.steps[i];
+            const shown = s.cmp ? (s.cmp[2] ? 2 : 3) : 2;
+            L.el.innerHTML = `<h3>${L.title}<span class="badge ${L.badge[0]}">${L.badge[1]}</span></h3>
+      <pre class="lane-code">${L.code.map((c, j) => `<div class="${j === s.line ? "on" : ""}">${hl(c)}</div>`).join("")}</pre>
+      <div class="mem">
+        <div class="mem-var">state <code>kurv</code> peker på <code>${s.ptr}</code>${s.sent ? ` <span class="muted">· sendt til React:</span> <code>${s.sent}</code>` : ""}</div>
+        <div class="boxes">${s.boxes.map((b) => `<div class="mbox ${b.cur ? "cur" : ""} ${b.old ? "old" : ""} ${b.fresh ? "pop" : ""}"><span class="addr">${b.name ? b.name + " · " : ""}adresse <b>${b.a}</b></span>${b.items.map((it) => `<span class="item ${it[2] ? "new pop" : ""}">${it[0]} × ${it[1]}</span>`).join("")}</div>`).join("")}</div>
+        ${
+          s.cmp
+            ? `<div class="cmp pop">Object.is(<b>${s.cmp[0]}</b>, <b>${s.cmp[1]}</b>) → <b>${s.cmp[2]}</b></div>
+        <div class="verdict ${s.cmp[2] ? "bad" : "good"} pop">${s.cmp[2] ? "React ser ingen endring og tegner ikke på nytt. Dataene har tre linjer, men skjermen viser fortsatt to." : "Ny adresse betyr ny verdi. React kjører Butikk på nytt, og Handlekurv viser tre linjer. Den gamle arrayen ryddes bort."}</div>`
+            : ""
+        }
+      </div>
+      <div class="screen-mini">Skjermen viser: <b>${shown} linjer</b> i handlekurven</div>`;
+          }
+          let token = 0;
+          function reset() {
+            token++;
+            draw(LANES.bad, 0);
+            draw(LANES.good, 0);
+            $("#immPlay").disabled = false;
+          }
+          $("#immReset").onclick = reset;
+          $("#immPlay").onclick = async () => {
+            reset();
+            const t = token;
+            $("#immPlay").disabled = true;
+            const n = Math.max(LANES.bad.steps.length, LANES.good.steps.length);
+            for (let i = 1; i < n; i++) {
+              await sleep(1300);
+              if (t !== token) return;
+              if (i < LANES.bad.steps.length) draw(LANES.bad, i);
+              draw(LANES.good, i);
+            }
+            $("#immPlay").disabled = false;
+          };
+          reset();
+        })();
+
+        // =====================================================================
+        // Del 7: map og reduce
+        // =====================================================================
+        (() => {
+          const kurv = START_KURV();
+          const objTxt = (l) =>
+            `{ vnr: "${l.vnr}", antall: ${l.antall}, pris: ${l.pris} }`;
+          const pTxt = (l) =>
+            `${l.antall} stk. av vare ${l.vnr} til ${visBeløp(l.pris)} = ${visBeløp(l.antall * l.pris)}`;
+          function drawMap(done, now = -1) {
+            $("#mapRows").innerHTML = kurv
+              .map(
+                (l, i) =>
+                  `<div class="maprow ${i >= done ? "waiting" : ""} ${i === now ? "now" : ""}"><span class="obj">${objTxt(l)}</span><span class="arr">→</span><span class="el ${i === now ? "pop" : ""}">&lt;p&gt; ${esc(pTxt(l))}</span></div>`,
+              )
+              .join("");
+          }
+          drawMap(kurv.length);
+          $("#mapPlay").onclick = async () => {
+            $("#mapPlay").disabled = true;
+            drawMap(0);
+            for (let i = 0; i < kurv.length; i++) {
+              await sleep(900);
+              drawMap(i + 1, i);
+            }
+            await sleep(900);
+            drawMap(kurv.length);
+            $("#mapPlay").disabled = false;
+          };
+
+          const n2 = (v) => (Math.round(v * 1000) / 1000).toString();
+          function drawRed(now) {
+            $("#redRows").innerHTML =
+              `<div class="rrow head"><span>vnr</span><span>antall</span><span>pris</span><span>pris × antall</span></div>` +
+              kurv
+                .map(
+                  (l, i) =>
+                    `<div class="rrow ${i === now ? "now" : ""}"><span>${l.vnr}</span><span>${l.antall}</span><span>${l.pris}</span><span>${n2(l.pris * l.antall)}</span></div>`,
+                )
+                .join("");
+          }
+          function pipe(v) {
+            const ok = Number.isFinite(v);
+            $("#pipeMva").textContent = ok ? n2(prisInklMva(v)) : "NaN";
+            $("#pipeFmt").textContent = ok ? visBeløp(v) : visBeløp(NaN);
+          }
+          drawRed(-1);
+          const total = kurv.reduce((s, e) => s + e.pris * e.antall, 0);
+          $("#redSum").textContent = n2(total);
+          $("#redCalc").textContent =
+            `Ferdig: summen av alle linjer er ${n2(total)} (uten mva).`;
+          pipe(total);
+          $("#pipeIn").addEventListener("input", (e) =>
+            pipe(parseFloat(e.target.value)),
+          );
+          $("#redPlay").onclick = async () => {
+            $("#redPlay").disabled = true;
+            let sum = 0;
+            $("#redSum").textContent = "0";
+            $("#redCalc").textContent =
+              "Startverdien er 0 (siste argument til reduce).";
+            drawRed(-1);
+            for (let i = 0; i < kurv.length; i++) {
+              await sleep(1100);
+              const e = kurv[i],
+                ny = sum + e.pris * e.antall;
+              drawRed(i);
+              $("#redCalc").textContent =
+                `sum = ${n2(sum)} + ${e.pris} × ${e.antall} = ${n2(ny)}`;
+              sum = ny;
+              $("#redSum").textContent = n2(sum);
+              restart($("#redSum"), "pop");
+            }
+            await sleep(1100);
+            drawRed(-1);
+            $("#redCalc").textContent =
+              `Ferdig: summen av alle linjer er ${n2(sum)} (uten mva).`;
+            $("#pipeIn").value = sum;
+            pipe(sum);
+            restart($("#pipeMid"), "lit");
+            await sleep(500);
+            restart($("#pipeOut"), "lit");
+            $("#redPlay").disabled = false;
+          };
+        })();
+
+        // =====================================================================
+        // Del 8: Tailwind
+        // =====================================================================
+        (() => {
+          const CLS = [
+            "cursor-pointer",
+            "rounded-lg",
+            "bg-emerald-700",
+            "px-4",
+            "py-2",
+            "font-medium",
+            "text-white",
+            "shadow-sm",
+            "transition-colors",
+            "hover:bg-emerald-800",
+          ];
+          const on = new Set(CLS);
+          function draw() {
+            $("#twChips").innerHTML = CLS.map(
+              (c) =>
+                `<button type="button" class="${on.has(c) ? "" : "off"}" data-c="${c}" aria-pressed="${on.has(c)}">${c}</button>`,
+            ).join("");
+            $("#twBtn").className = CLS.filter((c) => on.has(c)).join(" ");
+            const list = CLS.filter((c) => on.has(c));
+            $("#twCss").innerHTML = hlBlock(
+              `/* index.css */\n.knapp {\n  @apply ${list.join(" ") || "/* ingen klasser */"};\n}\n\n/* Bestilling.jsx */\n<button className="knapp">Legg i handlekurv</button>`,
+            );
+          }
+          $("#twChips").addEventListener("click", (e) => {
+            const b = e.target.closest("button");
+            if (!b) return;
+            const c = b.dataset.c;
+            on.has(c) ? on.delete(c) : on.add(c);
+            draw();
+          });
+          draw();
+
+          const frame = $("#gridFrame"),
+            sim = $("#gridSim"),
+            cards = $("#gridCards"),
+            range = $("#twWidth");
+          cards.innerHTML = VARER.map(vareKort).join("");
+          function grid() {
+            const w = +range.value;
+            const cols = w >= 1024 ? 4 : w >= 640 ? 2 : 1;
+            $("#twWidthOut").textContent = w + "px";
+            $$("#twBp span").forEach((s) =>
+              s.classList.toggle(
+                "on",
+                +s.dataset.bp === (cols === 4 ? 1024 : cols === 2 ? 640 : 0),
+              ),
+            );
+            cards.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+            frame.style.width = w + "px";
+            const scale = Math.min(1, sim.clientWidth / w);
+            frame.style.transform = `scale(${scale})`;
+            sim.style.height = frame.offsetHeight * scale + "px";
+          }
+          range.addEventListener("input", grid);
+          addEventListener("resize", grid);
+          grid();
+        })();
+
+        // =====================================================================
+        // Del 9: Vite
+        // =====================================================================
+        (() => {
+          const M = {
+            dev: {
+              out: [
+                "Nettleseren",
+                "/src/main.jsx (oversatt)",
+                "/src/App.jsx (oversatt)",
+                "/src/index.css (generert)",
+                "… én fil per forespørsel",
+              ],
+              text: `<p><b>Under utvikling</b> pakkes ingenting sammen. Nettleseren ber om én fil om gangen, og Vite oversetter filen idet den blir bedt om. Derfor starter tjeneren på et øyeblikk.</p><p>Når du lagrer en fil, sender Vite bare den endrede modulen til nettleseren (<em>Hot Module Replacement</em>). Siden oppdateres uten full omlasting, og state i komponentene beholdes ofte.</p>`,
+            },
+            build: {
+              out: [
+                "dist/",
+                "dist/index.html",
+                "dist/assets/index-[hash].js",
+                "dist/assets/index-[hash].css",
+                "dist/assets/logo-[hash].JPG",
+              ],
+              text: `<p><b>Ved bygging</b> leser Vite hele importtreet fra <code>main.jsx</code>, oversetter alt, og pakker det til én JavaScript-fil og én CSS-fil. Koden blir minimert, og Tailwind tar bare med CSS for klasser som faktisk brukes i koden.</p><p>Filnavnene får en <em>hash</em> som endres når innholdet endres. Da kan nettleseren mellomlagre filene trygt. Mappen <code>dist</code> kan legges på en hvilken som helst webtjener, og <code>npm run preview</code> lar deg teste den lokalt.</p>`,
+            },
+          };
+          function set(m) {
+            $$("#viteModes .btn").forEach((b) =>
+              b.classList.toggle("on", b.dataset.v === m),
+            );
+            const [h, ...items] = M[m].out;
+            $("#viteOut").innerHTML =
+              `<h3>${h}</h3>` +
+              items
+                .map((i) => `<div class="fchip out pop">${esc(i)}</div>`)
+                .join("");
+            $("#viteText").innerHTML = M[m].text;
+          }
+          $("#viteModes").addEventListener("click", (e) => {
+            const b = e.target.closest("button");
+            if (b) set(b.dataset.v);
+          });
+          set("dev");
+        })();
+
+        // =====================================================================
+        // Del 10: Svakheter
+        // =====================================================================
+        (() => {
+          const I = [
+            {
+              t: "Konsollen viser forrige verdi",
+              w: "Butikk.jsx · lesVnr, lesAntall",
+              x: "<code>console.log</code> kjører rett etter <code>setVnr</code>, men <code>vnr</code> har fortsatt verdien fra forrige rendering.",
+              tr: "Skriv 10840 i VNr-feltet og se konsollen.",
+              fix: `const lesVnr = (event) => {\n  const ny = event.target.value;\n  setVnr(ny);\n  console.log("lesVnr: " + ny);\n};`,
+            },
+            {
+              t: "Samme vare gir to linjer",
+              w: "Butikk.jsx · oppdaterKurv",
+              x: "En ny bestilling legges alltid til som ny linje. Med samme varenummer får to linjer samme <code>key</code>, og React advarer.",
+              tr: "Bestill vare 10820 (den ligger allerede i kurven).",
+              fix: `const finnes = kurv.find((l) => l.vnr === vnr);\nconst nyKurv = finnes\n  ? kurv.map((l) =>\n      l.vnr === vnr ? { ...l, antall: l.antall + antall } : l)\n  : [...kurv, { vnr, antall, pris: varepris(vnr) }];\nsetKurv(nyKurv);`,
+            },
+            {
+              t: "Ukjent varenummer får pris 0",
+              w: "Butikk.jsx · varepris",
+              x: "Finnes ikke varen, returnerer <code>varepris</code> 0, og linjen legges likevel i kurven. Kommentaren i koden sier selv at brukeren burde fått en feilmelding.",
+              tr: "Bestill vare 99999.",
+              fix: `const pris = varepris(vnr);\nif (pris === 0) {\n  setFeil(\`Fant ingen vare med nummer \${vnr}\`);\n  return;\n}`,
+            },
+            {
+              t: "Tomt antall blir NaN, og så null",
+              w: "Butikk.jsx · lesAntall",
+              x: '<code>parseInt("")</code> gir <code>NaN</code>. Ved neste bestilling kopieres kurven med JSON, og da blir <code>NaN</code> til <code>null</code>.',
+              tr: "Skriv et tall i Antall, slett det, og bestill. Bestill så en vare til.",
+              fix: `const tall = parseInt(event.target.value, 10);\nsetAntall(Number.isNaN(tall) ? 0 : tall);`,
+            },
+            {
+              t: "Innloggingen sjekker ingenting",
+              w: "Butikk.jsx · sjekkInnlogging",
+              x: "Alle kommer inn, uansett passord. I tillegg skrives passordet ut i konsollen. Ekte innlogging må sjekkes på tjeneren, og passord skal aldri logges.",
+              tr: "Logg inn med tomme felt.",
+              fix: `const svar = await fetch("http://localhost:3030/login", {\n  method: "POST",\n  headers: { "Content-Type": "application/json" },\n  body: JSON.stringify({ brukernavn, passord }),\n});\nsetInnlogget(svar.ok);`,
+            },
+            {
+              t: "Varelisten er hardkodet",
+              w: "Butikk.jsx · const varer",
+              x: "Varene står rett i koden. Kommentaren peker på at de skal hentes som JSON fra tjeneren på <code>/varer</code>.",
+              tr: "Varene i laboratoriet er alltid de samme fem.",
+              fix: `const [varer, setVarer] = useState([]);\n\nuseEffect(() => {\n  fetch("http://localhost:3030/varer")\n    .then((svar) => svar.json())\n    .then((data) => setVarer(data));\n}, []);`,
+            },
+          ];
+          $("#issues").innerHTML = I.map(
+            (i) =>
+              `<article class="panel issue"><div class="where">${i.w}</div><h3>${i.t}</h3><p>${i.x}</p><p class="try"><b>Prøv:</b> ${i.tr}</p><pre class="snip">${hlBlock(i.fix)}</pre></article>`,
+          ).join("");
+        })();
+
+        // ---------- Innholdsfortegnelse: marker aktiv del ----------
+        (() => {
+          const links = $$(".toc a");
+          const map = new Map(
+            links.map((a) => [a.getAttribute("href").slice(1), a]),
+          );
+          const io = new IntersectionObserver(
+            (ents) => {
+              ents.forEach((e) => {
+                if (!e.isIntersecting) return;
+                links.forEach((a) => a.classList.remove("on"));
+                const a = map.get(e.target.id);
+                if (a) {
+                  a.classList.add("on");
+                  a.parentElement.scrollTo({
+                    left: a.offsetLeft - 24,
+                    behavior: reduceMotion ? "auto" : "smooth",
+                  });
+                }
+              });
+            },
+            { rootMargin: "-45% 0px -50% 0px" },
+          );
+          $$("section.part").forEach((s) => io.observe(s));
+          if (reduceMotion) {
+            const h = $("#heroSvg");
+            h && h.pauseAnimations && h.pauseAnimations();
+          }
+        })();
+      })();
+    </script>
+  </body>
+</html>

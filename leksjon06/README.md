@@ -1,17 +1,18 @@
 # Leksjon 6. Bygge UI med React (https://dbsys.info/2000/leksjon06/)
 
-Vi starter nå å bygge en enkel nettbutikk. Første del er å lage brukergrensesnitt med React og JavaScript. Det gjøres i 4 steg, koden til hvert steg ligger på en egen mappe med en tilhørende README-fil. I steg 0 er det ingen kode, bare en README-fil.
+Vi starter nå å bygge en enkel nettbutikk. Første steg er å bygge frontend med React.
 
-Deretter skal vi utvide koden til en komplett webapplikasjon:
+Dette er vist i 4 steg, koden til hvert steg ligger på en egen mappe med en tilhørende README-fil. I steg 0 er det ingen kode, bare en README-fil. Samme løsning er laget både med Next og Vite.
 
-- Lage backend (REST API) (leksjon 7).
-- Utvide backend med database (leksjon 8).
-- Knytte sammen frontend og backend (leksjon 9).
-- Legge på autentisering (leksjon 10).
+Når jeg oppdaterte nettbutikken til nyeste versjon av React/Vite denne høsten (2026), så lot jeg bare 2025-mappene ligge (av hensyn til leksjonsvideoene), og la til en ny mappe butikk-klient-vite-2026. Dette er altså en oppdatert versjon av butikk-klient-vite-4. (Til slutt fikk jeg Claude til å lage en litt "finere" versjon av denne, på mappe butikk-klient-vite-2026-claude - identisk funksjonalitet, bare litt mer bruk av Tailwind CSS.)
+
+Nettbutikken skal utvides med backend og database. Da kommer jeg til å jobbe videre med "Vite-2026-varianten".
+
+For å forstå koden i nettbutikken må vi først se på noen flere grunnleggende React-teknikker.
 
 ## 6-0. Forberedelser
 
-Vi forutsetter nå at du har installert (Node og) React med create-next-app, og at du har forenklet startsiden og laget en "standard" mappestruktur, se leksjon 5.
+Lag en "demo React-app" med Vite og sørg for å forenkle startsiden, se leksjon 5.
 
 Start appen slik:
 
@@ -19,11 +20,11 @@ Start appen slik:
 npm run dev
 ```
 
-Åpne deretter nettleseren på: (http://localhost:3000)
+Åpne deretter nettleseren på: http://localhost:5173
 
 ## 6-1. JSON og sammensatte komponenter
 
-- Hvordan gjennomløpe en kompleks datastruktur med map-funksjonen
+- Hvordan gjennomløpe en kompleks datastruktur med map-funksjonen?
 - (https://react.dev/learn#adding-styles)
 - Merk bruk av key-attributt!
 
@@ -236,7 +237,7 @@ function Komponent3({ tema }) {
 
 ## 6-8. Bruke useContext for å dele data mellom komponenter
 
-Med useContext kan vi oppnå det samme som i 6-17 uten behov for "props drilling".
+Med useContext kan vi oppnå det samme som i 6-7 uten behov for "props drilling".
 
 - Se https://react.dev/learn/scaling-up-with-reducer-and-context
 - Koden er hentet fra: https://www.w3schools.com/react/react_usecontext.asp
