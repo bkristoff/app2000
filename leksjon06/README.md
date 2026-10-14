@@ -243,9 +243,10 @@ Med useContext kan vi oppnå det samme som i 6-7 uten behov for "props drilling"
 - Koden er hentet fra: https://www.w3schools.com/react/react_usecontext.asp
 - Test ved å vise Komponent1b i en tom side.
 
-Man trenger først to importer:
+Man trenger først et par importer:
 
 ```
+import { useState } from "react";
 import { createContext, useContext } from "react";
 ```
 
@@ -267,6 +268,9 @@ function Komponent1b() {
     <>
       <TemaContext.Provider value={tema}>
         <h1>K1b</h1>
+        <button onClick={() => setTema(tema === "mørk" ? "lys" : "mørk")}>
+          Bytt tema
+        </button>
         <Komponent2b />
       </TemaContext.Provider>
     </>
