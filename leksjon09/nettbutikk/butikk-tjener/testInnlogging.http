@@ -1,0 +1,20 @@
+### Innlogging. Bytt ut med en e-post og et passord fra din egen database:
+### SELECT EPost, Passord FROM Kunde LIMIT 5;
+POST http://localhost:3030/innlogging HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "brukernavn": "paaa@hh.no",
+    "passord": "laap"
+}
+
+### Feil passord gir 401
+POST http://localhost:3030/innlogging HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "brukernavn": "paaa@hh.no",
+    "passord": "feil"
+}

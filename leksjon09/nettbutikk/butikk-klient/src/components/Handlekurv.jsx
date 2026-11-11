@@ -1,45 +1,38 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
+import { lagreOrdre } from "../lib/api.js";
 import { visBeløp } from "../lib/hjelpere.js";
 
 // Handlekurv får inn brukernavn og handlekurv som props-parametre
 // og viser fram innholdet med beregnet totalsum. Merk bruk av
 // høyere ordens funksjoner reduce og map.
+//
+// Ordren lagres direkte i event-funksjonen gåTilKasse, ikke i en useEffect.
+// Tommelfingerregel: Kode som skal kjøres fordi brukeren gjorde noe
+// (klikket på en knapp), hører hjemme i event-funksjonen. useEffect er for
+// å synkronisere med noe utenfor React når komponenten vises (se Butikk).
+// Les mer: https://react.dev/learn/you-might-not-need-an-effect
 
-const Handlekurv = ({ brukernavn, kurv }) => {
-  // URL til tjeneren (bør legges i en styrefil)
-  const url = "http://localhost:3030/ordrer";
-
-  // Bruker en teller for å trigge useEffect
-  const [teller, setTeller] = useState(0);
-  // Lagrer ordre i databasen (hver gang teller endrer verdi)
-  useEffect(() => {
-    const lagreOrdre = async () => {
-      try {
-        if (teller > 0) {
-          const response = await axios.post(url, {
-            brukernavn: brukernavn,
-            kurv: kurv,
-          });
-          console.log(JSON.stringify(response.data, null, 2));
-        }
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
-    lagreOrdre();
-  }, [teller, brukernavn, kurv]);
+const Handlekurv = ({ brukernavn, kurv, tømKurv }) => {
+  const [melding, setMelding] = useState("");
+  const [lagrer, setLagrer] = useState(false);
 
   // Finn samlet verdi av handlekurven
   const handlekurvTotal = () => {
     return kurv.reduce((sum, elem) => sum + elem.pris * elem.antall, 0);
   };
 
-  const gåTilKasse = () => {
-    alert("Lagrer ordre i databasen. Takk for handelen!");
-
-    // Øker teller for å trigge useEffect
-    setTeller(teller + 1);
+  const gåTilKasse = async () => {
+    setLagrer(true);
+    setMelding("Lagrer ordre ...");
+    try {
+      const svar = await lagreOrdre(brukernavn, kurv);
+      setMelding(`Ordre nr. ${svar.ordrenr} er lagret. Takk for handelen!`);
+      tømKurv();
+    } catch (error) {
+      setMelding(`Kunne ikke lagre ordren: ${error.message}`);
+    } finally {
+      setLagrer(false);
+    }
   };
 
   return (
@@ -54,9 +47,11 @@ const Handlekurv = ({ brukernavn, kurv }) => {
       <p>Verdi av handlekurv: {visBeløp(handlekurvTotal())}</p>
       <button
         onClick={gåTilKasse}
-        className="p-2 border bg-gray-300 border-gray-600">
+        disabled={lagrer || kurv.length === 0}
+        className="p-2 border bg-gray-300 border-gray-600 disabled:opacity-50">
         Gå til kasse
       </button>
+      {melding && <p>{melding}</p>}
     </>
   );
 };

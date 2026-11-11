@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { hentVarer, loggInn } from "../lib/api.js";
 
 import Vareliste from "../components/Vareliste.jsx";
 import Innlogging from "../components/Innlogging.jsx";
@@ -27,16 +27,14 @@ import Handlekurv from "../components/Handlekurv.jsx";
 // useReducer - prøv gjerne dette selv.
 //
 // Henter varedata som JSON fra tjenerdelen av applikasjonen
-// (REST-basert API basert på Express). Bruker biblioteket Axios
-// for å forenkle AJAX-kallet, samt hooks useState og useEffect.
+// (REST-basert API basert på Express) med Fetch API, samt hooks useState
+// og useEffect. Selve fetch-kallene ligger i lib/api.js.
 // Generelt kan useEffect utføre en handling hver gang en variabel
 // endrer verdi, i vårt tilfelle blir handlingen utført kun én gang.
 
 const Butikk = () => {
-  // Klienten bruker kun denne ene ruten:
-  const url = `http://localhost:3030/varer`;
-
   let [innlogget, setInnlogget] = useState(false);
+  let [feilmelding, setFeilmelding] = useState("");
   let [brukernavn, setBrukernavn] = useState("");
   let [passord, setPassord] = useState("");
   let [vnr, setVnr] = useState("");
@@ -50,21 +48,30 @@ const Butikk = () => {
   ];
   let [kurv, setKurv] = useState(startKurv);
 
-  // Hent varelisten fra webtjeneren med useEffect/Axios ed oppstart.
-  // Generelt vil handlingen bli utført når en av variablene vi
-  // sender med som andre parameter endrer verdi (her url).
+  // Hent varelisten fra webtjeneren med useEffect/Fetch ved oppstart.
+  // Den tomme listen [] som andre parameter betyr at handlingen bare
+  // utføres når komponenten vises første gang.
+  //
+  // Funksjonen vi returnerer er en "opprydding" som avbryter kallet hvis
+  // komponenten forsvinner før svaret kommer. I utviklingsmodus (StrictMode)
+  // kjører React effekten to ganger for å avsløre manglende opprydding,
+  // så du vil se at det første kallet blir avbrutt i Network-fanen.
   const [varer, setVarer] = useState([]);
   useEffect(() => {
-    const hentVarer = async () => {
+    const controller = new AbortController();
+    const lastVarer = async () => {
       try {
-        const { data: response } = await axios.get(url);
-        setVarer(response);
+        const data = await hentVarer(controller.signal);
+        setVarer(data);
       } catch (error) {
-        console.error(error.message);
+        if (error.name !== "AbortError") {
+          setFeilmelding(`Kunne ikke hente varer: ${error.message}`);
+        }
       }
     };
-    hentVarer();
-  }, [url]);
+    lastVarer();
+    return () => controller.abort();
+  }, []);
 
   // Henter prisen til en vare.
   const varepris = (vnr) => {
@@ -102,16 +109,23 @@ const Butikk = () => {
     }
   };
 
-  // Håndterer submit i Innlogging.
-  const sjekkInnlogging = (event) => {
-    console.log(
-      `sjekkInnlogging: brukernavn = ${brukernavn}, passord = ${passord}`
-    );
+  // Håndterer submit i Innlogging. Brukernavn og passord sjekkes av
+  // tjeneren (POST /innlogging), som svarer 401 hvis de er feil.
+  // Seinere skal vi gjøre autentisering med Passport.
+  const sjekkInnlogging = async (event) => {
     event.preventDefault();
-    setInnlogget(true); // TODO: Sjekk mot databasen!
-
-    // Seinere skal vi gjøre autentisering med Passport.
+    try {
+      const kunde = await loggInn(brukernavn, passord);
+      console.log("Innlogget kunde:", kunde);
+      setFeilmelding("");
+      setInnlogget(true);
+    } catch (error) {
+      setFeilmelding(error.message);
+    }
   };
+
+  // Kalles fra Handlekurv når ordren er lagret.
+  const tømKurv = () => setKurv([]);
 
   // Håndterer endring i varenummer i Bestilling.
   const lesVnr = (event) => {
@@ -145,7 +159,7 @@ const Butikk = () => {
           bestillVare={bestillVare}
         />
         &nbsp;
-        <Handlekurv brukernavn={brukernavn} kurv={kurv} />
+        <Handlekurv brukernavn={brukernavn} kurv={kurv} tømKurv={tømKurv} />
       </div>
     );
   }
@@ -153,6 +167,7 @@ const Butikk = () => {
     <div className="space-y-4">
       <h1>Nettbutikken</h1>
       &nbsp;
+      {feilmelding && <p className="text-red-600">{feilmelding}</p>}
       {toppDel}
       &nbsp;
       <Vareliste varer={varer} />

@@ -1,0 +1,33 @@
+### Ny ordre (201). Bytt ut brukernavn med en e-post fra din egen database.
+POST http://localhost:3030/ordrer HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "brukernavn": "paaa@hh.no",
+    "kurv": [
+        { "vnr": "10820", "antall": 2, "pris": 66.5 }
+    ]
+}
+
+### Ukjent kunde gir 404
+POST http://localhost:3030/ordrer HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "brukernavn": "finnesikke@example.com",
+    "kurv": [
+        { "vnr": "10820", "antall": 2, "pris": 66.5 }
+    ]
+}
+
+### Tom handlekurv gir 400
+POST http://localhost:3030/ordrer HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "brukernavn": "paaa@hh.no",
+    "kurv": []
+}

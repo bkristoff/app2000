@@ -6,6 +6,7 @@ import {
   oppdaterVare,
   slettVare,
   hentKunde,
+  sjekkInnlogging,
   settInnOrdre,
 } from "../services/db.js";
 
@@ -167,6 +168,32 @@ const routes = (app) => {
     }
   });
 
+  // Sjekker innlogging. Brukernavn og passord sendes i body (POST),
+  // ikke i URL-en, slik at passordet ikke havner i logger og nettleserhistorikk.
+  // Svarer med 200 og kundedata (uten passord) eller 401 ved feil.
+  app.post("/innlogging", async (req, res) => {
+    try {
+      let { brukernavn, passord } = req.body;
+      const [rows, fields] = await sjekkInnlogging(brukernavn, passord);
+      res.set("Content-Type", "application/json");
+      if (rows.length === 1) {
+        res.status(200);
+        res.send(JSON.stringify(rows[0]));
+      } else {
+        res.status(401);
+        res.send(JSON.stringify({ melding: "Feil brukernavn eller passord." }));
+      }
+    } catch (error) {
+      res.status(500);
+      res.set("Content-Type", "application/json");
+      res.send(
+        JSON.stringify({
+          "SQL Error Message": error.sqlMessage || error.message,
+        })
+      );
+    }
+  });
+
   // Setter inn en ny ordre fra en gitt handlekurv.
   app.post("/ordrer", async (req, res) => {
     try {
@@ -177,15 +204,17 @@ const routes = (app) => {
       // console.log(JSON.stringify(kurv, null, 2));
       // Og hva vi sender til klienten
       // console.log(JSON.stringify(response, null, 2));
-      res.status(200);
+      res.status(201); // 201 Created: en ny ressurs (ordre) er opprettet
       res.set("Content-Type", "application/json");
       res.send(JSON.stringify(result));
     } catch (error) {
-      res.status(500);
+      // settInnOrdre setter error.status ved "kjente" feil (400 tom kurv,
+      // 404 ukjent kunde). Alt annet er en uventet feil på tjeneren (500).
+      res.status(error.status || 500);
       res.set("Content-Type", "application/json");
       res.send(
         JSON.stringify({
-          "SQL Error Message": error.sqlMessage || error.message,
+          melding: error.sqlMessage || error.message,
         })
       );
     }

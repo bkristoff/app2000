@@ -1,5 +1,9 @@
 # Lagring i MySQL del 2
 
+**Nytt i leksjon 9:** Ruten `POST /innlogging` sjekker brukernavn og passord mot Kunde-tabellen (401 ved feil). `POST /ordrer` svarer nå 201 ved suksess, 400 ved tom handlekurv og 404 ved ukjent kunde. Se `testInnlogging.http` og `testNyOrdre.http`.
+
+Kjør tjeneren med `node server.js`. Den lytter på http://localhost:3030 og godtar kall fra alle klienter (CORS), se `server.js`.
+
 Vi skal nå utvide løsningen med lagring av data om kunder.
 
 Vi følger "mønsteret" for Vare-tabellen.

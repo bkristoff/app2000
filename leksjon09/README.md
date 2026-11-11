@@ -8,6 +8,10 @@ Det blir også en introduksjon til kartprogrammering og flerspråklighet.
 
 Eksempelkoden er fordelt på et antall undermapper. Kort forklaring følger, men flere README-filer ligger nede i hver mappe.
 
+## Nettbutikk 2026-versjon (nettbutikk-2026)
+
+Nettbutikken fra i fjor, forbedret og modernisert av Claude, utvidet med litt ekstra funksjonalitet som demonstrerer flerspråklighet og kart.
+
 ## 1. AJAX
 
 AJAX er en programmeringsteknikk som bruker XmlHttpRequest-objektet i nettleseren til å sende asynkrone HTTP-forespørsler til webtjeneren. Dette kan brukes for å bygge SPA-løsninger. Mappen ajax inneholder et antall mini-prosjekter som demonstrerer enkel bruk.
@@ -17,7 +21,7 @@ AJAX er en programmeringsteknikk som bruker XmlHttpRequest-objektet i nettlesere
 Mini-programmer som demonstrerer bruk av Fetch API for å kommunisere med nettbutikk-tjeneren.
 
 - Dette er kanskje den mest aktuelle måten å knytte sammen frontend og backend.
-- I nåværende versjon av nettbutikken (se under), bruker jeg imidlertid biblioteket Axios.
+- Nettbutikken (se under) bruker også Fetch API.
 
 ## 3. Node
 
@@ -36,9 +40,9 @@ Demoprosjekt for å bygge REST API med Next "route handlers".
 
 Inneholder undermapper for klient og tjener.
 
-- Viser hvordan de kan kobles sammen med bruk av Axios. Bytt gjerne ut med Fetch.
+- Viser hvordan de kan kobles sammen med bruk av Fetch API.
 - Varelageret blir hentet fra databasen med GET-kall.
-- Brukerdata blir hentet fra databasen ved innlogging.
+- Innlogging blir sjekket mot databasen med POST-kall.
 - Nye ordrer blir satt inn med POST-kall, og demonstrerer også bruk av transaksjoner (= sammensatte operasjoner mot databasen).
 
 ## 6. Kart og useRef

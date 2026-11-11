@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "hjem": "Home",
+    "butikk": "Shop",
+    "om": "About",
+    "faq": "FAQ",
+    "mørkModus": "Dark mode",
+    "lysModus": "Light mode",
+    "byttTilMørk": "Switch to dark mode",
+    "byttTilLys": "Switch to light mode",
+    "byttSpråk": "Bytt til norsk"
+  },
+  "footer": {
+    "kontakt": "Contact us.",
+    "logo": "Company logo",
+    "butikker": "Find a store near you"
+  },
+  "hjem": {
+    "tittel": "Welcome to Hobbyhuset",
+    "ingress": "This is the landing page, demonstrating the use of Tailwind.",
+    "tilButikken": "Go to the shop"
+  },
+  "butikk": {
+    "tittel": "The online shop",
+    "ingress": "Everything you need for your hobby, all in one place.",
+    "feilHentVarer": "Could not fetch products: {{melding}}",
+    "feilAntall": "Quantity must be a whole number greater than 0."
+  },
+  "innlogging": {
+    "tittel": "Log in",
+    "ingress": "Log in to order products.",
+    "brukernavn": "Username",
+    "passord": "Password",
+    "loggInn": "Log in"
+  },
+  "bestilling": {
+    "tittel": "Order product",
+    "vnr": "Product no.",
+    "antall": "Quantity",
+    "leggIKurv": "Add to cart"
+  },
+  "handlekurv": {
+    "tittel": "Shopping cart for {{brukernavn}}",
+    "linje": "{{antall}} pcs. of product {{vnr}} at {{pris}}",
+    "total": "Cart total:",
+    "tilKasse": "Go to checkout",
+    "lagrer": "Saving order ...",
+    "lagret": "Order no. {{ordrenr}} has been saved. Thank you for shopping with us!",
+    "feil": "Could not save the order: {{melding}}"
+  },
+  "vareliste": {
+    "tittel": "Products in stock",
+    "antall_one": "{{count}} product",
+    "antall_other": "{{count}} products"
+  },
+  "vare": {
+    "vnr": "No.: {{vnr}}"
+  },
+  "om": {
+    "tittel": "About us",
+    "tekst": "Here you will find information about the company and our employees."
+  },
+  "faq": {
+    "tittel": "FAQ",
+    "tekst": "Answers to frequently asked questions."
+  },
+  "notFound": {
+    "tittel": "Page not found (error code 404)",
+    "tekst": "So you have reached the end of the internet.",
+    "tilbake": "Back to the front page"
+  },
+  "api": {
+    "httpFeil": "HTTP error {{status}}"
+  },
+  "butikker": {
+    "tittel": "Our stores",
+    "ingress": "Visit one of our physical stores. Click a store in the list to see it on the map.",
+    "åpningstider": "Mon–Fri 10–18, Sat 10–16",
+    "visAlle": "Show all stores"
+  }
+}

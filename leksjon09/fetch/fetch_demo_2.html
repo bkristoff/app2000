@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>APP2000</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous" />
     <script src="fetch_demo_2.js" defer></script>
   </head>
@@ -77,12 +77,12 @@
     </nav>
 
     <div class="bg-light p-5 rounded-lg m-3">
-      <h1 class="display-4">AJAX-demo 4</h1>
+      <h1 class="display-4">Fetch-demo 2</h1>
       <p class="lead">
         Denne siden og tilhørende JavaScript-fil demonstrerer hvordan å lage en
         enkel SPA som kaller opp et REST API uten bruk av rammeverk ("vanilla
-        JavaScript"). Løsningen forutsetter at butikk-tjener fra leksjon 8
-        kjører.
+        JavaScript"). Løsningen forutsetter at butikk-tjener
+        (nettbutikk/butikk-tjener) kjører.
       </p>
       <p class="lead">
         Siden demonstrerer også enkel bruk av Bootstrap &ndash; med litt
@@ -125,19 +125,19 @@
           <h2>Vare</h2>
           <form id="form">
             <div class="form-group">
-              <label for="txtVNr">Varenummer</label><br />
+              <label for="VNr">Varenummer</label><br />
               <input type="number" size="5" id="VNr" name="VNr" />
             </div>
             <div class="form-group">
-              <label for="txtVNr">Betegnelse</label><br />
+              <label for="Betegnelse">Betegnelse</label><br />
               <input type="text" size="50" id="Betegnelse" name="Betegnelse" />
             </div>
             <div class="form-group">
-              <label for="txtPris">Pris</label><br />
+              <label for="Pris">Pris</label><br />
               <input type="number" size="10" id="Pris" name="Pris" />
             </div>
             <div class="form-group">
-              <label for="txtPris">Kategorinummer</label><br />
+              <label for="KatNr">Kategorinummer</label><br />
               <input type="number" size="3" id="KatNr" name="KatNr" />
             </div>
             <p>
@@ -161,6 +161,7 @@
               </button>
             </p>
           </form>
+          <div id="melding" role="status"></div>
         </div>
       </div>
     </div>
@@ -172,8 +173,8 @@
     </div>
 
     <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"></script>
   </body>
 </html>

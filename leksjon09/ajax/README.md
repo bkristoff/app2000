@@ -17,6 +17,15 @@ Eller man kan programmere en webtjener med Node.js og kjøre filene via denne. M
 
 ## Forutsetning
 
-Ett av demo-programmene kommuniserer med tjenerdelen av nettbutikken, så man må først starte MySQL-databasen, deretter butikk-tjener og til slutt kjøre klienten.
+Demo-program 2 kommuniserer med tjenerdelen av nettbutikken, så man må først starte MySQL-databasen, og deretter butikk-tjener (`node server.js` i mappen nettbutikk/butikk-tjener). Åpne så ajax_demo_2.html.
 
-Man må også gjøre en liten justering i nettbutikken. Installer npm-pakken cors og legg til følgende på passende sted i fil server.js:
+Siden demo-siden og tjeneren kjører på ulike adresser (porter), må tjeneren tillate kall fra andre "origins" (CORS). Dette er allerede gjort i nettbutikk/butikk-tjener/server.js med npm-pakken cors:
+
+```js
+import cors from "cors";
+
+// Godta kall fra alle klienter:
+app.use(cors({ origin: "*" }));
+```
+
+I en reell løsning bør man bare tillate de klientene man stoler på, f.eks. `cors({ origin: "http://localhost:5173" })`.

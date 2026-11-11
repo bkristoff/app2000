@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "hjem": "Hjem",
+    "butikk": "Butikk",
+    "om": "Om",
+    "faq": "FAQ",
+    "mørkModus": "Mørk modus",
+    "lysModus": "Lys modus",
+    "byttTilMørk": "Bytt til mørk modus",
+    "byttTilLys": "Bytt til lys modus",
+    "byttSpråk": "Switch to English"
+  },
+  "footer": {
+    "kontakt": "Kontakt oss.",
+    "logo": "Firma logo",
+    "butikker": "Finn en butikk nær deg"
+  },
+  "hjem": {
+    "tittel": "Velkommen til Hobbyhuset",
+    "ingress": "Dette er landingsiden med demo-bruk av Tailwind.",
+    "tilButikken": "Gå til butikken"
+  },
+  "butikk": {
+    "tittel": "Nettbutikken",
+    "ingress": "Alt du trenger til hobbyen din, samlet på ett sted.",
+    "feilHentVarer": "Kunne ikke hente varer: {{melding}}",
+    "feilAntall": "Antall må være et helt tall større enn 0."
+  },
+  "innlogging": {
+    "tittel": "Innlogging",
+    "ingress": "Logg inn for å bestille varer.",
+    "brukernavn": "Brukernavn",
+    "passord": "Passord",
+    "loggInn": "Logg inn"
+  },
+  "bestilling": {
+    "tittel": "Bestill vare",
+    "vnr": "VNr",
+    "antall": "Antall",
+    "leggIKurv": "Legg i handlekurv"
+  },
+  "handlekurv": {
+    "tittel": "Handlekurv for {{brukernavn}}",
+    "linje": "{{antall}} stk. av vare {{vnr}} til {{pris}}",
+    "total": "Verdi av handlekurv:",
+    "tilKasse": "Gå til kasse",
+    "lagrer": "Lagrer ordre ...",
+    "lagret": "Ordre nr. {{ordrenr}} er lagret. Takk for handelen!",
+    "feil": "Kunne ikke lagre ordren: {{melding}}"
+  },
+  "vareliste": {
+    "tittel": "Varer på lager",
+    "antall_one": "{{count}} vare",
+    "antall_other": "{{count}} varer"
+  },
+  "vare": {
+    "vnr": "VNr: {{vnr}}"
+  },
+  "om": {
+    "tittel": "Om oss",
+    "tekst": "Her finner du informasjon om bedriften og våre ansatte."
+  },
+  "faq": {
+    "tittel": "FAQ",
+    "tekst": "Svar på vanlige spørsmål."
+  },
+  "notFound": {
+    "tittel": "Nettsiden finnes ikke (feilkode 404)",
+    "tekst": "Du er altså kommet til slutten av internett.",
+    "tilbake": "Tilbake til forsiden"
+  },
+  "api": {
+    "httpFeil": "HTTP-feil {{status}}"
+  },
+  "butikker": {
+    "tittel": "Våre butikker",
+    "ingress": "Besøk en av våre fysiske butikker. Klikk på en butikk i listen for å se den i kartet.",
+    "åpningstider": "Man–fre 10–18, lør 10–16",
+    "visAlle": "Vis alle butikker"
+  }
+}

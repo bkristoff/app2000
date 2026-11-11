@@ -107,8 +107,25 @@ async function hentKunde(brukernavn) {
   return doQuery(sql, [brukernavn]);
 }
 
+// Sjekker innlogging: henter kunden med gitt brukernavn (epost) og passord.
+// Vi får enten 0 eller 1 rader i retur. Merk at vi IKKE henter ut passordet,
+// slik at det aldri blir sendt tilbake til klienten.
+// NB! Passord lagret i klartekst er kun for demo. Seinere skal vi se på
+// hashing av passord og autentisering med Passport.
+async function sjekkInnlogging(brukernavn, passord) {
+  let sql =
+    "SELECT KNr, Fornavn, Etternavn, EPost FROM Kunde WHERE EPost = ? AND Passord = ?";
+  return doQuery(sql, [brukernavn, passord]);
+}
+
+// Lager en feil med HTTP-statuskode, slik at ruten kan svare med riktig kode.
+function lagFeil(status, melding) {
+  let error = new Error(melding);
+  error.status = status;
+  return error;
+}
+
 // Setter inn en ny ordre fra en gitt handlekurv.
-// For enkel løsning som forutsetter at alt går bra, ingen feilsjekking.
 // Merk at vi her må utføre flere spørringer og at vi derfor ikke kan bruke
 // hjelpefunksjonen doQuery. Vi åpner og lukker forbindelsen manuelt.
 async function settInnOrdre(brukernavn, kurv) {
@@ -128,8 +145,14 @@ async function settInnOrdre(brukernavn, kurv) {
   let sqlInsertOrdrelinje =
     "INSERT INTO Ordrelinje(OrdreNr, VNr, PrisPrEnhet, Antall) VALUES (?, ?, ?, ?)";
 
+  // Enkel validering før vi går til databasen.
+  if (!Array.isArray(kurv) || kurv.length === 0) {
+    throw lagFeil(400, "Handlekurven er tom.");
+  }
+
   // Åpner forbindelse til databasen.
   let conn = await mysql.createConnection(config.db);
+  let ordrenr;
 
   try {
     // Start en transaksjon
@@ -137,6 +160,9 @@ async function settInnOrdre(brukernavn, kurv) {
 
     // Henter kundenummeret til kunden med gitt brukernavn.
     let [rows, meta] = await conn.execute(sqlHentKunde, [brukernavn]);
+    if (rows.length === 0) {
+      throw lagFeil(404, `Fant ingen kunde med brukernavn ${brukernavn}.`);
+    }
     let knr = rows[0].KNr;
 
     // Debugging - sjekk hva vi har fått fra databasen
@@ -148,7 +174,7 @@ async function settInnOrdre(brukernavn, kurv) {
     console.log("Kvittering 1: " + JSON.stringify(result1, null, 2));
 
     let [rows2, meta2] = await conn.execute(sqlHentSisteId, []);
-    let ordrenr = rows2[0].Id;
+    ordrenr = rows2[0].Id;
 
     // Debugging - sjekk hva vi har fått fra databasen
     console.log("Ordrenummer: " + ordrenr);
@@ -192,7 +218,7 @@ async function settInnOrdre(brukernavn, kurv) {
     await conn.end();
   }
 
-  return { melding: "1 ordre satt inn." };
+  return { melding: "1 ordre satt inn.", ordrenr: ordrenr };
 }
 
 export {
@@ -203,5 +229,6 @@ export {
   oppdaterVare,
   slettVare,
   hentKunde,
+  sjekkInnlogging,
   settInnOrdre,
 };
