@@ -1,6 +1,6 @@
 # Leksjon 10. Sikkerhet
 
-Den viktigste kodedelen av denne leksjonen tar for seg JavaScript-biblioteket Passport, se mappe passport-local.
+Den viktigste kodedelen av denne leksjonen tar for seg JavaScript-biblioteket Passport, se mappe passport-local-2026.
 
 Ellers så er leksjonen en generell introduksjon til sikkerhet i webapplikasjoner.
 

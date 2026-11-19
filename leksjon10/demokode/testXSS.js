@@ -31,5 +31,13 @@ const html = filterXSS(input, {
   stripIgnoreTagBody: ["script"], // og hele script-elementet
 });
 
-// Resultatet:
-console.log(`text: ${html.replace(/\\s/g, "")}`);
+// Resultatet: script-elementet er borte, men <p>, <div> og lenken er beholdt.
+console.log("Etter filtrering:");
+console.log(html);
+
+// Et annet vanlig angrep som IKKE bruker <script>: en hendelsesattributt.
+const angrep2 = `<p>Se bildet mitt! <img src="x" onerror="alert('XSS')"></p>`;
+console.log("Angrep med onerror:", angrep2);
+console.log("Etter filtrering: ", filterXSS(angrep2)); // standard-whitelist fjerner onerror
+
+// Se også testXSSReact.html for hvordan dette ser ut i React.

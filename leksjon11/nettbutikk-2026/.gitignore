@@ -1,0 +1,32 @@
+# Én .gitignore for hele monorepoet. Mønstrene gjelder i alle undermapper.
+
+# Avhengigheter (installeres med npm install)
+node_modules
+
+# Bygget klient (lages med npm run build, også på Heroku)
+dist
+dist-ssr
+
+# Miljøvariabler med passord og hemmeligheter. Bare .env.example skal i Git.
+.env
+.env.*
+!.env.example
+*.local
+
+# Playwright (ende-til-ende-tester)
+test-results
+playwright-report
+blob-report
+playwright/.cache
+
+# Logger
+logs
+*.log
+
+# Editor og operativsystem
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.sw?

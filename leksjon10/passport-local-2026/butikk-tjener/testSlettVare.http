@@ -1,0 +1,8 @@
+### Krever innlogging: kjør først kall 3 i testInnlogging.http (REST Client husker cookien).
+DELETE http://localhost:3030/varer HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "VNr":"99980"
+}

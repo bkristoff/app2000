@@ -1,0 +1,42 @@
+### Ny ordre krever innlogging. Kundenummeret hentes fra sesjonen,
+### så vi sender IKKE med brukernavn.
+
+### 1. Uten innlogging gir 401
+POST http://localhost:3030/ordrer HTTP/1.1
+Content-Type: application/json
+
+{
+    "kurv": [
+        { "vnr": "10820", "antall": 2, "pris": 66.5 }
+    ]
+}
+
+### 2. Logg inn (REST Client husker cookien)
+POST http://localhost:3030/innlogging HTTP/1.1
+Content-Type: application/json
+
+{
+    "epost": "paaa@abc.no",
+    "passord": "laap"
+}
+
+### 3. Ny ordre (201)
+POST http://localhost:3030/ordrer HTTP/1.1
+Content-Type: application/json
+
+{
+    "kurv": [
+        { "vnr": "10820", "antall": 2, "pris": 66.5 }
+    ]
+}
+
+### 4. Tom handlekurv gir 400
+POST http://localhost:3030/ordrer HTTP/1.1
+Content-Type: application/json
+
+{
+    "kurv": []
+}
+
+### 5. Logg ut
+POST http://localhost:3030/utlogging HTTP/1.1

@@ -1,0 +1,67 @@
+### Innlogging med Passport.
+### REST Client husker cookies mellom kallene, akkurat som en nettleser.
+### Kjør kallene ovenfra og ned. Bytt gjerne ut med en kunde fra din egen database
+### (npm run forbered-db skriver ut noen e-poster med passord).
+
+### 1. Hvem er innlogget? (401 – ingen ennå)
+GET http://localhost:3030/bruker HTTP/1.1
+
+### 2. Feil passord gir 401
+POST http://localhost:3030/innlogging HTTP/1.1
+Content-Type: application/json
+
+{
+    "epost": "paaa@abc.no",
+    "passord": "feil"
+}
+
+### 3. Riktig innlogging gir 200 og en sesjons-cookie (se Set-Cookie i svaret)
+POST http://localhost:3030/innlogging HTTP/1.1
+Content-Type: application/json
+
+{
+    "epost": "paaa@abc.no",
+    "passord": "laap"
+}
+
+### 4. Hvem er innlogget? (200 – nå vet tjeneren hvem vi er)
+GET http://localhost:3030/bruker HTTP/1.1
+
+### 5. Egne kundeopplysninger (200)
+GET http://localhost:3030/kunder/paaa@abc.no HTTP/1.1
+
+### 6. Andres kundeopplysninger (403 – innlogget, men ikke tilgang)
+GET http://localhost:3030/kunder/jola@xyz.com HTTP/1.1
+
+### 7. Logg ut
+POST http://localhost:3030/utlogging HTTP/1.1
+
+### 8. Hvem er innlogget? (401 igjen)
+GET http://localhost:3030/bruker HTTP/1.1
+
+### 9. Registrer ny kunde (201, og logges inn). Bytt e-post hvis den er brukt (409).
+### Postnummeret må finnes i Poststed-tabellen.
+POST http://localhost:3030/registrering HTTP/1.1
+Content-Type: application/json
+
+{
+    "fornavn": "Test",
+    "etternavn": "Testesen",
+    "epost": "test@eksempel.no",
+    "passord": "hemmelig123",
+    "adresse": "Testveien 1",
+    "postnr": "3800"
+}
+
+### 10. For kort passord gir 400
+POST http://localhost:3030/registrering HTTP/1.1
+Content-Type: application/json
+
+{
+    "fornavn": "Test",
+    "etternavn": "Testesen",
+    "epost": "test2@eksempel.no",
+    "passord": "kort",
+    "adresse": "Testveien 1",
+    "postnr": "3800"
+}

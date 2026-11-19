@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="webstorage.js" defer></script>
     <title>Web Storage Demo</title>
@@ -14,18 +13,19 @@
     <p>Men det skal <b>ikke</b> fungere "på tvers" av nettlesere.</p>
 
     <h2>sessionStorage</h2>
-    <p>
-        <button id="telleKnapp">Tell opp!</button>
-        <div id="knappemelding"></div>
-    </p>
+    <p>Lever så lenge fanen er åpen. Prøv å åpne siden i en ny fane.</p>
+    <div>
+      <button id="telleKnapp">Tell opp!</button>
+      <div id="knappemelding"></div>
+    </div>
 
     <h2>localStorage</h2>
-    <p>
-        <input type="text" id="navneboks">
-        <button id="henteKnapp">Hent verdi!</button>
-        <button id="oppdaterKnapp">Oppdater verdi!</button>
-        <div id="navnemelding"></div>
-    </p>
-
+    <p>Lever til den slettes, også etter at nettleseren er lukket.</p>
+    <div>
+      <input type="text" id="navneboks" />
+      <button id="henteKnapp">Hent verdi!</button>
+      <button id="oppdaterKnapp">Oppdater verdi!</button>
+      <div id="navnemelding"></div>
+    </div>
   </body>
 </html>

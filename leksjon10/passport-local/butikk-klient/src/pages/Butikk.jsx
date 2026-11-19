@@ -36,8 +36,30 @@ const Butikk = () => {
   const url = `http://localhost:3030/varer`;
 
   let [innlogget, setInnlogget] = useState(false);
+  let [feilmelding, setFeilmelding] = useState("");
   let [brukernavn, setBrukernavn] = useState("");
   let [passord, setPassord] = useState("");
+
+  // Er brukeren allerede innlogget? Sesjonen lever på tjeneren, så etter at
+  // siden er lastet på nytt (F5) spør vi tjeneren (GET /user). Nettleseren
+  // sender med sesjons-cookien fordi vi bruker credentials: "include".
+  useEffect(() => {
+    const sjekkSesjon = async () => {
+      try {
+        const response = await fetch("http://localhost:3030/user", {
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setBrukernavn(data.user.epost);
+          setInnlogget(true);
+        }
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+    sjekkSesjon();
+  }, []);
   let [vnr, setVnr] = useState("");
   let [antall, setAntall] = useState(0);
 
@@ -106,23 +128,31 @@ const Butikk = () => {
   };
 
   // Håndterer submit i Innlogging.
+  // NB! Ikke logg passordet til konsollet.
   const sjekkInnlogging = async (event) => {
-    console.log(`sjekkInnlogging: epost = ${brukernavn}, passord = ${passord}`);
     event.preventDefault();
 
-    const response = await fetch("http://localhost:3030/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ epost: brukernavn, passord: passord }),
-      credentials: "include",
-    });
-
-    if (response.ok) {
+    try {
+      const response = await fetch("http://localhost:3030/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ epost: brukernavn, passord: passord }),
+        credentials: "include", // Ta imot (og senere sende med) sesjons-cookien
+      });
       const data = await response.json();
-      setInnlogget(true);
-      console.log("Innlogget:", data.user);
-    } else {
-      console.error("Innlogging feilet");
+
+      if (response.ok) {
+        setFeilmelding("");
+        setPassord("");
+        setInnlogget(true);
+        console.log("Innlogget:", data.user);
+      } else {
+        // 401 (feil e-post/passord) eller 429 (for mange forsøk)
+        setFeilmelding(data.error);
+      }
+    } catch (error) {
+      setFeilmelding("Fikk ikke kontakt med tjeneren.");
+      console.error(error.message);
     }
   };
 
@@ -166,6 +196,7 @@ const Butikk = () => {
     <div className="space-y-4">
       <h1>Nettbutikken</h1>
       &nbsp;
+      {feilmelding && <p className="text-red-700">{feilmelding}</p>}
       {toppDel}
       &nbsp;
       <Vareliste varer={varer} />

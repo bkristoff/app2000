@@ -1,8 +1,12 @@
-# Leksjon 11. Testing
+# Leksjon 11. Testing og DevOps
 
 Den praktiske kodedelen av denne leksjonen tar for seg unit-testing, deployment til web server og et kopilot-eksperiment.
 
 - https://dbsys.info/2000/leksjon11/index.html
+
+## Oppdatert nettbutikk 2026
+
+Mappen nettbutikk-2026 utvider nettbutikken for Hobbyhuset med testing og devops-eksempler, og erstatter den gamle nettbutikken.
 
 ## Mappe demo-js-mocha
 

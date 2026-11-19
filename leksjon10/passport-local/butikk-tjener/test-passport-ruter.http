@@ -5,13 +5,12 @@ POST http://localhost:3030/register
 Content-Type: application/json
 
 {
-  "knr": "99999",
   "fornavn": "Test",
   "etternavn": "Testesen",
   "epost": "test@xyz.com",
-  "passord": "hemmelig",
+  "passord": "hemmelig123",
   "adresse": "Testveien 1",
-  "postnr": "0123"
+  "postnr": "3800"
 }
 
 ### Logg inn
@@ -20,18 +19,17 @@ Content-Type: application/json
 
 {
   "epost": "test@xyz.com",
-  "passord": "hemmelig"
+  "passord": "hemmelig123"
 }
 
 ### Sjekk innloggingsstatus
 GET http://localhost:3030/user
 
-### Registrere ordre (krever innlogging)
+### Registrere ordre (krever innlogging). Kunden hentes fra sesjonen, ikke fra body.
 POST http://localhost:3030/ordrer
 Content-Type: application/json
 
 {
-  "brukernavn": "test@xyz.com",
   "kurv": [
     {
       "vnr": "10820",
@@ -54,7 +52,6 @@ POST http://localhost:3030/ordrer
 Content-Type: application/json
 
 {
-  "brukernavn": "test@xyz.com",
   "kurv": []
 }
 
@@ -64,5 +61,17 @@ GET http://localhost:3030/varer
 ### Hent én vare
 GET http://localhost:3030/varer/10820
 
-### Hent én kunde (krever innlogging)
+### Logg inn igjen
+POST http://localhost:3030/login
+Content-Type: application/json
+
+{
+  "epost": "test@xyz.com",
+  "passord": "hemmelig123"
+}
+
+### Hent egne kundeopplysninger (200, uten passord)
 GET http://localhost:3030/kunder/test@xyz.com
+
+### Hent en annen kunde (403 - innlogget, men ikke tilgang)
+GET http://localhost:3030/kunder/paaa@abc.no

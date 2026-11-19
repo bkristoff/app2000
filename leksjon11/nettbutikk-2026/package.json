@@ -1,0 +1,27 @@
+{
+  "name": "nettbutikk-2026",
+  "version": "1.0.0",
+  "description": "Hobbyhuset: React-klient og Express-tjener i ett monorepo",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "workspaces": [
+    "butikk-klient",
+    "butikk-tjener"
+  ],
+  "scripts": {
+    "dev": "concurrently -n tjener,klient -c blue,magenta \"npm run dev -w butikk-tjener\" \"npm run dev -w butikk-klient\"",
+    "build": "npm run build -w butikk-klient",
+    "start": "npm start -w butikk-tjener",
+    "test": "npm test -w butikk-tjener",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "heroku-postbuild": "npm run build"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "concurrently": "^10.0.7"
+  }
+}

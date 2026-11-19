@@ -1,19 +1,26 @@
 {
-  "name": "demo-app",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "demokode-sikkerhet",
+  "version": "1.1.0",
+  "description": "Minieksempler om sikkerhet i webapplikasjoner (APP2000, leksjon 10)",
   "type": "module",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "crypto": "node testCrypto.js",
+    "bcrypt": "node testBCrypt.js",
+    "sql": "node testSqlInjection.js",
+    "sql-param": "node --env-file-if-exists=.env testSqlParam.js",
+    "xss": "node testXSS.js",
+    "cookie": "node testCookie.js",
+    "session": "node --env-file-if-exists=.env testSession.js",
+    "csrf": "node testCsrf.js"
   },
-  "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
-    "express": "^4.21.1",
+    "express": "^5.1.0",
     "express-session": "^1.18.1",
+    "mysql2": "^3.14.0",
     "xss": "^1.0.15"
   }
 }

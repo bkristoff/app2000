@@ -8,18 +8,24 @@ Det er lagt til flere nye biblioteker i package.json: bcrypt for å kryptere pas
 
 Alle først må du sørge for at en lokal MySQL-database kjører med databasen for nettbutikken, som forklart i leksjon 8.
 
-Kjør så følgende skript for å lage krypterte passord:
-
-```
-node .\lag-kryptert-passord.js
-```
-
-Skriptet skriver ut en SQL-spørring som du må kjøre i MySQL-databasen
-
-Vi installerer og kjører deretter serveren på vanlig måte:
+Installer og gjør så databasen klar for Passport (bare første gang):
 
 ```
 npm install
+npm run forbered-db
+```
+
+Skriptet `forbered-passport-db.js` gjør tre ting:
+
+1. Tar sikkerhetskopi av Kunde til `Kunde_backup`.
+2. Gjør `EPost` unik. `SettDummyEPostOgPassord.sql` lager duplikater, og med e-post som brukernavn må den være unik.
+3. Hasher alle passordene med bcrypt.
+
+Til slutt skriver skriptet ut noen e-poster med passord du kan logge inn med. Det erstatter det gamle `lag-kryptert-passord.js`, som bare hashet passordet til én kunde, og som nå er fjernet.
+
+Kopier gjerne `.env.example` til `.env` og sett `SESSION_SECRET`. Start deretter tjeneren:
+
+```
 npm start
 ```
 
@@ -57,7 +63,15 @@ Vi må fortelle Passport hvilke kolonner i databasen som inneholder "brukernavn"
 
 Det ble litt ekstra koding av dette KNr/EPost-oppsettet, fordelen er kanskje at vi lærte litt ekstra om Passport på veien?
 
-Funksjonen isAutheticated sjekker om brukeren (kunden) er logget inn.
+Funksjonen isAuthenticated sjekker om brukeren (kunden) er logget inn.
+
+Noen sikkerhetsdetaljer i passport.js og routes/index.js:
+
+- Ved ukjent e-post kjøres `bcrypt.compare` likevel, mot en dummy-hash. Svaret blir dermed like tregt som ved feil passord, og en angriper kan ikke måle seg fram til hvilke e-poster som finnes.
+- Passordet logges aldri. `req.user` og alle svar til klienten er uten passord-hash.
+- `POST /login` er begrenset til 10 mislykkede forsøk per 15 minutter (`express-rate-limit`).
+- Passport (fra versjon 0.6) lager ny sesjons-id ved innlogging, som beskytter mot "session fixation". Ved utlogging slettes sesjonen og cookien.
+- Sesjons-cookien har `httpOnly` og `sameSite: "lax"`.
 
 ## 4. Endring av rutene i routes/index.js
 
@@ -71,16 +85,19 @@ Teknisk løser vi det ved å "beskytte" noen ruter med Passport, f.eks. innsetti
 app.post("/ordrer", isAuthenticated, async (req, res) => { ... })
 ```
 
+Ordren lagres for kunden i `req.user`, altså den innloggede kunden. Klienten sender ikke med brukernavn. Ellers kunne en innlogget kunde bestilt i andres navn ved å bytte ut brukernavnet i forespørselen.
+
 Andre eksempler på beskyttede ruter:
 
-- Endring, innsetting og sletting av varer (ikke i bruk fra klienten pr. nå, vil skal bare kunne gjøres av innloggede ansatte)
-- Visning av én kunde
+- Endring, innsetting og sletting av varer. Dette er ikke i bruk fra klienten ennå, og skal egentlig bare kunne gjøres av innloggede ansatte (autorisasjon/roller er en god øvelse).
+- Visning av én kunde. Her holder det ikke å være innlogget: man får bare se sine egne opplysninger, ellers svarer tjeneren 403.
 
-Nederst i routes/index.js ligger det tre ruter som er nye:
+Nederst i routes/index.js ligger fire nye ruter:
 
-- POST mot /register: Oppretter en ny bruker (kunde)
-- POST mot /login: Logger inn (og oppretter en sesjon, ei arbeidsøkt)
-- POST mot /logout: Avslutter sesjonen
+- `POST /register` oppretter en ny kunde. Kundenummeret lages av tjeneren, passordet hashes, og kunden logges inn. Svarer 409 hvis e-posten er i bruk.
+- `POST /login` logger inn og oppretter en sesjon (ei arbeidsøkt).
+- `POST /logout` avslutter sesjonen.
+- `GET /user` svarer med hvem som er innlogget. Klienten bruker den til å huske innloggingen når siden lastes på nytt.
 
 ## 5 Testing med REST Client
 

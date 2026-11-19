@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* Mørk modus: Som standard følger dark: operativsystemets innstilling.
+   Her sier vi i stedet at dark: gjelder når et element utenfor har
+   klassen "dark". Klassen settes i Layout.jsx ut fra TemaContext. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Egne farger og font for Hobbyhuset. Tailwind v4 lager automatisk
+   klasser som bg-merke-600, text-merke-700 osv. ut fra disse variablene. */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-merke-50: oklch(0.97 0.02 265);
+  --color-merke-100: oklch(0.93 0.04 265);
+  --color-merke-300: oklch(0.78 0.11 265);
+  --color-merke-500: oklch(0.58 0.19 265);
+  --color-merke-600: oklch(0.51 0.21 265);
+  --color-merke-700: oklch(0.45 0.2 265);
+  --color-merke-900: oklch(0.3 0.12 265);
+}
+
+/* Felles grunnstil for overskrifter, slik at vi slipper å gjenta klasser. */
+@layer base {
+  h1 {
+    @apply text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100;
+  }
+  h2 {
+    @apply text-xl font-semibold text-slate-900 dark:text-slate-100;
+  }
+  h3 {
+    @apply font-semibold text-slate-900 dark:text-slate-100;
+  }
+}
+
+/* Gjenbrukbare komponentklasser for skjemaelementer og knapper. */
+@layer components {
+  .felt {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-merke-500 focus:ring-2 focus:ring-merke-500/30 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500;
+  }
+  .knapp {
+    @apply inline-flex items-center justify-center rounded-lg bg-merke-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-merke-700 focus-visible:ring-2 focus-visible:ring-merke-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-slate-900;
+  }
+  .kort {
+    @apply rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800;
+  }
+}

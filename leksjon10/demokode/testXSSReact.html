@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XSS i React</title>
+    <!-- For å slippe byggesteg (Vite) henter vi React, Babel og DOMPurify fra CDN.
+         I et vanlig React-prosjekt: npm install dompurify -->
+    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.4/purify.min.js"></script>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+      textarea { width: 100%; font-family: monospace; }
+      .boks { border: 1px solid #aaa; border-radius: 6px; padding: 0.5rem 1rem; margin: 1rem 0; }
+      .trygg { border-color: green; }
+      .farlig { border-color: crimson; }
+      code { background: #eee; padding: 0 0.2rem; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState } = React;
+
+      // Noen typiske angrep. Merk: <script>-elementer som settes inn med innerHTML
+      // blir IKKE kjørt av nettleseren, så angripere bruker heller hendelsesattributter.
+      const eksempler = [
+        `Hei! <b>Fin</b> butikk <img src="x" onerror="alert('XSS: ' + document.cookie)">`,
+        `<a href="javascript:alert('XSS')">Klikk for rabattkode</a>`,
+        `Hei verden! <script>alert('XSS')<\/script>`,
+      ];
+
+      function App() {
+        // Tenk deg at kommentar er en produktanmeldelse hentet fra databasen,
+        // skrevet av en hvilken som helst bruker.
+        const [kommentar, setKommentar] = useState(eksempler[0]);
+
+        return (
+          <>
+            <h1>XSS i React</h1>
+            <p>
+              Skriv en "produktanmeldelse" (eller velg et eksempel) og se hvordan den vises
+              på tre ulike måter.
+            </p>
+            <p>
+              {eksempler.map((e, i) => (
+                <button key={i} onClick={() => setKommentar(e)}>Eksempel {i + 1}</button>
+              ))}
+            </p>
+            <textarea rows="3" value={kommentar} onChange={(e) => setKommentar(e.target.value)} />
+
+            <div className="boks trygg">
+              <h2>1. Vanlig JSX: <code>{"{kommentar}"}</code> ✅</h2>
+              <p>{kommentar}</p>
+              <small>
+                React escaper alltid tekst i <code>{"{ }"}</code>. HTML vises som tekst og
+                blir aldri tolket. Dette er standard, og det du nesten alltid skal bruke.
+              </small>
+            </div>
+
+            <div className="boks farlig">
+              <h2>2. <code>dangerouslySetInnerHTML</code> uten filtrering ❌</h2>
+              <p dangerouslySetInnerHTML={{ __html: kommentar }} />
+              <small>
+                Her settes teksten inn som HTML. Angriperens kode kjøres i nettleseren til
+                alle som ser på siden. Navnet er en advarsel!
+              </small>
+            </div>
+
+            <div className="boks trygg">
+              <h2>3. <code>dangerouslySetInnerHTML</code> + DOMPurify ✅</h2>
+              <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(kommentar) }} />
+              <small>
+                Trenger du virkelig å vise HTML fra brukere (f.eks. fet skrift), må den
+                renses først. DOMPurify beholder ufarlige elementer som <code>&lt;b&gt;</code>,
+                men fjerner <code>onerror</code>, <code>javascript:</code>-lenker og
+                <code>&lt;script&gt;</code>.
+              </small>
+            </div>
+
+            <h2>Andre steder å passe på i React</h2>
+            <ul>
+              <li>
+                <code>{'<a href={brukerUrl}>'}</code>: en URL fra brukeren kan være{" "}
+                <code>javascript:...</code>. Sjekk at den starter med <code>https://</code>.
+              </li>
+              <li>
+                <code>element.innerHTML = ...</code> via <code>useRef</code> omgår Reacts
+                beskyttelse på samme måte som <code>dangerouslySetInnerHTML</code>.
+              </li>
+              <li>
+                Server-siden må uansett validere data. Klienten kan aldri stoles på.
+              </li>
+            </ul>
+          </>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>

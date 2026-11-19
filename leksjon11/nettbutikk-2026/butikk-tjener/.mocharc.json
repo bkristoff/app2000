@@ -1,0 +1,6 @@
+{
+  "spec": "test/**/*.test.js",
+  "require": "test/oppsett.js",
+  "node-option": ["env-file-if-exists=.env"],
+  "timeout": 10000
+}

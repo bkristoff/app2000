@@ -1,5 +1,6 @@
 // Denne styrefilen bør ikke tas med i et Git-repo (inneholder brukernavn og passord til databasen).
 // Legg til mappe config i .gitignore-filen.
+// Enda bedre: legg hemmeligheter i en .env-fil (se .env.example) og les dem fra process.env.
 
 // Oppsettet under forutsetter at man har opprettet følgende bruker og database i MySQL:
 
@@ -24,4 +25,10 @@ export const config = {
     queueLimit: 0,
   },
   port: env.PORT || 3030,
+
+  // Adressen til React-klienten (Vite). Brukes i CORS-oppsettet.
+  klientUrl: env.CLIENT_URL || "http://localhost:5173",
+
+  // Hemmeligheten som signerer sesjons-cookien. Skal ALDRI stå i koden i produksjon.
+  sessionSecret: env.SESSION_SECRET,
 };

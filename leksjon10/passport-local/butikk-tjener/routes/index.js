@@ -1,6 +1,6 @@
-import passport from "passport";
 import bcrypt from "bcrypt";
-import { isAuthenticated } from "../services/passport.js";
+import { rateLimit } from "express-rate-limit";
+import { passport, isAuthenticated } from "../services/passport.js";
 import {
   hentVarer,
   hentVare,
@@ -8,10 +8,21 @@ import {
   settInnVare,
   oppdaterVare,
   slettVare,
-  hentKunde,
+  hentKundeFraKNr,
   settInnKunde,
   settInnOrdre,
 } from "../services/db.js";
+
+// Begrenser antall mislykkede innloggingsforsøk fra samme IP-adresse,
+// for å gjøre det vanskelig å gjette passord (brute force).
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutter
+  limit: 10,
+  skipSuccessfulRequests: true,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: { error: "For mange innloggingsforsøk. Prøv igjen om 15 minutter." },
+});
 
 // Definerer rutene (routes) i REST-API'et.
 
@@ -139,7 +150,7 @@ const routes = (app) => {
   // Denne ruten er kun tilgjengelig for brukere som er logget inn.
   app.delete("/varer", isAuthenticated, async (req, res) => {
     try {
-      let VNr = req.body.VNr;
+      let VNr = req.body?.VNr;
       const result = await slettVare(VNr);
       res.status(200);
       res.set("Content-Type", "application/json");
@@ -155,15 +166,16 @@ const routes = (app) => {
     }
   });
 
-  // Leverer én rad fra Kunde-tabellen i Hobbyhuset på JSON-format.
-  // Denne ruten er kun tilgjengelig for brukere som er logget inn.
+  // Leverer én rad fra Kunde-tabellen (uten passord). Krever innlogging.
+  // Autentisering (hvem er du?) er ikke nok: en innlogget kunde skal bare få se
+  // sine EGNE opplysninger (autorisasjon). Ellers svarer vi 403 Forbidden.
   app.get("/kunder/:brukernavn", isAuthenticated, async (req, res) => {
     try {
-      let brukernavn = req.params["brukernavn"];
-      const [rows, fields] = await hentKunde(brukernavn);
-      res.status(200);
-      res.set("Content-Type", "application/json");
-      res.send(JSON.stringify(rows));
+      if (req.params.brukernavn !== req.user.epost) {
+        return res.status(403).json({ error: "Ingen tilgang til denne kunden" });
+      }
+      const [rows] = await hentKundeFraKNr(req.user.knr);
+      res.status(200).json(rows);
     } catch (error) {
       res.status(500);
       res.set("Content-Type", "application/json");
@@ -177,110 +189,114 @@ const routes = (app) => {
 
   // Setter inn en ny ordre fra en gitt handlekurv.
   // Denne ruten er kun tilgjengelig for brukere som er logget inn.
+  // Kundenummeret hentes fra den innloggede brukeren (req.user), IKKE fra
+  // forespørselen. Ellers kunne en innlogget kunde bestilt i andres navn.
   app.post("/ordrer", isAuthenticated, async (req, res) => {
     try {
-      let { brukernavn, kurv } = req.body;
-      const result = await settInnOrdre(brukernavn, kurv);
-      // Debugging - sjekk hva vi har fått fra klienten
-      // console.log(brukernavn);
-      // console.log(JSON.stringify(kurv, null, 2));
-      // Og hva vi sender til klienten
-      // console.log(JSON.stringify(response, null, 2));
-      res.status(200);
+      let { kurv } = req.body ?? {};
+      const result = await settInnOrdre(req.user.knr, kurv);
+      res.status(201);
       res.set("Content-Type", "application/json");
       res.send(JSON.stringify(result));
     } catch (error) {
-      res.status(500);
+      // settInnOrdre setter error.status ved "kjente" feil (400: tom kurv,
+      // ukjent vare, ugyldig antall). Alt annet er en uventet feil (500).
+      res.status(error.status || 500);
       res.set("Content-Type", "application/json");
       res.send(
         JSON.stringify({
-          "SQL Error Message": error.sqlMessage || error.message,
+          error: error.sqlMessage || error.message,
         })
       );
     }
   });
 
-  // Registrering
-  // TODO: Har ikke laget frontend-kode for dette,
-  // det er altså kun mulig å logge inn med en eksisterende bruker.
-  // Backend-koden under bør nok også modifiseres litt.
-  // Det er blant annet naturlig å la knr være autonummerert i databasen,
-  // og i så fall ikke kreve at kunden finner på sitt eget kundenummer.
-  app.post("/register", async (req, res) => {
-    try {
-      const { knr, fornavn, etternavn, epost, passord, adresse, postnr } =
-        req.body;
-      const passwordHash = await bcrypt.hash(passord, 10);
+  // Registrering av ny kunde.
+  // Body: { fornavn, etternavn, epost, passord, adresse, postnr }.
+  // Kundenummeret lages av databasen (høyeste KNr + 1), ikke av klienten.
+  // Passordet hashes med bcrypt, og kunden blir logget inn med en gang.
+  // TODO: Har ikke laget frontend-kode for dette (se passport-local-2026).
+  app.post("/register", async (req, res, next) => {
+    const { fornavn, etternavn, epost, passord, adresse, postnr } = req.body ?? {};
 
-      const result = await settInnKunde(
-        knr,
-        fornavn,
-        etternavn,
-        epost,
-        passwordHash,
-        adresse,
-        postnr
-      );
-      res.status(201);
-      res.set("Content-Type", "application/json");
-      res.send(JSON.stringify(result));
-    } catch (error) {
-      console.log("Feil: " + error);
-      res.status(400).json({
-        error:
-          "En feil oppsto på serveren, kan f.eks. skyldes at e-post allerede er i bruk.",
-      });
+    // Validering på tjeneren – klienten kan aldri stoles på.
+    if (![fornavn, etternavn, epost, passord, adresse, postnr].every(Boolean)) {
+      return res.status(400).json({ error: "Alle feltene må fylles ut" });
     }
-  });
+    if (passord.length < 8) {
+      return res.status(400).json({ error: "Passordet må ha minst 8 tegn" });
+    }
 
-  // Innlogging
-  app.post("/login", (req, res, next) => {
-    console.log("Login-forsøk:", req.body);
-
-    passport.authenticate("local", (err, user, info) => {
-      if (err) {
-        console.error("Feil ved autentisering:", err);
-        return res.status(500).json({ error: "Serverfeil" });
+    try {
+      const passwordHash = await bcrypt.hash(passord, 10);
+      await settInnKunde(fornavn, etternavn, epost, passwordHash, adresse, postnr);
+    } catch (error) {
+      if (error.code === "ER_DUP_ENTRY") {
+        return res.status(409).json({ error: "E-postadressen er allerede i bruk" });
       }
+      console.log("Feil ved registrering: " + error);
+      return res.status(400).json({ error: "Kunne ikke registrere kunden" });
+    }
 
-      if (!user) {
-        console.log("Autentisering feilet:", info);
-        return res
-          .status(401)
-          .json({ error: info?.message || "Feil e-post eller passord" });
+    // Logger inn den nye kunden via Passport-strategien (samme body: epost og passord).
+    passport.authenticate("local", (err, user) => {
+      if (err || !user) {
+        return next(err || new Error("Kunne ikke logge inn ny kunde"));
       }
-
       req.logIn(user, (err) => {
         if (err) {
-          console.error("Feil ved req.logIn:", err);
-          return res.status(500).json({ error: "Kunne ikke logge inn" });
+          return next(err);
         }
-
-        console.log("Vellykket innlogging:", user);
-        return res.json({ user: req.user });
+        res.status(201).json({ user });
       });
     })(req, res, next);
-
-    //res.json({ user: req.user });
   });
 
-  // Utlogging
-  // TODO: Har ikke laget frontend-kode for dette.
-  // Tips: Lag en knapp som gjør en POST-request med useEffect.
-  app.post("/logout", (req, res) => {
-    req.logout(() => {
-      res.json({ message: "Logget ut" });
+  // Innlogging. Body: { epost, passord }.
+  // Vi bruker passport.authenticate med en egen callback, slik at vi selv
+  // kan svare med JSON (standard er redirect mellom HTML-sider).
+  // NB! Aldri logg req.body her – den inneholder passordet i klartekst.
+  app.post("/login", loginLimiter, (req, res, next) => {
+    passport.authenticate(
+      "local",
+      { badRequestMessage: "Mangler e-post eller passord" },
+      (err, user, info) => {
+        if (err) {
+          return next(err);
+        }
+        if (!user) {
+          return res.status(401).json({ error: info?.message });
+        }
+        // req.logIn lagrer brukeren i sesjonen (via serializeUser).
+        // Passport lager samtidig en ny sesjons-id, slik at en eventuell gammel
+        // id ikke kan misbrukes ("session fixation").
+        req.logIn(user, (err) => {
+          if (err) {
+            return next(err);
+          }
+          console.log("Vellykket innlogging:", user.epost);
+          return res.json({ user });
+        });
+      }
+    )(req, res, next);
+  });
+
+  // Utlogging. Fjerner brukeren fra sesjonen, sletter sesjonen og cookien.
+  app.post("/logout", (req, res, next) => {
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      req.session.destroy(() => {
+        res.clearCookie("butikk.sid");
+        res.json({ message: "Logget ut" });
+      });
     });
   });
 
-  // Sjekk innloggingsstatus
-  // TODO: Brukes heller ikke i frontend pr. nå.
+  // Sjekk innloggingsstatus. Klienten kaller denne når siden lastes, slik at
+  // brukeren forblir innlogget selv om siden lastes på nytt.
   app.get("/user", (req, res) => {
-    console.log("Session ID:", req.sessionID);
-    console.log("Session:", req.session);
-    console.log("isAuthenticated:", req.isAuthenticated());
-    console.log("User:", req.user);
-
     if (req.isAuthenticated()) {
       res.json({ user: req.user });
     } else {

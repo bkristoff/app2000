@@ -1,0 +1,106 @@
+# GitHub Actions: kjører alle testene automatisk ved hver push og pull request.
+#
+# GitHub starter en "fersk" Linux-maskin (en runner), henter koden og
+# følger stegene under. Resultatet ser du under fanen Actions på GitHub,
+# og som en grønn hake eller et rødt kryss ved hver commit.
+#
+# Kombinert med "Wait for CI to pass before deploy" på Heroku blir bare
+# kode der alle testene går gjennom, deployet (se README).
+#
+# NB! Mappen .github må ligge på rotmappen i Git-repoet, altså i nettbutikk-2026.
+
+name: Tester
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # Gjør det mulig å starte workflowen manuelt fra fanen Actions
+
+# Pusher du flere ganger rett etter hverandre, avbrytes den forrige kjøringen.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint, API-tester og ende-til-ende-tester
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # En MySQL-database som kjører i en egen container ved siden av runneren,
+    # bare så lenge jobben varer. Databasen og brukeren opprettes automatisk
+    # med de samme navnene som vi bruker lokalt (se butikk-tjener/.env.example).
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: rot
+          MYSQL_DATABASE: butikk
+          MYSQL_USER: butikkapp
+          MYSQL_PASSWORD: hemmelig
+        ports:
+          - 3306:3306
+        # Venter til MySQL svarer før stegene under starter
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    # Miljøvariabler for alle stegene. Tjeneren og testene leser dem via config.js.
+    # Hemmeligheten under er bare for testene. Ekte hemmeligheter legges under
+    # Settings → Secrets and variables → Actions og brukes som ${{ secrets.NAVN }}.
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USER: butikkapp
+      DB_PASSWORD: hemmelig
+      DB_NAME: butikk
+      SESSION_SECRET: hemmelighet-kun-for-ci
+
+    steps:
+      - name: Hent koden
+        uses: actions/checkout@v5
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm # Gjenbruker nedlastede pakker fra forrige kjøring
+
+      - name: Installer pakker
+        run: npm ci # Som npm install, men følger package-lock.json nøyaktig
+
+      - name: Lint av klienten (ESLint)
+        run: npm run lint -w butikk-klient
+
+      # Samme oppsett som lokalt og på Heroku (se README i butikk-tjener):
+      # 1. Hobbyhuset-databasen, 2. e-post og passord, 3. unik e-post og bcrypt-hash.
+      - name: Fyll databasen med Hobbyhuset-data
+        run: |
+          MYSQL="mysql -h 127.0.0.1 -u butikkapp -phemmelig --default-character-set=utf8mb4 butikk"
+          $MYSQL < butikk-tjener/config/hobbyhuset.sql
+          $MYSQL < butikk-tjener/config/SettDummyEPostOgPassord.sql
+          npm run forbered-db -w butikk-tjener
+
+      - name: API-tester (Mocha + Supertest)
+        run: npm test
+
+      - name: Installer nettleser for Playwright
+        run: npx playwright install --with-deps chromium
+
+      # Playwright bygger klienten og starter tjeneren selv (webServer i playwright.config.js).
+      - name: Ende-til-ende-tester (Playwright)
+        run: npm run test:e2e
+
+      # Lagrer HTML-rapporten (med skjermbilder og trace for tester som feilet),
+      # slik at den kan lastes ned fra siden til kjøringen under fanen Actions.
+      - name: Last opp Playwright-rapport
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-rapport
+          path: playwright-report/
+          retention-days: 14
